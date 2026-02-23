@@ -1,0 +1,88 @@
+---
+import Button from "../components/button/index.astro";
+import Card from "../components/card/index.astro";
+import Contact from "../components/contact/index.astro";
+import Hero from "../components/hero/index.astro";
+import IconWrapper from "../components/icon-wrapper/index.astro";
+import List from "../components/list/index.astro";
+import features from "../constants/features";
+import infoCards from "../constants/info-cards";
+import services from "../constants/services";
+import Layout from "../layouts/Layout.astro";
+import "../styles/components.css";
+---
+
+<Layout title="Renew Digital - Serviços Digitais">
+  <Hero />
+
+  <section class="section" id="servicos">
+    <div class="container">
+      <h2 class="section-title">Nossos Serviços</h2>
+      <p class="section-subtitle">
+        Soluções digitais completas para seu negócio
+      </p>
+      <div class="services-grid">
+        {
+          services.map((s) => (
+            <Card size="md">
+              <IconWrapper name={s.icon} variant="gradient" size={32} />
+              <h3>{s.title}</h3>
+              <p>{s.description}</p>
+            </Card>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-section" id="sobre">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <span class="about-badge">Sobre Nós</span>
+          <h2>
+            Transformamos ideias em <span class="highlight"
+              >resultados digitais</span>
+          </h2>
+          <p>
+            A Renew Digital é uma agência de serviços digitais especializada.
+          </p>
+          <List
+            items={features.map((f) => ({
+              icon: "lucide:check-circle",
+              label: f,
+            }))}
+            variant="icon"
+          />
+        </div>
+        <div class="about-cards">
+          {
+            infoCards.map((c) => (
+              <Card size="sm">
+                <IconWrapper name={c.icon} variant="default" size={24} />
+                <h3>{c.title}</h3>
+                <p>{c.description}</p>
+              </Card>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Pronto para transformar sua presença digital?</h2>
+        <p>
+          Entre em contato e vamos discutir como ajudar seu negócio a crescer
+        </p>
+        <Button href="#contato" variant="secondary" icon="lucide:message-circle"
+          >Falar com Especialista</Button
+        >
+      </div>
+    </div>
+  </section>
+
+  <Contact />
+</Layout>

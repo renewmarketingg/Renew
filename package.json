@@ -1,0 +1,21 @@
+{
+  "name": "renew",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "astro": "astro",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "dev:host": "astro dev --host"
+  },
+  "dependencies": {
+    "astro": "^5.17.1",
+    "astro-icon": "^1.1.5",
+    "@iconify-json/lucide": "^1.2.91"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@astrojs/check": "^0.9.6"
+  }
+}

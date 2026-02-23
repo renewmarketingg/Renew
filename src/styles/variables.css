@@ -1,0 +1,74 @@
+:root {
+  --color-primary: #8414e3;
+  --color-primary-light: #c51be4;
+  --color-primary-lighter: #ae8bc7;
+  --color-primary-alpha-08: rgba(132, 20, 227, 0.08);
+  --color-primary-alpha-10: rgba(132, 20, 227, 0.1);
+  --color-primary-alpha-15: rgba(132, 20, 227, 0.15);
+  --color-primary-alpha-20: rgba(132, 20, 227, 0.2);
+  --color-white: #f4f2f4;
+  --color-gray-100: #cccbcc;
+  --color-gray-200: #a4a4a4;
+  --color-gray-300: #9c9c9c;
+  --color-gray-400: #747474;
+  --color-gray-500: #6c6c6c;
+  --color-dark: #242424;
+
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4rem;
+  --spacing-3xl: 6rem;
+
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+  --border-radius-full: 50px;
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  --shadow-sm: 0 2px 8px rgba(132, 20, 227, 0.1);
+  --shadow-md: 0 4px 20px rgba(132, 20, 227, 0.15);
+  --shadow-lg: 0 8px 40px rgba(132, 20, 227, 0.2);
+
+  --container-max: 1200px;
+
+  --btn-height-sm: 40px;
+  --btn-height-md: 44px;
+  --btn-height-lg: 48px;
+  --btn-padding-sm: 0.5rem 1rem;
+  --btn-padding-md: 0.75rem 1.5rem;
+  --btn-padding-lg: 1rem 2rem;
+
+  --icon-size-sm: 18px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
+
+  --card-padding-sm: 1.5rem;
+  --card-padding-md: 2rem;
+  --card-padding-lg: 2.5rem;
+
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  --gradient-primary-alpha: linear-gradient(135deg, var(--color-primary-alpha-15), rgba(197, 27, 228, 0.15));
+}
+
+[data-theme="dark"] {
+  --color-white: #252525;
+  --color-gray-100: #323232;
+  --color-gray-200: #3d3d3d;
+  --color-gray-300: #4a4a4a;
+  --color-gray-400: #b0b0b0;
+  --color-gray-500: #9a9a9a;
+  --color-dark: #f4f2f4;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
