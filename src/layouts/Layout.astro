@@ -1,4 +1,6 @@
 ---
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
 import Footer from "../components/footer/index.astro";
 import Header from "../components/header/index.astro";
 import "../styles/global.css";
@@ -91,6 +93,8 @@ const fontsUrl = (str: "gstatic" | "googleapis" = "googleapis") =>
     </script>
   </head>
   <body>
+    <Analytics />
+    <SpeedInsights />
     <Header />
     <main>
       <slot />
