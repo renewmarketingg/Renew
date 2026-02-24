@@ -10,6 +10,7 @@
   transition: all var(--transition-normal);
   border: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn svg {

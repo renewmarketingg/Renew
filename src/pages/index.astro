@@ -1,15 +1,15 @@
 ---
-import Button from "../components/button/index.astro";
-import Card from "../components/card/index.astro";
-import Contact from "../components/contact/index.astro";
-import Hero from "../components/hero/index.astro";
-import IconWrapper from "../components/icon-wrapper/index.astro";
-import List from "../components/list/index.astro";
-import features from "../constants/features";
-import infoCards from "../constants/info-cards";
-import services from "../constants/services";
-import Layout from "../layouts/Layout.astro";
-import "../styles/components.css";
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Contact from '../components/Contact.astro';
+import Hero from '../components/Hero.astro';
+import IconWrapper from '../components/IconWrapper.astro';
+import List from '../components/List.astro';
+import features from '../constants/features';
+import infoCards from '../constants/infoCards';
+import services from '../constants/services';
+import Layout from '../layouts/Layout.astro';
+import '../styles/components.css';
 ---
 
 <Layout title="Renew Digital - Serviços Digitais">
@@ -18,9 +18,7 @@ import "../styles/components.css";
   <section class="section" id="servicos">
     <div class="container">
       <h2 class="section-title">Nossos Serviços</h2>
-      <p class="section-subtitle">
-        Soluções digitais completas para seu negócio
-      </p>
+      <p class="section-subtitle">Soluções digitais completas para seu negócio</p>
       <div class="services-grid">
         {
           services.map((s) => (
@@ -41,15 +39,12 @@ import "../styles/components.css";
         <div class="about-text">
           <span class="about-badge">Sobre Nós</span>
           <h2>
-            Transformamos ideias em <span class="highlight"
-              >resultados digitais</span>
+            Transformamos ideias em <span class="highlight">resultados digitais</span>
           </h2>
-          <p>
-            A Renew Digital é uma agência de serviços digitais especializada.
-          </p>
+          <p>A Renew Digital é uma agência de serviços digitais especializada.</p>
           <List
             items={features.map((f) => ({
-              icon: "lucide:check-circle",
+              icon: 'lucide:check-circle',
               label: f,
             }))}
             variant="icon"
@@ -74,10 +69,8 @@ import "../styles/components.css";
     <div class="container">
       <div class="cta-content">
         <h2>Pronto para transformar sua presença digital?</h2>
-        <p>
-          Entre em contato e vamos discutir como ajudar seu negócio a crescer
-        </p>
-        <Button href="#contato" variant="secondary" icon="lucide:message-circle"
+        <p>Entre em contato e vamos discutir como ajudar seu negócio a crescer</p>
+        <Button href="#contato" variant="secondary" icon="lucide:message-circle" class="cta-button"
           >Falar com Especialista</Button
         >
       </div>

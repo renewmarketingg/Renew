@@ -1,4 +1,4 @@
-# Renew Digital - Website
+# Renew Digital
 
 Website da Renew Digital, agência de serviços digitais especializada.
 
@@ -8,22 +8,24 @@ Website da Renew Digital, agência de serviços digitais especializada.
 - **TypeScript** - Linguagem com tipagem estática
 - **astro-icon** - Ícones Lucide
 - **CSS Variables** - Sistema de temas (dark/light)
+- **Vercel** - Analytics e Speed Insights
 
 ## 📦 Instalação
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## 🛠️ Comandos
 
 | Comando | Ação |
 |---------|------|
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm run build` | Build para produção |
-| `npm run preview` | Visualizar build local |
-| `npx astro check` | Verificar tipos TypeScript |
-| `npx tsc --noEmit` | Verificar tipos sem emitir |
+| `pnpm dev` | Servidor de desenvolvimento |
+| `pnpm build` | Build para produção |
+| `pnpm preview` | Visualizar build local |
+| `pnpm typecheck` | Verificar tipos TypeScript |
+| `pnpm lint` | Verificar código com ESLint |
+| `pnpm format` | Formatar código com Prettier |
 
 ## 🎨 Funcionalidades
 
@@ -33,31 +35,32 @@ npm install
 - ♿ Acessibilidade (aria-labels, semantic HTML)
 - 🎯 Componentes reutilizáveis
 - 🎴 Cards interativos com efeitos 3D na Hero Section
+- 📊 SEO otimizado (Open Graph, Schema.org, Sitemap)
+- ⚡ Performance (Vercel Speed Insights)
 
 ## 📁 Estrutura
 
 ```
 src/
-├── components/              # Componentes Astro
-│   ├── button/             # Botão reutilizável
-│   ├── card/               # Card genérico
-│   ├── footer/             # Footer com links
-│   ├── header/             # Header com nav e toggle
-│   ├── hero/               # Seção hero com cards interativos
-│   ├── icon-wrapper/       # Wrapper para ícones
-│   └── list/               # Lista reutilizável
-├── constants/              # Dados estáticos
+├── components/           # Componentes Astro
+│   ├── Button.astro       # Botão reutilizável
+│   ├── Card.astro        # Card genérico
+│   ├── Contact.astro     # Seção de contato com formulário
+│   ├── Footer.astro      # Footer com links
+│   ├── Header.astro      # Header com nav e toggle
+│   ├── Hero.astro        # Seção hero com cards interativos
+│   ├── IconWrapper.astro # Wrapper para ícones
+│   └── List.astro        # Lista reutilizável
+├── constants/            # Dados estáticos (serviços, links, etc.)
 ├── layouts/
-│   └── Layout.astro        # Layout base
+│   └── Layout.astro      # Layout base
 ├── pages/
-│   └── index.astro         # Página principal
-├── scripts/
-│   └── header.ts           # Scripts do header
+│   └── index.astro       # Página principal
 └── styles/
-    ├── components.css       # Estilos dos componentes da página
-    ├── variables.css       # Variáveis CSS e temas
-    └── global.css          # Estilos globais
-public/                     # Assets estáticos
+    ├── components.css    # Estilos dos componentes da página
+    ├── variables.css    # Variáveis CSS e temas
+    └── global.css       # Estilos globais
+public/                   # Assets estáticos
 ```
 
 ## 🎨 Cores (CSS Variables)
