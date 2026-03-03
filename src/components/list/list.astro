@@ -1,6 +1,6 @@
 ---
-import { Icon } from "astro-icon/components";
-import "./List.css";
+import { Icon } from 'astro-icon/components';
+import './list.css';
 
 interface Item {
   icon?: string;
@@ -10,22 +10,24 @@ interface Item {
 
 interface Props {
   items: Item[];
-  variant?: "links" | "icon" | "contact";
+  variant?: 'links' | 'icon' | 'contact';
 }
 
-const { items, variant = "icon" } = Astro.props;
+const { items, variant = 'icon' } = Astro.props;
 ---
 
-<ul class:list={["list", variant]}>
-  {items.map((item) => (
-    <li>
-      {variant === "links" && <a href={item.href}>{item.label}</a>}
-      {(variant === "icon" || variant === "contact") && (
-        <>
-          {item.icon && <Icon name={item.icon} />}
-          <span>{item.label}</span>
-        </>
-      )}
-    </li>
-  ))}
+<ul class:list={['list', variant]}>
+  {
+    items.map((item) => (
+      <li>
+        {variant === 'links' && <a href={item.href}>{item.label}</a>}
+        {(variant === 'icon' || variant === 'contact') && (
+          <>
+            {item.icon && <Icon name={item.icon} />}
+            <span>{item.label}</span>
+          </>
+        )}
+      </li>
+    ))
+  }
 </ul>
