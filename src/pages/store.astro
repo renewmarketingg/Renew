@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import affiliateProducts, { categories } from '../constants/affiliateProducts';
 import '../styles/store.css';
-import '../components/button/button.css';
 
 const productsJson = JSON.stringify(affiliateProducts);
 const categoriesJson = JSON.stringify(categories);
@@ -57,9 +56,15 @@ const categoriesJson = JSON.stringify(categories);
         </div>
         <div class="category-filters" id="categoryFilters">
           <button class="category-btn active" data-category="Todos">Todos</button>
-          {categories.filter(c => c !== 'Todos').map((cat) => (
-            <button class="category-btn" data-category={cat}>{cat}</button>
-          ))}
+          {
+            categories
+              .filter((c) => c !== 'Todos')
+              .map((cat) => (
+                <button class="category-btn" data-category={cat}>
+                  {cat}
+                </button>
+              ))
+          }
         </div>
       </div>
     </div>
@@ -78,7 +83,7 @@ const categoriesJson = JSON.stringify(categories);
   </section>
 </Layout>
 
-<script define:vars={{ products: productsJson, categories: categoriesJson }}>
+<script is:inline define:vars={{ products: productsJson, categories: categoriesJson }}>
   const CART_KEY = 'renew_cart';
 
   function formatPriceBR(price) {
@@ -100,8 +105,8 @@ const categoriesJson = JSON.stringify(categories);
 
   function addToCart(product) {
     const cart = getCart();
-    const existing = cart.find(item => item.id === product.id);
-    
+    const existing = cart.find((item) => item.id === product.id);
+
     if (existing) {
       existing.quantity += 1;
     } else {
@@ -113,21 +118,21 @@ const categoriesJson = JSON.stringify(categories);
         quantity: 1,
       });
     }
-    
+
     saveCart(cart);
     showToast(`${product.name} adicionado ao carrinho!`, 'success');
   }
 
   function removeFromCart(productId) {
     let cart = getCart();
-    cart = cart.filter(item => item.id !== productId);
+    cart = cart.filter((item) => item.id !== productId);
     saveCart(cart);
   }
 
   function updateQuantity(productId, delta) {
     const cart = getCart();
-    const item = cart.find(item => item.id === productId);
-    
+    const item = cart.find((item) => item.id === productId);
+
     if (item) {
       item.quantity += delta;
       if (item.quantity <= 0) {
@@ -147,20 +152,22 @@ const categoriesJson = JSON.stringify(categories);
   function updateCartUI() {
     const cart = getCart();
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
     document.getElementById('cartCount').textContent = String(count);
     document.getElementById('cartTotal').textContent = formatPriceBR(total);
-    
+
     const cartItemsEl = document.getElementById('cartItems');
     const cartEmptyEl = document.getElementById('cartEmpty');
-    
+
     if (cart.length === 0) {
       cartEmptyEl.style.display = 'block';
       cartItemsEl.innerHTML = '<p class="cart-empty">Seu carrinho está vazio</p>';
     } else {
       cartEmptyEl.style.display = 'none';
-      cartItemsEl.innerHTML = cart.map(item => `
+      cartItemsEl.innerHTML = cart
+        .map(
+          (item) => `
         <div class="cart-item">
           <img src="${item.image}" alt="${item.name}" class="cart-item-img" />
           <div class="cart-item-info">
@@ -176,15 +183,17 @@ const categoriesJson = JSON.stringify(categories);
             <Icon name="lucide:x" size={16} />
           </button>
         </div>
-      `).join('');
-      
-      cartItemsEl.querySelectorAll('.qty-btn').forEach(btn => {
+      `
+        )
+        .join('');
+
+      cartItemsEl.querySelectorAll('.qty-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           updateQuantity(btn.dataset.id, parseInt(btn.dataset.delta));
         });
       });
-      
-      cartItemsEl.querySelectorAll('.cart-item-remove').forEach(btn => {
+
+      cartItemsEl.querySelectorAll('.cart-item-remove').forEach((btn) => {
         btn.addEventListener('click', () => {
           removeFromCart(btn.dataset.id);
         });
@@ -288,7 +297,8 @@ const categoriesJson = JSON.stringify(categories);
 
     if (id) {
       filtered = filtered.filter((p) => p.id === id);
-      document.getElementById('urlParamsInfo').innerHTML = `Mostrando produto específico: <code>${id}</code>`;
+      document.getElementById('urlParamsInfo').innerHTML =
+        `Mostrando produto específico: <code>${id}</code>`;
       document.getElementById('urlParamsInfo').style.display = 'block';
     } else {
       document.getElementById('urlParamsInfo').style.display = 'none';
@@ -342,11 +352,11 @@ const categoriesJson = JSON.stringify(categories);
 
     document.getElementById('productsContainer').innerHTML = html;
 
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    document.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const productId = btn.dataset.id;
         const productsArray = typeof products === 'string' ? JSON.parse(products) : products;
-        const product = productsArray.find(p => p.id === productId);
+        const product = productsArray.find((p) => p.id === productId);
         if (product) {
           addToCart(product);
         }
@@ -358,7 +368,8 @@ const categoriesJson = JSON.stringify(categories);
     if (category !== 'Todos') filterDesc.push(category);
     const filterText = filterDesc.length > 0 ? ` para ${filterDesc.join(' em ')}` : '';
 
-    document.getElementById('resultsInfo').textContent = `${filtered.length} produto${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}${filterText}`;
+    document.getElementById('resultsInfo').textContent =
+      `${filtered.length} produto${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}${filterText}`;
   }
 
   function updateURL(search, category) {
@@ -374,7 +385,7 @@ const categoriesJson = JSON.stringify(categories);
 
     const searchInput = document.getElementById('searchInput');
     const categoryButtons = document.querySelectorAll('.category-btn');
-    
+
     if (searchInput) searchInput.value = q;
 
     categoryButtons.forEach((btn) => {
@@ -440,7 +451,9 @@ const categoriesJson = JSON.stringify(categories);
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(132, 20, 227, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
     position: relative;
   }
 
@@ -491,7 +504,9 @@ const categoriesJson = JSON.stringify(categories);
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+    transition:
+      opacity 0.3s,
+      visibility 0.3s;
   }
 
   .cart-overlay.open {
@@ -696,7 +711,9 @@ const categoriesJson = JSON.stringify(categories);
     z-index: 1002;
     opacity: 0;
     transform: translateY(1rem);
-    transition: opacity 0.3s, transform 0.3s;
+    transition:
+      opacity 0.3s,
+      transform 0.3s;
   }
 
   .toast.show {

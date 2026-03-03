@@ -1,0 +1,82 @@
+---
+import { Icon } from "astro-icon/components";
+import services from "../constants/services";
+import Button from "./Button.astro";
+import styles from "./styles/hero.module.css";
+
+const heroServices = services.slice(0, 4);
+---
+
+<section class={styles.hero}>
+  <div class={styles.heroBg}></div>
+  <div class={styles.heroParticles}></div>
+
+  <div class={`container ${styles.heroContainer}`}>
+    <div>
+      <span class={styles.heroBadge}>
+        <Icon name="lucide:sparkles" />
+        Transformação Digital
+      </span>
+
+      <h1 class={styles.heroTitle}>
+        Eleve sua marca para o
+        <span class="highlight">mundo digital</span>
+      </h1>
+
+      <p class={styles.heroDescription}>
+        Somos especializados em criar presenças online impactantes.
+      </p>
+
+      <div class={styles.heroActions}>
+        <Button href="#servicos" variant="primary" iconPosition="right" icon="lucide:arrow-right">
+          Ver Serviços
+        </Button>
+        <Button href="#contato" variant="secondary" icon="lucide:message-circle">
+          Falar com Especialista
+        </Button>
+      </div>
+
+      <div class={styles.heroStats}>
+        <div class={styles.stat}>
+          <span class={styles.statNumber}>50+</span>
+          <span class={styles.statLabel}>Projetos</span>
+        </div>
+        <div class={styles.stat}>
+          <span class={styles.statNumber}>98%</span>
+          <span class={styles.statLabel}>Satisfeitos</span>
+        </div>
+        <div class={styles.stat}>
+          <span class={styles.statNumber}>5+</span>
+          <span class={styles.statLabel}>Anos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class={styles.heroGridContainer}>
+      <div class={styles.floatingShapes}>
+        <div class={`${styles.shape} ${styles.shape1}`}></div>
+        <div class={`${styles.shape} ${styles.shape2}`}></div>
+        <div class={`${styles.shape} ${styles.shape3}`}></div>
+      </div>
+
+      <div class={styles.interactiveGrid}>
+        {
+          heroServices.map((s, i) => (
+            <div class={styles.gridCard} style={`--i: ${i}`}>
+              <div class={styles.shine} />
+              <div class={styles.cardInner}>
+                <Icon name={s.icon} class={styles.gridIcon} />
+                <div class={styles.gridText}>
+                  <h4>{s.title}</h4>
+                  <p>{s.description}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class={styles.gridReflection}></div>
+    </div>
+  </div>
+</section>

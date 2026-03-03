@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
-import Layout from "../../layouts/Layout.astro";
-import { SignUp } from "@clerk/astro/components";
+import Layout from '../../layouts/Layout.astro';
+import { SignUp } from '@clerk/astro/components';
 
 const token = Astro.url.searchParams.get('token') || '';
 ---
@@ -19,15 +19,14 @@ const token = Astro.url.searchParams.get('token') || '';
         <SignUp
           appearance={{
             elements: {
-              rootBox: "clerk-root",
-              card: "clerk-card",
-              formButtonPrimary: "clerk-button-primary",
-              formFieldInput: "clerk-input",
-              footerActionLink: "clerk-link",
+              rootBox: 'clerk-root',
+              card: 'clerk-card',
+              formButtonPrimary: 'clerk-button-primary',
+              formFieldInput: 'clerk-input',
+              footerActionLink: 'clerk-link',
             },
           }}
           fallbackRedirectUrl="/admin"
-          afterSignUpUrl="/admin"
         />
       </div>
 
@@ -36,19 +35,19 @@ const token = Astro.url.searchParams.get('token') || '';
   </div>
 </Layout>
 
-<script define:vars={{ token }}>
+<script is:inline define:vars={{ token }}>
   const INVITES_KEY = 'admin_invites';
-  
+
   function validateToken(t) {
     if (!t) return false;
     const invites = JSON.parse(localStorage.getItem(INVITES_KEY) || '[]');
-    const invite = invites.find(inv => inv.token === t && !inv.used);
+    const invite = invites.find((inv) => inv.token === t && !inv.used);
     return invite || null;
   }
-  
+
   function markTokenUsed(t, userId) {
     const invites = JSON.parse(localStorage.getItem(INVITES_KEY) || '[]');
-    const idx = invites.findIndex(inv => inv.token === t);
+    const idx = invites.findIndex((inv) => inv.token === t);
     if (idx !== -1) {
       invites[idx].used = true;
       invites[idx].usedBy = userId;
@@ -56,7 +55,7 @@ const token = Astro.url.searchParams.get('token') || '';
       localStorage.setItem(INVITES_KEY, JSON.stringify(invites));
     }
   }
-  
+
   if (token) {
     const invite = validateToken(token);
     if (!invite) {
@@ -133,9 +132,16 @@ const token = Astro.url.searchParams.get('token') || '';
   }
 
   @media (max-width: 480px) {
-    .login-page { padding: 1rem; }
-    .clerk-login { padding: 1.5rem; }
-    .login-logo-img { width: 60px; height: 60px; }
+    .login-page {
+      padding: 1rem;
+    }
+    .clerk-login {
+      padding: 1.5rem;
+    }
+    .login-logo-img {
+      width: 60px;
+      height: 60px;
+    }
   }
 
   :global(.clerk-card) {
@@ -144,14 +150,18 @@ const token = Astro.url.searchParams.get('token') || '';
     width: 100% !important;
   }
 
-  :global(.clerk-root) { width: 100%; }
+  :global(.clerk-root) {
+    width: 100%;
+  }
 
   :global(.clerk-button-primary) {
     background: #8414e3 !important;
     width: 100%;
   }
 
-  :global(.clerk-button-primary:hover) { background: #7c3aed !important; }
+  :global(.clerk-button-primary:hover) {
+    background: #7c3aed !important;
+  }
 
   :global(.clerk-input) {
     width: 100%;
@@ -160,5 +170,7 @@ const token = Astro.url.searchParams.get('token') || '';
     border-radius: 8px;
   }
 
-  :global(.clerk-link) { color: #8414e3; }
+  :global(.clerk-link) {
+    color: #8414e3;
+  }
 </style>

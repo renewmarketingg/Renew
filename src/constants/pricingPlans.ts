@@ -1,0 +1,40 @@
+export default [
+  {
+    title: 'Criação de Sites',
+    description: 'Site moderno, responsivo e otimizado para conversão.',
+    price: 'R$ 1.490',
+    cadence: 'projeto',
+    icon: 'lucide:globe',
+    badge: 'Ideal para começar',
+    features: ['Layout personalizado', 'SEO básico', 'Formulário de contato', 'Entrega rápida'],
+  },
+  {
+    title: 'Redes Sociais',
+    description: 'Conteúdo e consistência para crescer sua presença online.',
+    price: 'R$ 890',
+    cadence: '/mês',
+    icon: 'lucide:share-2',
+    badge: 'Mais escolhido',
+    highlight: true,
+    features: [
+      'Planejamento mensal',
+      'Artes e legendas',
+      'Calendário de posts',
+      'Acompanhamento de métricas',
+    ],
+  },
+  {
+    title: 'Marketing Digital',
+    description: 'Estratégia para aumentar visibilidade e gerar leads.',
+    price: 'R$ 1.290',
+    cadence: '/mês',
+    icon: 'lucide:trending-up',
+    badge: 'Para escalar',
+    features: [
+      'Estratégia e funil',
+      'Campanhas e otimizações',
+      'Relatório mensal',
+      'Suporte dedicado',
+    ],
+  },
+];

@@ -1,0 +1,26 @@
+---
+import { Icon } from "astro-icon/components";
+import styles from "./styles/statsCard.module.css";
+
+interface Props {
+  title: string;
+  value: string | number;
+  icon?: string;
+  iconColor?: string;
+  iconBg?: string;
+}
+
+const { title, value, icon, iconColor = "var(--color-primary)", iconBg = "var(--color-primary-alpha-10)" }: Props = Astro.props;
+---
+
+<div class={styles.statCard}>
+  {icon && (
+    <div class={styles.statIcon} style={`background: ${iconBg}; color: ${iconColor};`}>
+      <Icon name={icon} size={24} />
+    </div>
+  )}
+  <div class={styles.statContent}>
+    <h3>{title}</h3>
+    <div class={styles.value} data-stat={title.toLowerCase().replace(/\s/g, "-")}>{value}</div>
+  </div>
+</div>

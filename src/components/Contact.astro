@@ -1,0 +1,120 @@
+---
+import { Icon } from "astro-icon/components";
+import Button from "./Button.astro";
+import styles from "./styles/contact.module.css";
+
+const contactInfo = [
+  {
+    icon: "lucide:mail",
+    title: "E-mail",
+    label: "contato@renewdigital.com.br",
+    href: "mailto:contato@renewdigital.com.br",
+  },
+  { icon: "lucide:phone", title: "Telefone", label: "(43) 99828-0078", href: "tel:+5543998280078" },
+  {
+    icon: "lucide:map-pin",
+    title: "Localização",
+    label: "Manoel Ribas, PR",
+    href: "https://maps.google.com/?q=Manoel+Ribas+PR",
+  },
+];
+---
+
+<section class={styles.contactSection} id="contato">
+  <div class="container">
+    <div class={styles.contactHeader}>
+      <span class={styles.contactBadge}>
+        <Icon name="lucide:message-circle" />
+        Fale Conosco
+      </span>
+      <h2>Vamos transformar sua ideia em <span class="highlight">resultado</span>?</h2>
+      <p>Preencha o formulário abaixo e retornaremos em breve.</p>
+    </div>
+
+    <div class={styles.contactGrid}>
+      <div class="contact-info">
+        <div class={styles.infoCards}>
+          {
+            contactInfo.map((info) => (
+              <a href={info.href} class={styles.infoCard}>
+                <div class={styles.infoIcon}>
+                  <Icon name={info.icon} />
+                </div>
+                <div class={styles.infoContent}>
+                  <span class={styles.infoLabel}>{info.title}</span>
+                  <span class={styles.infoValue}>{info.label}</span>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <form class={styles.contactForm} name="contact" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="contact" />
+        <div class={styles.formGroup}>
+          <label for="name">Nome</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Seu nome completo"
+            autocomplete="name"
+            required
+          />
+        </div>
+
+        <div class={styles.formRow}>
+          <div class={styles.formGroup}>
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div class={styles.formGroup}>
+            <label for="phone">Telefone</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="(00) 00000-0000"
+              autocomplete="tel"
+            />
+          </div>
+        </div>
+
+        <div class={styles.formGroup}>
+          <label for="service">Serviço de Interesse</label>
+          <select id="service" name="service" autocomplete="off">
+            <option value="">Selecione um serviço</option>
+            <option value="website">Criação de Sites</option>
+            <option value="social-media">Redes Sociais</option>
+            <option value="branding">Identidade Visual</option>
+            <option value="marketing">Marketing Digital</option>
+            <option value="video">Edição de Vídeos</option>
+            <option value="copywriting">Copywriting</option>
+            <option value="other">Outro</option>
+          </select>
+        </div>
+
+        <div class={styles.formGroup}>
+          <label for="message">Mensagem</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Conte-nos sobre seu projeto..."
+            autocomplete="off"
+            required></textarea>
+        </div>
+
+        <Button type="submit" variant="primary" icon="lucide:send"> Enviar Mensagem </Button>
+      </form>
+    </div>
+  </div>
+</section>

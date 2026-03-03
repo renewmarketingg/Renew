@@ -1,0 +1,28 @@
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1rem;
+}
+
+.iconWrapper svg {
+  color: var(--color-primary);
+}
+
+.iconWrapper.default {
+  width: 48px;
+  height: 48px;
+  background: var(--gradient-primary);
+}
+
+.iconWrapper.default svg {
+  color: white;
+}
+
+.iconWrapper.gradient {
+  width: 64px;
+  height: 64px;
+  background: var(--gradient-primary-alpha);
+  margin-bottom: 1.5rem;
+}

@@ -61,6 +61,7 @@
   --gradient-primary-alpha: linear-gradient(135deg, var(--color-primary-alpha-15), rgba(197, 27, 228, 0.15));
 }
 
+.dark,
 [data-theme="dark"] {
   --color-white: #252525;
   --color-gray-100: #323232;

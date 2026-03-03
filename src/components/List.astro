@@ -1,0 +1,36 @@
+---
+import { Icon } from "astro-icon/components";
+import styles from "./styles/list.module.css";
+
+interface Item {
+  icon?: string;
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Item[];
+  variant?: "links" | "icon" | "contact";
+}
+
+const { items, variant = "icon" } = Astro.props;
+
+const variantClass =
+  variant === "links" ? styles.listLinks : variant === "contact" ? styles.listContact : styles.listIcon;
+---
+
+<ul class={`${styles.list} ${variantClass}`}>
+  {
+    items.map((item) => (
+      <li>
+        {variant === "links" && <a href={item.href}>{item.label}</a>}
+        {(variant === "icon" || variant === "contact") && (
+          <>
+            {item.icon && <Icon name={item.icon} />}
+            <span>{item.label}</span>
+          </>
+        )}
+      </li>
+    ))
+  }
+</ul>

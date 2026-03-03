@@ -1,0 +1,422 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1001;
+  background: var(--color-white);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding: 0 var(--spacing-lg);
+}
+
+@media (min-width: 1200px) {
+  .header {
+    padding: 0 calc((100% - 1200px) / 2 + var(--spacing-lg));
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo img {
+  width: 6rem;
+  height: 6rem;
+  object-fit: contain;
+}
+
+.navMenu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.navLink {
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--color-dark);
+  position: relative;
+  padding: var(--spacing-xs) 0;
+  transition: color var(--transition-fast);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width var(--transition-normal);
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  border: none;
+}
+
+.themeToggle:hover {
+  background: var(--color-primary);
+}
+
+.themeToggle:hover svg {
+  color: white;
+}
+
+.themeToggle svg {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.themeToggle .iconMoon {
+  display: none;
+}
+
+[data-theme='dark'] .themeToggle .iconSun {
+  display: none;
+}
+
+[data-theme='dark'] .themeToggle .iconMoon {
+  display: block;
+}
+
+.menuToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: var(--spacing-xs);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius-full);
+  border: none;
+  cursor: pointer;
+}
+
+.menuToggle svg {
+  color: var(--color-dark);
+}
+
+.menuToggle .closeIcon {
+  display: none;
+}
+
+.menuToggle:global(.active) .menuIcon {
+  display: none;
+}
+
+.menuToggle:global(.active) .closeIcon {
+  display: block;
+}
+
+.headerAdmin {
+  height: 70px;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 1200px) {
+  .headerAdmin {
+    padding: 0 calc((100% - 1200px) / 2 + 1.5rem);
+  }
+}
+
+.adminHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.adminLabel {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.adminSeparator {
+  color: var(--color-gray-400);
+}
+
+.adminPageTitle {
+  color: var(--color-gray-400);
+  font-weight: 500;
+}
+
+.adminNavList {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.adminNavLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-md);
+  color: var(--color-gray-400);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.adminNavLink:hover {
+  background: var(--color-gray-100);
+  color: var(--color-dark);
+}
+
+.adminNavLinkActive {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.adminActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  text-wrap: nowrap;
+  border-radius: var(--border-radius-md);
+  background: var(--color-gray-100);
+  color: var(--color-dark);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.adminActionBtn:hover {
+  background: var(--color-gray-200);
+}
+
+.adminLogout {
+  color: #ef4444;
+}
+
+.adminLogout:hover {
+  color: white;
+  background: var(--color-primary);
+}
+
+.adminLogout:hover svg {
+  color: white;
+}
+
+@media (max-width: 992px) {
+  .navLink {
+    font-size: 0.875rem;
+  }
+
+  .navMenu {
+    gap: var(--spacing-md);
+  }
+
+  .adminHeaderTitle,
+  .adminBtnText,
+  .adminNavLink span {
+    display: none;
+  }
+
+  .adminNavLink {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 70px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  .logo img {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .headerAdmin {
+    height: 70px;
+    padding: 0 1rem;
+  }
+
+  .nav,
+  .adminNav {
+    display: none;
+  }
+
+  .headerAdmin .navMenu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 1000;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+
+  .headerAdmin .navMenu:global(.active) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .headerAdmin .navLink {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    display: block;
+  }
+
+  .headerAdmin .adminNavList {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .headerAdmin .adminNavLink {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+  }
+
+  .headerAdmin .headerActions {
+    display: flex !important;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 999;
+    box-shadow: var(--shadow-md);
+  }
+
+  .headerAdmin .headerActions:global(.active) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .headerAdmin .headerActions > * {
+    width: 100%;
+  }
+
+  .headerAdmin .adminActionBtn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .themeToggle {
+    position: fixed !important;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1002;
+    min-width: 48px;
+    min-height: 48px;
+    width: 48px;
+    height: 48px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .menuToggle {
+    display: flex;
+  }
+
+  .header:not(.headerAdmin) .navMenu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 1000;
+  }
+
+  .header:not(.headerAdmin) .navMenu:global(.active) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .header:not(.headerAdmin) .navLink {
+    font-size: 1rem;
+  }
+
+  .header:not(.headerAdmin) .headerActions {
+    display: flex !important;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+  }
+
+  .header:not(.headerAdmin) .headerActions:global(.active) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

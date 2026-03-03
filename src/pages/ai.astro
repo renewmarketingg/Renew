@@ -1,0 +1,214 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import Button from "../components/Button.astro";
+import '../styles/global.css';
+import '../styles/ai.css';
+---
+
+<Layout
+  title="IA - Renew Digital"
+  description="Assistente de IA para ajudar em suas tarefas"
+  theme="dark"
+  hideHeaderFooter
+>
+  <div class="ai-container">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-header">
+        <Button variant="primary" icon="lucide:plus" class="new-chat-btn" id="newChatBtn">
+          Novo Chat
+        </Button>
+      </div>
+
+      <div class="ai-sidebar-section">
+        <div class="ai-sidebar-label">
+          <Icon name="lucide:folder" size={14} />
+          <span>Projetos</span>
+        </div>
+        <button class="ai-sidebar-item" id="connectProjectBtn">
+          <Icon name="lucide:hard-drive" size={16} />
+          <span>Conectar projeto</span>
+        </button>
+        <button class="ai-sidebar-item" id="createProjectBtn">
+          <Icon name="lucide:folder-plus" size={16} />
+          <span>Criar projeto</span>
+        </button>
+      </div>
+
+      <div class="ai-sidebar-chats" id="chatList">
+        <div class="ai-sidebar-label">
+          <Icon name="lucide:message-square" size={14} />
+          <span>Conversas</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <header class="ai-header">
+        <div class="ai-model-selector" id="modelSelector">
+          <button class="ai-model-btn" id="modelBtn">
+            <Icon name="lucide:sparkles" size={18} />
+            <span id="currentModel">Selecionar Modelo</span>
+            <Icon name="lucide:chevron-down" size={16} />
+          </button>
+          <div class="ai-model-dropdown" id="modelDropdown">
+            <button class="ai-model-option" data-model="gpt-4">
+              <Icon name="lucide:brain" size={16} />
+              <div class="ai-model-info">
+                <span class="ai-model-name">GPT-4</span>
+                <span class="ai-model-desc">Modelo mais avançado</span>
+              </div>
+            </button>
+            <button class="ai-model-option" data-model="gpt-4o">
+              <Icon name="lucide:brain" size={16} />
+              <div class="ai-model-info">
+                <span class="ai-model-name">GPT-4o</span>
+                <span class="ai-model-desc">Omnichannel</span>
+              </div>
+            </button>
+            <button class="ai-model-option" data-model="claude">
+              <Icon name="lucide:bot" size={16} />
+              <div class="ai-model-info">
+                <span class="ai-model-name">Claude 3</span>
+                <span class="ai-model-desc">Análise profunda</span>
+              </div>
+            </button>
+            <button class="ai-model-option" data-model="gemini">
+              <Icon name="lucide:gem" size={16} />
+              <div class="ai-model-info">
+                <span class="ai-model-name">Gemini</span>
+                <span class="ai-model-desc">Google AI</span>
+              </div>
+            </button>
+            <button class="ai-model-option" data-model="llama">
+              <Icon name="lucide:bird" size={16} />
+              <div class="ai-model-info">
+                <span class="ai-model-name">Llama 3</span>
+                <span class="ai-model-desc">Meta AI</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-header-center">
+          <h1 class="ai-title">Assistente IA</h1>
+        </div>
+
+        <div class="ai-header-right">
+          <button class="theme-toggle" id="themeToggleBtn" aria-label="Alternar tema">
+            <Icon name="lucide:sun" size={18} />
+          </button>
+          <Button variant="danger" id="clearChatBtn" aria-label="Limpar conversa">
+            <Icon name="lucide:trash-2" size={18} />
+          </Button>
+        </div>
+      </header>
+
+      <div class="ai-chat-area" id="chatArea">
+        <div class="ai-welcome" id="welcomeScreen">
+          <div class="ai-welcome-icon">
+            <Icon name="lucide:sparkles" size={48} />
+          </div>
+          <h2>Como posso ajudar hoje?</h2>
+          <p>Envie uma mensagem ou escolha uma ação abaixo</p>
+          <div class="ai-quick-actions">
+            <button class="ai-quick-action" data-prompt="Crie uma imagem de">
+              <Icon name="lucide:image-plus" size={20} />
+              <span>Criar imagem</span>
+            </button>
+            <button class="ai-quick-action" data-prompt="Analise este código:">
+              <Icon name="lucide:code" size={20} />
+              <span>Analisar código</span>
+            </button>
+            <button class="ai-quick-action" data-prompt="Resuma este texto:">
+              <Icon name="lucide:file-text" size={20} />
+              <span>Resumir texto</span>
+            </button>
+            <button class="ai-quick-action" data-prompt="Traduza para o inglês:">
+              <Icon name="lucide:languages" size={20} />
+              <span>Traduzir</span>
+            </button>
+          </div>
+        </div>
+        <div class="ai-messages" id="messagesContainer"></div>
+      </div>
+
+      <div class="ai-input-area">
+        <div class="ai-input-container">
+          <button class="ai-input-action" id="attachBtn" aria-label="Anexar imagem">
+            <Icon name="lucide:paperclip" size={20} />
+          </button>
+          
+          <div class="ai-input-wrapper">
+            <textarea 
+              id="chatInput" 
+              placeholder="Digite sua mensagem..." 
+              rows="1"
+              autocomplete="off"
+            ></textarea>
+            <div class="ai-input-tools">
+              <button class="ai-tool-btn" id="voiceBtn" aria-label="Usar voz">
+                <Icon name="lucide:mic" size={18} />
+              </button>
+              <button class="ai-tool-btn" id="imageGenBtn" aria-label="Gerar imagem">
+                <Icon name="lucide:image-plus" size={18} />
+              </button>
+            </div>
+          </div>
+
+          <button class="ai-send-btn" id="sendBtn" aria-label="Enviar mensagem">
+            <Icon name="lucide:send" size={20} />
+          </button>
+        </div>
+        <p class="ai-input-hint">IA pode cometer erros. Verifique informações importantes.</p>
+      </div>
+    </main>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" hidden />
+  <input type="file" id="folderInput" hidden />
+
+  <div class="modal-overlay ai-projects-modal" id="projectModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Projetos Conectados</h2>
+        <button class="modal-close" id="closeProjectModal" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="ai-project-list" id="projectList"></div>
+        <div class="ai-connect-folder">
+          <Icon name="lucide:folder-open" size={48} />
+          <p>Conecte uma pasta do seu computador para que a IA possa analisar seus arquivos</p>
+          <Button variant="secondary" icon="lucide:folder-plus" class="ai-connect-btn" id="connectFolderBtn">
+            Selecionar Pasta
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay ai-projects-modal" id="createProjectModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Criar Novo Projeto</h2>
+        <button class="modal-close" id="closeCreateModal" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="newProjectName">Nome do Projeto</label>
+          <input type="text" id="newProjectName" placeholder="Meu Projeto" />
+        </div>
+        <div class="form-group">
+          <label for="newProjectDesc">Descrição (opcional)</label>
+          <textarea id="newProjectDesc" placeholder="Descrição do projeto..." rows="3"></textarea>
+        </div>
+        <Button variant="primary" id="saveProjectBtn" class="btn-full">
+          <Icon name="lucide:plus" size={18} />
+          Criar Projeto
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/ai.ts"></script>
+</Layout>
