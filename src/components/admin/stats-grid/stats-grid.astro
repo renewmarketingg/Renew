@@ -1,0 +1,88 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Stat {
+  label: string;
+  value: string | number;
+  icon?: string;
+  iconBg?: string;
+  iconColor?: string;
+}
+
+interface Props {
+  stats: Stat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<div class="stats-grid">
+  {stats.map((stat) => (
+    <div class="stat-card">
+      <div
+        class="stat-icon"
+        style={stat.iconBg ? `background: ${stat.iconBg}` : "background: var(--color-primary-alpha-10)"}
+      >
+        {stat.icon && <Icon name={stat.icon} size={24} style={stat.iconColor ? `color: ${stat.iconColor}` : ""} />}
+      </div>
+      <div class="stat-content">
+        <h3>{stat.label}</h3>
+        <div class="value">{stat.value}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--color-white, #fff);
+    border-radius: var(--border-radius-md, 12px);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius-md, 12px);
+    flex-shrink: 0;
+  }
+
+  .stat-content h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-gray-400, #747474);
+    margin: 0 0 0.25rem;
+  }
+
+  .stat-content .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark, #242424);
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

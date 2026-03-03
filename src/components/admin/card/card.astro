@@ -1,0 +1,21 @@
+---
+interface Props {
+  title?: string;
+  icon?: string;
+  class?: string;
+}
+
+const { title, icon, class: className } = Astro.props;
+---
+
+<div class:list={["card", className]}>
+  {(title || icon) && (
+    <div class="card-header">
+      {icon && <Fragment set:html={icon} />}
+      {title && <h3>{title}</h3>}
+    </div>
+  )}
+  <div class="card-body">
+    <slot />
+  </div>
+</div>

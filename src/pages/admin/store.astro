@@ -1,0 +1,291 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import PageHeader from "../../components/page-header/page-header.astro";
+import Button from "../../components/button/button.astro";
+import StatsGrid from "../../components/admin/stats-grid/stats-grid.astro";
+import Filters from "../../components/admin/filters/filters.astro";
+import Modal from "../../components/admin/modal/modal.astro";
+import affiliateProducts, { categories } from "../../constants/affiliateProducts";
+import "../../styles/global.css";
+
+const productCategories = categories.filter((c) => c !== "Todos");
+
+const stats = [
+  { label: "Total", value: "0", icon: "lucide:package" },
+  { label: "Destaques", value: "0", icon: "lucide:star" },
+  { label: "Valor Médio", value: "R$ 0", icon: "lucide:tag" },
+  { label: "Categorias", value: "0", icon: "lucide:folder" },
+];
+
+const filters = [
+  {
+    id: "category",
+    label: "Categoria",
+    type: "select" as const,
+    options: productCategories.map((c) => ({ value: c, label: c })),
+  },
+  {
+    id: "featured",
+    label: "Status",
+    type: "select" as const,
+    options: [
+      { value: "true", label: "Destaque" },
+      { value: "false", label: "Ativo" },
+    ],
+  },
+];
+
+const productsJson = JSON.stringify(affiliateProducts);
+---
+
+<Layout title="Gerenciar Produtos" adm={true} activePage="/admin/store">
+  <div class="admin-content">
+    <PageHeader title="Gerenciar Produtos">
+      <Button id="addBtn" variant="primary">
+        <Icon name="lucide:plus" size={18} />Novo
+      </Button>
+    </PageHeader>
+
+    <StatsGrid stats={stats} />
+
+    <Filters searchPlaceholder="Buscar produtos..." filters={filters} />
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <Modal id="itemModal" title="Novo">
+    <form id="itemForm">
+      <input type="hidden" id="itemId" />
+      <div class="form-group">
+        <label for="name">Nome</label>
+        <input type="text" id="name" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Descrição</label>
+        <textarea id="description" rows="2" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price">Preço</label>
+          <input type="number" id="price" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="originalPrice">Original</label>
+          <input type="number" id="originalPrice" step="0.01" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category">Categoria</label>
+          <select id="category" required>
+            {productCategories.map((cat) => <option value={cat}>{cat}</option>)}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rating">Avaliação</label>
+          <input type="number" id="rating" min="0" max="5" step="0.1" value="4.5" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="image">Imagem</label>
+        <input type="url" id="image" required />
+      </div>
+      <div class="form-group">
+        <label for="affiliateLink">Link</label>
+        <input type="url" id="affiliateLink" required />
+      </div>
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input type="checkbox" id="featured" />
+          <label for="featured">Destaque</label>
+        </div>
+      </div>
+    </form>
+    <div slot="footer">
+      <Button id="cancelBtn" variant="secondary">Cancelar</Button>
+      <Button id="saveBtn" variant="primary">Salvar</Button>
+    </div>
+  </Modal>
+
+  <Modal id="deleteModal" title="Excluir?" size="sm">
+    <p>Excluir <strong id="deleteName"></strong>?</p>
+    <div slot="footer">
+      <Button id="cancelDeleteBtn" variant="secondary">Cancelar</Button>
+      <Button id="confirmDeleteBtn" variant="danger">Excluir</Button>
+    </div>
+  </Modal>
+</Layout>
+
+<script define:vars={{ productsJson }}>
+  const formatPrice = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+  const generateId = (prefix) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
+
+  const STORAGE_KEY = "admin_products";
+  let items = JSON.parse(productsJson);
+  let deleteId = null;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) items = JSON.parse(stored);
+  else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  function render() {
+    const search = document.getElementById("searchInput")?.value?.toLowerCase() || "";
+    const cat = document.getElementById("categoryFilter")?.value || "";
+    const feat = document.getElementById("featuredFilter")?.value || "";
+
+    const filtered = items.filter((p) => {
+      const matchSearch = !search || p.name.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search);
+      const matchCat = !cat || p.category === cat;
+      const matchFeat = !feat || (feat === "true" ? p.featured : !p.featured);
+      return matchSearch && matchCat && matchFeat;
+    });
+
+    const tbody = document.getElementById("tableBody");
+    if (!tbody) return;
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">Nenhum produto</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map((p) => `
+      <tr data-id="${p.id}">
+        <td>
+          <div class="product-cell">
+            <img src="${p.image}" alt="" class="product-thumb" loading="lazy" />
+            <div class="product-info">
+              <h4>${p.name}</h4>
+              <span>${p.reviews?.toLocaleString() || 0} avaliações</span>
+            </div>
+          </div>
+        </td>
+        <td>${p.category}</td>
+        <td>${formatPrice(p.price)}${p.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">${formatPrice(p.originalPrice)}</span>` : ""}</td>
+        <td><span class="badge ${p.featured ? "badge-featured" : "badge-active"}">${p.featured ? "Destaque" : "Ativo"}</span></td>
+        <td>
+          <div class="flex gap-1">
+            <button class="action-btn edit-btn" data-id="${p.id}"><Icon name="lucide:pencil" size={16} /></button>
+            <button class="action-btn delete-btn" data-id="${p.id}" data-name="${p.name}"><Icon name="lucide:trash-2" size={16} /></button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => btn.addEventListener("click", () => edit(btn.dataset.id)));
+    document.querySelectorAll(".delete-btn").forEach((btn) => btn.addEventListener("click", () => showDelete(btn.dataset.id, btn.dataset.name)));
+    updateStats();
+  }
+
+  function updateStats() {
+    const total = items.length;
+    const featured = items.filter((p) => p.featured).length;
+    const avg = items.reduce((s, p) => s + p.price, 0) / total || 0;
+    const cats = new Set(items.map((p) => p.category)).size;
+    document.querySelector('[data-stat="total"]').textContent = String(total);
+    document.querySelector('[data-stat="featured"]').textContent = String(featured);
+    document.querySelector('[data-stat="avg"]').textContent = formatPrice(avg);
+    document.querySelector('[data-stat="categories"]').textContent = String(cats);
+  }
+
+  function edit(id) {
+    const p = items.find((x) => x.id === id);
+    if (!p) return;
+    document.getElementById("modalTitle").textContent = "Editar";
+    document.getElementById("itemId").value = p.id;
+    document.getElementById("name").value = p.name;
+    document.getElementById("description").value = p.description || "";
+    document.getElementById("price").value = p.price;
+    document.getElementById("originalPrice").value = p.originalPrice || "";
+    document.getElementById("category").value = p.category;
+    document.getElementById("rating").value = p.rating || 4.5;
+    document.getElementById("image").value = p.image;
+    document.getElementById("affiliateLink").value = p.affiliateLink;
+    document.getElementById("featured").checked = p.featured;
+    document.getElementById("itemModal").classList.add("visible");
+  }
+
+  function saveItem() {
+    const id = document.getElementById("itemId").value;
+    const data = {
+      id: id || generateId("prod"),
+      name: document.getElementById("name").value,
+      description: document.getElementById("description").value,
+      price: parseFloat(document.getElementById("price").value),
+      originalPrice: parseFloat(document.getElementById("originalPrice").value) || undefined,
+      category: document.getElementById("category").value,
+      rating: parseFloat(document.getElementById("rating").value) || 4.5,
+      reviews: id ? items.find((x) => x.id === id)?.reviews || 0 : 0,
+      image: document.getElementById("image").value,
+      affiliateLink: document.getElementById("affiliateLink").value,
+      featured: document.getElementById("featured").checked,
+    };
+    if (id) {
+      const idx = items.findIndex((x) => x.id === id);
+      if (idx !== -1) items[idx] = data;
+    } else {
+      items.unshift(data);
+    }
+    save();
+    render();
+    document.getElementById("itemModal").classList.remove("visible");
+  }
+
+  function showDelete(id, name) {
+    deleteId = id;
+    document.getElementById("deleteName").textContent = name;
+    document.getElementById("deleteModal").classList.add("visible");
+  }
+
+  function deleteItem() {
+    if (!deleteId) return;
+    items = items.filter((p) => p.id !== deleteId);
+    save();
+    render();
+    document.getElementById("deleteModal").classList.remove("visible");
+    deleteId = null;
+  }
+
+  document.getElementById("addBtn")?.addEventListener("click", () => {
+    document.getElementById("modalTitle").textContent = "Novo";
+    document.getElementById("itemForm").reset();
+    document.getElementById("itemId").value = "";
+    document.getElementById("itemModal").classList.add("visible");
+  });
+
+  document.getElementById("cancelBtn")?.addEventListener("click", () => document.getElementById("itemModal").classList.remove("visible"));
+  document.getElementById("saveBtn")?.addEventListener("click", saveItem);
+  document.getElementById("cancelDeleteBtn")?.addEventListener("click", () => document.getElementById("deleteModal").classList.remove("visible"));
+  document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteItem);
+  document.getElementById("searchInput")?.addEventListener("input", render);
+  document.getElementById("categoryFilter")?.addEventListener("change", render);
+  document.getElementById("featuredFilter")?.addEventListener("change", render);
+
+  document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", () => document.getElementById(btn.dataset.close)?.classList.remove("visible"));
+  });
+
+  document.querySelectorAll(".modal-overlay").forEach((modal) => {
+    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("visible"); });
+  });
+
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".modal-overlay.visible").forEach((m) => m.classList.remove("visible")); });
+
+  render();
+</script>

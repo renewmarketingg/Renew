@@ -1,35 +1,47 @@
 ---
 import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import Footer from '../components/footer/footer.astro';
+import Header from '../components/header/header.astro';
 import '../styles/global.css';
 
 interface Props {
-  title: string;
+  title?: string;
   description?: string;
   image?: string;
+  adm?: boolean;
+  icon?: string;
+  activePage?: string;
+  hideHeaderFooter?: boolean;
+  theme?: string;
 }
 
 const {
-  title,
-  description = "Renew Digital - Serviços digitais especializados para impulsionar seu negócio",
-  image = "/renew.png",
-} = Astro.props;
+  adm = false,
+  theme = 'dark',
+  activePage = '',
+  icon = '/renew_favicon_64x.svg',
+  title = import.meta.env.DEV ? 'Dev | Renew Digital' : 'Home - Renew Digital',
+  description = 'Renew Digital - Serviços digitais especializados para impulsionar seu negócio',
+  image = '/renew.png',
+  hideHeaderFooter = false,
+}: Props = Astro.props;
+
+const finalTitle = adm ? 'Admin | Renew Digital' : title;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const fontsUrl = (str: 'gstatic' | 'googleapis' = 'googleapis') => `https://fonts.${str}.com`;
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme={theme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#8414e3" />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/renew.png" />
+    <link rel="icon" type="image/svg+xml" href={icon} />
     <link rel="preconnect" href={fontsUrl()} />
     <link crossorigin rel="preconnect" href={fontsUrl('gstatic')} />
     <link
@@ -40,7 +52,7 @@ const fontsUrl = (str: 'gstatic' | 'googleapis' = 'googleapis') => `https://font
     <link
       media="print"
       rel="stylesheet"
-      onload="this.media='all'"
+      onload="this.setAttribute('media', 'all')"
       href={`${fontsUrl()}/css2?family=Inter:wght@400;500;600;700;800&display=swap`}
     />
     <noscript
@@ -53,18 +65,18 @@ const fontsUrl = (str: 'gstatic' | 'googleapis' = 'googleapis') => `https://font
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={finalTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, Astro.site ?? canonicalURL)} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={finalTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(image, Astro.site ?? canonicalURL)} />
 
-    <title>{title}</title>
+    <title>{finalTitle}</title>
 
     <script type="application/ld+json" is:inline>
       {
@@ -89,10 +101,10 @@ const fontsUrl = (str: 'gstatic' | 'googleapis' = 'googleapis') => `https://font
   <body>
     <Analytics />
     <SpeedInsights />
-    <Header />
-    <main>
+    {!hideHeaderFooter && (adm ? <Header variant="admin" activePage={activePage} /> : <Header />)}
+    <main class:list={adm ? ['admin-main'] : []}>
       <slot />
     </main>
-    <Footer />
+    {!hideHeaderFooter && !adm && <Footer />}
   </body>
 </html>
