@@ -1,0 +1,211 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import PageHeader from "../../components/page-header/page-header.astro";
+import Button from "../../components/button/button.astro";
+import StatsGrid from "../../components/admin/stats-grid/stats-grid.astro";
+import Filters from "../../components/admin/filters/filters.astro";
+import Modal from "../../components/admin/modal/modal.astro";
+import "../../styles/global.css";
+
+const categories = ["auth", "api", "system"];
+const levels = ["info", "warning", "error", "success"];
+
+const stats = [
+  { label: "Total", value: "0", icon: "lucide:file-text" },
+  { label: "Erros", value: "0", icon: "lucide:alert-circle", iconBg: "rgba(239,68,68,0.1)", iconColor: "#ef4444" },
+  { label: "Alertas", value: "0", icon: "lucide:alert-triangle", iconBg: "rgba(251,191,36,0.1)", iconColor: "#fbbf24" },
+  { label: "Última att", value: "--", icon: "lucide:check-circle", iconBg: "rgba(34,197,94,0.1)", iconColor: "#22c55e" },
+];
+
+const filters = [
+  {
+    id: "level",
+    label: "Nível",
+    type: "select" as const,
+    options: levels.map((l) => ({ value: l, label: l.charAt(0).toUpperCase() + l.slice(1) })),
+  },
+  {
+    id: "category",
+    label: "Categoria",
+    type: "select" as const,
+    options: categories.map((c) => ({ value: c, label: c })),
+  },
+];
+---
+
+<Layout title="Logs do Sistema" adm={true} activePage="/admin/logs">
+  <div class="admin-content">
+    <PageHeader title="Logs do Sistema">
+      <div class="flex gap-2">
+        <Button id="exportBtn" variant="secondary">
+          <Icon name="lucide:download" size={18} />Exportar
+        </Button>
+        <Button id="clearBtn" variant="danger">
+          <Icon name="lucide:trash-2" size={18} />Limpar
+        </Button>
+      </div>
+    </PageHeader>
+
+    <StatsGrid stats={stats} />
+
+    <Filters searchPlaceholder="Buscar logs..." filters={filters} />
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Nível</th>
+            <th>Categoria</th>
+            <th>Mensagem</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="logsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <Modal id="detailModal" title="Detalhes do Log" size="lg">
+    <div id="detailContent"></div>
+  </Modal>
+
+  <Modal id="clearModal" title="Limpar Logs?" size="sm">
+    <p>Todos os logs serão excluídos.</p>
+    <div slot="footer">
+      <Button id="cancelClearBtn" variant="secondary">Cancelar</Button>
+      <Button id="confirmClearBtn" variant="danger">Limpar</Button>
+    </div>
+  </Modal>
+</Layout>
+
+<script>
+  import { formatDateTime, initModals, openModal, closeModal } from "../../lib/admin";
+
+  type LogLevel = "info" | "warning" | "error" | "success";
+  type LogCategory = "auth" | "api" | "system";
+
+  interface Log {
+    id: string;
+    timestamp: string;
+    level: LogLevel;
+    category: LogCategory;
+    message: string;
+  }
+
+  const STORAGE_KEY = "app_logs";
+  const MAX_LOGS = 500;
+  let logs: Log[] = [];
+
+  const defaultLogs = generateMockLogs();
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) logs = JSON.parse(stored);
+  else { logs = defaultLogs; save(); }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs.slice(0, MAX_LOGS)));
+  }
+
+  function generateMockLogs(): Log[] {
+    const msgs: Record<LogCategory, string[]> = {
+      auth: ["Login realizado", "Falha na autenticação", "Sessão expirada"],
+      api: ["Requisição GET", "Erro 404", "Timeout"],
+      system: ["Backup iniciado", "Memória crítica", "Cache limpo"],
+    };
+    const arr: Log[] = [];
+    for (let i = 0; i < 20; i++) {
+      const cats: LogCategory[] = ["auth", "api", "system"];
+      const cat = cats[Math.floor(Math.random() * cats.length)];
+      const lvl: LogLevel = Math.random() > 0.7 ? (Math.random() > 0.5 ? "error" : "warning") : "info";
+      arr.push({
+        id: `log-${i}`,
+        timestamp: new Date(Date.now() - Math.random() * 86400000 * 7).toISOString(),
+        level: lvl,
+        category: cat,
+        message: msgs[cat][Math.floor(Math.random() * msgs[cat].length)],
+      });
+    }
+    return arr.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  function render() {
+    const search = document.querySelector<HTMLInputElement>("#searchInput")?.value.toLowerCase() || "";
+    const level = document.querySelector<HTMLInputElement>("#levelFilter")?.value || "";
+    const cat = document.querySelector<HTMLInputElement>("#categoryFilter")?.value || "";
+
+    const filtered = logs.filter((l) => {
+      const matchSearch = !search || l.message.toLowerCase().includes(search);
+      const matchLevel = !level || l.level === level;
+      const matchCat = !cat || l.category === cat;
+      return matchSearch && matchLevel && matchCat;
+    });
+
+    const tbody = document.getElementById("logsTableBody");
+    if (!tbody) return;
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">Nenhum log</td></tr>`;
+      return;
+    }
+
+    const colors: Record<LogLevel, string> = { info: "#3b82f6", warning: "#fbbf24", error: "#ef4444", success: "#22c55e" };
+    tbody.innerHTML = filtered.slice(0, 100).map((l) => `
+      <tr data-id="${l.id}">
+        <td class="text-sm">${formatDateTime(l.timestamp)}</td>
+        <td><span class="badge" style="background:${colors[l.level]}20;color:${colors[l.level]}">${l.level}</span></td>
+        <td>${l.category}</td>
+        <td>${l.message}</td>
+        <td><button class="action-btn detail-btn" data-id="${l.id}"><Icon name="lucide:eye" size={16} /></button></td>
+      </tr>
+    `).join("");
+
+    document.querySelectorAll<HTMLButtonElement>(".detail-btn").forEach((btn) => btn.addEventListener("click", () => showDetail(btn.dataset.id!)));
+    updateStats(filtered);
+  }
+
+  function updateStats(filtered: Log[]) {
+    document.querySelector("[data-stat='total']")!.textContent = String(filtered.length);
+    document.querySelector("[data-stat='errors']")!.textContent = String(filtered.filter((l) => l.level === "error").length);
+    document.querySelector("[data-stat='warnings']")!.textContent = String(filtered.filter((l) => l.level === "warning").length);
+    document.getElementById("lastUpdate")!.textContent = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function showDetail(id: string) {
+    const l = logs.find((x) => x.id === id);
+    if (!l) return;
+    document.getElementById("detailContent")!.innerHTML = `
+      <div class="info-row"><span>ID</span><code>${l.id}</code></div>
+      <div class="info-row"><span>Timestamp</span>${formatDateTime(l.timestamp)}</div>
+      <div class="info-row"><span>Nível</span>${l.level}</div>
+      <div class="info-row"><span>Categoria</span>${l.category}</div>
+      <div class="info-row"><span>Mensagem</span>${l.message}</div>
+    `;
+    openModal("detailModal");
+  }
+
+  function clearLogs() {
+    logs = [];
+    save();
+    render();
+    closeModal("clearModal");
+  }
+
+  function exportLogs() {
+    const blob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `logs-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+  }
+
+  document.getElementById("searchInput")?.addEventListener("input", render);
+  document.getElementById("levelFilter")?.addEventListener("change", render);
+  document.getElementById("categoryFilter")?.addEventListener("change", render);
+  document.getElementById("clearBtn")?.addEventListener("click", () => openModal("clearModal"));
+  document.getElementById("cancelClearBtn")?.addEventListener("click", () => closeModal("clearModal"));
+  document.getElementById("confirmClearBtn")?.addEventListener("click", clearLogs);
+  document.getElementById("exportBtn")?.addEventListener("click", exportLogs);
+
+  initModals();
+  render();
+</script>

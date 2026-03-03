@@ -1,0 +1,97 @@
+---
+interface Column {
+  key: string;
+  label: string;
+  render?: (value: unknown, row: Record<string, unknown>) => string;
+}
+
+interface Props {
+  columns: Column[];
+  data: Record<string, unknown>[];
+  emptyMessage?: string;
+}
+
+const { columns, data, emptyMessage = "Nenhum item encontrado" } = Astro.props;
+---
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        {columns.map((col) => <th>{col.label}</th>)}
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      {data.length === 0 ? (
+        <tr>
+          <td colspan={columns.length} class="text-center p-8">
+            {emptyMessage}
+          </td>
+        </tr>
+      ) : (
+        data.map((row) => (
+          <tr data-id={row.id}>
+            {columns.map((col) => (
+              <td>
+                {col.render ? <Fragment set:html={col.render(row[col.key], row)} /> : row[col.key]}
+              </td>
+            ))}
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .table-wrapper {
+    overflow-x: auto;
+    background: var(--color-white, #fff);
+    border-radius: var(--border-radius-lg, 16px);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table th {
+    text-align: left;
+    padding: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-400, #747474);
+    background: var(--color-gray-50, #f9fafb);
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+
+  .table td {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-dark, #242424);
+    border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  }
+
+  .table tbody tr {
+    transition: background 0.15s;
+  }
+
+  .table tbody tr:hover {
+    background: var(--color-gray-50, #f9fafb);
+  }
+
+  .table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  :global(.text-center) {
+    text-align: center;
+  }
+
+  :global(.p-8) {
+    padding: 2rem;
+  }
+</style>

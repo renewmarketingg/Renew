@@ -1,0 +1,132 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  id: string;
+  title: string;
+  size?: "sm" | "md" | "lg";
+}
+
+const { id, title, size = "md" } = Astro.props;
+
+const sizes = {
+  sm: "360px",
+  md: "480px",
+  lg: "600px",
+};
+
+const maxWidth = sizes[size];
+---
+
+<div class="modal-overlay" id={id}>
+  <div class="modal" style={`max-width: ${maxWidth}`}>
+    <div class="modal-header">
+      <h2>{title}</h2>
+      <button class="modal-close" data-close={id}>
+        <Icon name="lucide:x" size={20} />
+      </button>
+    </div>
+    <div class="modal-body">
+      <slot />
+    </div>
+    <div class="modal-footer">
+      <slot name="footer" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+  }
+
+  .modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    background: var(--color-white, #fff);
+    border-radius: var(--border-radius-lg, 16px);
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+  }
+
+  :global(.modal-overlay.visible) .modal {
+    transform: scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+
+  .modal-header h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--color-dark, #242424);
+  }
+
+  .modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--color-gray-400, #747474);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .modal-close:hover {
+    background: var(--color-gray-100, #f3f4f6);
+    color: var(--color-dark, #242424);
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+
+  @media (max-width: 480px) {
+    .modal-overlay {
+      padding: 0.5rem;
+    }
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      padding: 1rem;
+    }
+  }
+</style>

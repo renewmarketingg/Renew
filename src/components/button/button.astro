@@ -1,29 +1,36 @@
 ---
 import { Icon } from "astro-icon/components";
-import "./Button.css";
+import "./button.css";
 
 interface Props {
   href?: string;
   type?: "button" | "submit" | "reset";
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "danger" | "ghost";
+  size?: "sm" | "md" | "lg";
   icon?: string;
   iconPosition?: "left" | "right";
   class?: string;
+  fullWidth?: boolean;
+  id?: string;
 }
 
 const {
   href,
   type = "button",
   variant = "primary",
+  size = "md",
   icon,
   iconPosition = "left",
   class: className,
+  fullWidth = false,
+  id,
 }: Props = Astro.props;
 
 const Tag = href ? "a" : "button";
 const isButton = !href;
 const props = {
-  class: `btn btn-${variant} ${className || ""}`,
+  id,
+  class: `btn btn-${variant} btn-${size} ${fullWidth ? "btn-full" : ""} ${className || ""}`,
   ...(href && { href }),
   ...(isButton && { type }),
 };

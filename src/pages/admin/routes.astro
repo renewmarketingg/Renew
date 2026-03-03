@@ -1,0 +1,217 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import PageHeader from "../../components/page-header/page-header.astro";
+import Button from "../../components/button/button.astro";
+import StatsGrid from "../../components/admin/stats-grid/stats-grid.astro";
+import Filters from "../../components/admin/filters/filters.astro";
+import Modal from "../../components/admin/modal/modal.astro";
+import defaultRoutes from "../../constants/quickLinks";
+import "../../styles/global.css";
+
+const categories = ["Público", "Admin", "Sistema", "Blog", "API", "Custom"];
+const routesJson = JSON.stringify(defaultRoutes);
+
+const stats = [
+  { label: "Total", value: "0", icon: "lucide:route" },
+  { label: "Dinâmicas", value: "0", icon: "lucide:git-branch" },
+  { label: "Categorias", value: "0", icon: "lucide:folder" },
+  { label: "Ativas", value: "0", icon: "lucide:toggle-left" },
+];
+
+const filters = [
+  { id: "category", label: "Categoria", type: "select" as const, options: categories.map((c) => ({ value: c, label: c })) },
+  { id: "dynamic", label: "Tipo", type: "select" as const, options: [{ value: "true", label: "Dinâmica" }, { value: "false", label: "Estática" }] },
+  { id: "status", label: "Status", type: "select" as const, options: [{ value: "active", label: "Ativa" }, { value: "inactive", label: "Inativa" }] },
+];
+---
+
+<Layout title="Gerenciar Rotas" adm={true} activePage="/admin/routes">
+  <div class="admin-content">
+    <PageHeader title="Gerenciar Rotas">
+      <Button id="addBtn" variant="primary"><Icon name="lucide:plus" size={18} />Nova rota</Button>
+    </PageHeader>
+
+    <StatsGrid stats={stats} />
+    <Filters searchPlaceholder="Buscar rotas..." filters={filters} />
+
+    <div class="card-grid" id="grid"></div>
+  </div>
+
+  <Modal id="itemModal" title="Nova Rota">
+    <form id="itemForm">
+      <input type="hidden" id="itemId" />
+      <div class="form-group"><label for="label">Label</label><input type="text" id="label" required /></div>
+      <div class="form-group"><label for="path">Path</label><input type="text" id="path" required /></div>
+      <div class="form-group"><label for="description">Descrição</label><input type="text" id="description" /></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category">Categoria</label>
+          <select id="category" required>{categories.map((c) => <option value={c}>{c}</option>)}</select>
+        </div>
+        <div class="form-group">
+          <div class="checkbox-group mt-4"><input type="checkbox" id="dynamic" /><label for="dynamic">Dinâmica</label></div>
+        </div>
+      </div>
+      <div class="form-group" id="paramsGroup" style="display:none">
+        <label for="dynamicParams">Parâmetros</label><input type="text" id="dynamicParams" />
+      </div>
+    </form>
+    <div slot="footer">
+      <Button id="cancelBtn" variant="secondary">Cancelar</Button>
+      <Button id="saveBtn" variant="primary">Salvar</Button>
+    </div>
+  </Modal>
+
+  <Modal id="deleteModal" title="Excluir?" size="sm">
+    <p>Excluir <strong id="deleteName"></strong>?</p>
+    <div slot="footer">
+      <Button id="cancelDeleteBtn" variant="secondary">Cancelar</Button>
+      <Button id="confirmDeleteBtn" variant="danger">Excluir</Button>
+    </div>
+  </Modal>
+</Layout>
+
+<script define:vars={{ routesJson }}>
+  const generateId = (prefix) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
+  const STORAGE_KEY = "admin_routes";
+  let items = JSON.parse(routesJson);
+  let deleteId = null;
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) items = JSON.parse(stored);
+  else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+
+  function render() {
+    const search = (document.getElementById("searchInput")?.value || "").toLowerCase();
+    const cat = document.getElementById("categoryFilter")?.value || "";
+    const dyn = document.getElementById("dynamicFilter")?.value || "";
+    const status = document.getElementById("statusFilter")?.value || "";
+
+    const filtered = items.filter((r) => {
+      const matchSearch = !search || r.label.toLowerCase().includes(search) || r.path.toLowerCase().includes(search);
+      const matchCat = !cat || r.category === cat;
+      const matchDyn = !dyn || (dyn === "true" ? r.dynamic : !r.dynamic);
+      const matchStatus = !status || (status === "active" ? r.active : !r.active);
+      return matchSearch && matchCat && matchDyn && matchStatus;
+    });
+
+    const grid = document.getElementById("grid");
+    if (!grid) return;
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><Icon name="lucide:route" size={48}/><h3>Nenhuma rota</h3></div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map((r) => `
+      <div class="route-card ${r.active ? "" : "inactive"}">
+        <div class="route-card-header">
+          <span class="badge badge-${r.category.toLowerCase()}">${r.category}</span>
+          ${r.dynamic ? '<span class="badge badge-dynamic">Dinâmica</span>' : ""}
+          <div class="route-actions">
+            <button class="action-btn edit-btn" data-id="${r.id}"><Icon name="lucide:pencil" size={16}/></button>
+            <button class="action-btn toggle-btn" data-id="${r.id}"><Icon name="${r.active ? "lucide:toggle-right" : "lucide:toggle-left"}" size={16}/></button>
+            <button class="action-btn delete-btn" data-id="${r.id}" data-name="${r.label}"><Icon name="lucide:trash-2" size={16}/></button>
+          </div>
+        </div>
+        <div class="route-card-body">
+          <h4 class="font-bold mb-2">${r.label}</h4>
+          <code class="route-path">${r.path}</code>
+          ${r.description ? `<p class="text-sm text-gray-400 mt-2">${r.description}</p>` : ""}
+        </div>
+      </div>
+    `).join("");
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => btn.addEventListener("click", () => edit(btn.dataset.id)));
+    document.querySelectorAll(".delete-btn").forEach((btn) => btn.addEventListener("click", () => showDelete(btn.dataset.id, btn.dataset.name)));
+    document.querySelectorAll(".toggle-btn").forEach((btn) => btn.addEventListener("click", () => toggle(btn.dataset.id)));
+    updateStats();
+  }
+
+  function updateStats() {
+    const total = items.length;
+    const dynamic = items.filter((r) => r.dynamic).length;
+    const cats = new Set(items.map((r) => r.category)).size;
+    const active = items.filter((r) => r.active).length;
+    document.querySelector('[data-stat="total"]').textContent = String(total);
+    document.querySelector('[data-stat="dynamic"]').textContent = String(dynamic);
+    document.querySelector('[data-stat="categories"]').textContent = String(cats);
+    document.querySelector('[data-stat="active"]').textContent = String(active);
+  }
+
+  function edit(id) {
+    const r = items.find((x) => x.id === id);
+    if (!r) return;
+    document.getElementById("modalTitle").textContent = "Editar";
+    document.getElementById("itemId").value = r.id;
+    document.getElementById("label").value = r.label;
+    document.getElementById("path").value = r.path;
+    document.getElementById("description").value = r.description || "";
+    document.getElementById("category").value = r.category;
+    document.getElementById("dynamic").checked = r.dynamic || false;
+    document.getElementById("dynamicParams").value = r.dynamicParams || "";
+    document.getElementById("paramsGroup").style.display = r.dynamic ? "block" : "none";
+    document.getElementById("itemModal").classList.add("visible");
+  }
+
+  function saveItem() {
+    const id = document.getElementById("itemId").value;
+    const data = {
+      id: id || generateId("route"),
+      label: document.getElementById("label").value,
+      path: document.getElementById("path").value,
+      description: document.getElementById("description").value,
+      category: document.getElementById("category").value,
+      dynamic: document.getElementById("dynamic").checked,
+      dynamicParams: document.getElementById("dynamicParams").value || undefined,
+      active: true,
+    };
+    if (id) { const idx = items.findIndex((x) => x.id === id); if (idx !== -1) items[idx] = { ...items[idx], ...data }; }
+    else items.unshift(data);
+    save();
+    render();
+    document.getElementById("itemModal").classList.remove("visible");
+  }
+
+  function toggle(id) {
+    const r = items.find((x) => x.id === id);
+    if (r) { r.active = !r.active; save(); render(); }
+  }
+
+  function showDelete(id, name) { deleteId = id; document.getElementById("deleteName").textContent = name; document.getElementById("deleteModal").classList.add("visible"); }
+
+  function deleteItem() {
+    if (!deleteId) return;
+    items = items.filter((r) => r.id !== deleteId);
+    save();
+    render();
+    document.getElementById("deleteModal").classList.remove("visible");
+    deleteId = null;
+  }
+
+  document.getElementById("addBtn")?.addEventListener("click", () => {
+    document.getElementById("modalTitle").textContent = "Nova";
+    document.getElementById("itemForm").reset();
+    document.getElementById("itemId").value = "";
+    document.getElementById("paramsGroup").style.display = "none";
+    document.getElementById("itemModal").classList.add("visible");
+  });
+
+  document.getElementById("cancelBtn")?.addEventListener("click", () => document.getElementById("itemModal").classList.remove("visible"));
+  document.getElementById("saveBtn")?.addEventListener("click", saveItem);
+  document.getElementById("cancelDeleteBtn")?.addEventListener("click", () => document.getElementById("deleteModal").classList.remove("visible"));
+  document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteItem);
+  document.getElementById("searchInput")?.addEventListener("input", render);
+  document.getElementById("categoryFilter")?.addEventListener("change", render);
+  document.getElementById("dynamicFilter")?.addEventListener("change", render);
+  document.getElementById("statusFilter")?.addEventListener("change", render);
+  document.getElementById("dynamic")?.addEventListener("change", (e) => { document.getElementById("paramsGroup").style.display = e.target.checked ? "block" : "none"; });
+
+  document.querySelectorAll("[data-close]").forEach((btn) => btn.addEventListener("click", () => document.getElementById(btn.dataset.close)?.classList.remove("visible")));
+  document.querySelectorAll(".modal-overlay").forEach((modal) => modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("visible"); }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".modal-overlay.visible").forEach((m) => m.classList.remove("visible")); });
+
+  render();
+</script>

@@ -1,0 +1,89 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform var(--transition-normal);
+}
+
+/* Variants */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 20px rgba(132, 20, 227, 0.35);
+}
+
+.btn-secondary {
+  background: var(--color-white) !important;
+  color: var(--color-dark) !important;
+  border: 2px solid var(--color-primary-alpha-20) !important;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-dark);
+}
+
+.btn-ghost:hover {
+  background: var(--color-primary-alpha-08);
+}
+
+/* Sizes */
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.btn-lg svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Full width */
+.btn-full {
+  width: 100%;
+}
+
+/* Icon animation */
+.btn:hover svg[data-icon='lucide:arrow-right'] {
+  transform: translateX(8px);
+}

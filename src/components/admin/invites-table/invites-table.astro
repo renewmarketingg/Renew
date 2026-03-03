@@ -1,0 +1,99 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Invite {
+  id: string;
+  token: string;
+  email: string;
+  createdAt: string;
+  used: boolean;
+  usedBy?: string;
+  usedAt?: string;
+}
+
+interface Props {
+  invites: Invite[];
+}
+
+const { invites } = Astro.props;
+
+function formatDate(isoString: string): string {
+  return new Date(isoString).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+---
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Token</th>
+        <th>Criado</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {invites.length === 0 ? (
+        <tr>
+          <td colspan="5" class="text-center p-8">Nenhum convite</td>
+        </tr>
+      ) : (
+        invites.map((inv) => (
+          <tr>
+            <td>{inv.email}</td>
+            <td><code class="text-sm">{inv.token.substring(0, 12)}...</code></td>
+            <td>{formatDate(inv.createdAt)}</td>
+            <td>
+              <span class={`badge ${inv.used ? "badge-used" : "badge-active"}`}>
+                {inv.used ? "Usado" : "Pendente"}
+              </span>
+            </td>
+            <td>
+              <div class="flex gap-1">
+                <button class="action-btn copy-btn" data-token={inv.token} aria-label="Copiar link">
+                  <Icon name="lucide:copy" size={16} />
+                </button>
+                <button class="action-btn delete-btn" data-id={inv.id} aria-label="Excluir">
+                  <Icon name="lucide:trash-2" size={16} />
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const token = btn.getAttribute("data-token");
+      const url = `${window.location.origin}/admin/register?token=${token}`;
+      navigator.clipboard.writeText(url);
+      const event = new CustomEvent("toast", { detail: { message: "Link copiado!", type: "success" } });
+      document.dispatchEvent(event);
+    });
+  });
+
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const event = new CustomEvent("invite-delete", { detail: btn.getAttribute("data-id") });
+      document.dispatchEvent(event);
+    });
+  });
+</script>
+
+<style>
+  .badge-used {
+    background: #fef3c7;
+    color: #d97706;
+  }
+</style>
