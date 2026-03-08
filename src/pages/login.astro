@@ -30,7 +30,7 @@ const hasError = url.searchParams.get('error') === '1';
       <div class={styles.card}>
         {hasError && <div class={styles.error}>Email ou senha inválidos.</div>}
 
-        <form method="post" action="/api/auth/owner/login">
+        <form id="loginForm">
           <input type="hidden" name="redirect_url" value={redirectUrl} />
 
           <div class="form-group">
@@ -49,6 +49,8 @@ const hasError = url.searchParams.get('error') === '1';
             />
           </div>
 
+          <div id="loginError" class={styles.error} style="display:none"></div>
+
           <div class={styles.actions}>
             <Button type="submit" variant="primary" fullWidth icon="lucide:log-in"> Entrar </Button>
           </div>
@@ -59,3 +61,35 @@ const hasError = url.searchParams.get('error') === '1';
     </div>
   </div>
 </Layout>
+
+<script>
+  const form = document.getElementById('loginForm') as HTMLFormElement;
+  const errorEl = document.getElementById('loginError') as HTMLDivElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const redirectUrl = formData.get('redirect_url')?.toString() || '/admin';
+    
+    errorEl.style.display = 'none';
+    
+    try {
+      const res = await fetch('/api/auth/owner/login', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok || res.status === 303) {
+        window.location.href = res.url || redirectUrl;
+      } else {
+        const data = await res.json();
+        errorEl.textContent = data.error || 'Erro ao fazer login';
+        errorEl.style.display = 'block';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Erro de conexão';
+      errorEl.style.display = 'block';
+    }
+  });
+</script>

@@ -44,19 +44,30 @@ const toStringField = (value: FormDataEntryValue | null): string => {
   return typeof value === 'string' ? value : '';
 };
 
+const isAjaxRequest = (request: Request): boolean => {
+  const accept = request.headers.get('accept') || '';
+  return accept.includes('application/json');
+};
+
+const redirectWithError = (url: URL, redirectUrl: string): Response => {
+  const q = new URLSearchParams();
+  q.set('error', '1');
+  q.set('redirect_url', redirectUrl);
+  return Response.redirect(new URL(`/login?${q.toString()}`, url).toString(), 303);
+};
+
 export const POST: APIRoute = async ({ request, cookies, url }) => {
   const clientIP = getClientIP(request);
 
   if (!checkRateLimit(clientIP)) {
-    return new Response(
-      JSON.stringify({
-        error: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
-      }),
-      {
+    const errorMsg = 'Muitas tentativas de login. Tente novamente em 15 minutos.';
+    if (isAjaxRequest(request)) {
+      return new Response(JSON.stringify({ error: errorMsg }), {
         status: 429,
         headers: { 'Content-Type': 'application/json' },
-      }
-    );
+      });
+    }
+    return redirectWithError(url, '/admin');
   }
 
   const form = await request.formData();
@@ -66,23 +77,37 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
   const redirectUrl = toStringField(form.get('redirect_url')) || getRedirectUrlParam(url, '/admin');
 
   if (!email || !password) {
-    const q = new URLSearchParams();
-    q.set('error', '1');
-    q.set('redirect_url', redirectUrl);
-    return Response.redirect(new URL(`/login?${q.toString()}`, url).toString(), 303);
+    if (isAjaxRequest(request)) {
+      return new Response(JSON.stringify({ error: 'Email e senha são obrigatórios' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return redirectWithError(url, redirectUrl);
   }
 
   const ok = verifyOwnerCredentials({ email, password });
   if (!ok) {
-    const q = new URLSearchParams();
-    q.set('error', '1');
-    q.set('redirect_url', redirectUrl);
-    return Response.redirect(new URL(`/login?${q.toString()}`, url).toString(), 303);
+    if (isAjaxRequest(request)) {
+      return new Response(JSON.stringify({ error: 'Email ou senha inválidos' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return redirectWithError(url, redirectUrl);
   }
 
   loginAttempts.delete(clientIP);
 
   const token = createOwnerSessionToken(ok.email);
   setOwnerSessionCookie(cookies, token);
+
+  if (isAjaxRequest(request)) {
+    return new Response(JSON.stringify({ success: true, redirectUrl }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   return Response.redirect(new URL(redirectUrl, url).toString(), 303);
 };
