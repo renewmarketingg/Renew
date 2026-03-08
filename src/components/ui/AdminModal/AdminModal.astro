@@ -1,0 +1,37 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './AdminModal.module.css';
+
+interface Props {
+  id: string;
+  title: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { id, title, size = 'md' } = Astro.props;
+
+const sizes = {
+  sm: '360px',
+  md: '480px',
+  lg: '600px',
+};
+
+const maxWidth = sizes[size];
+---
+
+<div class={`modal-overlay ${styles.modalOverlay}`} {id}>
+  <div class={styles.modal} style={`max-width: ${maxWidth}`}>
+    <div class={styles.modalHeader}>
+      <h2>{title}</h2>
+      <button class={styles.modalClose} data-close={id} aria-label="Fechar modal">
+        <Icon name="lucide:x" size={20} />
+      </button>
+    </div>
+    <div class={styles.modalBody}>
+      <slot />
+    </div>
+    <div class={styles.modalFooter}>
+      <slot name="footer" />
+    </div>
+  </div>
+</div>

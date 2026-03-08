@@ -2,11 +2,13 @@
   --color-primary: #8414e3;
   --color-primary-light: #c51be4;
   --color-primary-lighter: #ae8bc7;
+
   --color-primary-alpha-08: rgba(132, 20, 227, 0.08);
   --color-primary-alpha-10: rgba(132, 20, 227, 0.1);
   --color-primary-alpha-15: rgba(132, 20, 227, 0.15);
   --color-primary-alpha-20: rgba(132, 20, 227, 0.2);
   --color-primary-alpha-30: rgba(132, 20, 227, 0.3);
+
   --color-white: #f4f2f4;
   --color-gray-100: #cccbcc;
   --color-gray-200: #a4a4a4;
@@ -14,6 +16,23 @@
   --color-gray-400: #747474;
   --color-gray-500: #6c6c6c;
   --color-dark: #242424;
+
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+  --color-danger-alpha-10: rgba(239, 68, 68, 0.1);
+  --color-danger-alpha-20: rgba(239, 68, 68, 0.2);
+
+  --color-success: #10b981;
+  --color-success-alpha-10: rgba(16, 185, 129, 0.1);
+  --color-success-alpha-20: rgba(16, 185, 129, 0.2);
+
+  --color-warning: #f59e0b;
+  --color-warning-alpha-10: rgba(245, 158, 11, 0.1);
+  --color-warning-alpha-20: rgba(245, 158, 11, 0.2);
+
+  --color-info: #3b82f6;
+  --color-info-alpha-10: rgba(59, 130, 246, 0.1);
+  --color-info-alpha-20: rgba(59, 130, 246, 0.2);
 
   --font-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family: 'Inter', var(--font-fallback);
@@ -58,11 +77,15 @@
   --card-padding-lg: 2.5rem;
 
   --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  --gradient-primary-alpha: linear-gradient(135deg, var(--color-primary-alpha-15), rgba(197, 27, 228, 0.15));
+  --gradient-primary-alpha: linear-gradient(
+    135deg,
+    var(--color-primary-alpha-15),
+    rgba(197, 27, 228, 0.15)
+  );
 }
 
 .dark,
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-white: #252525;
   --color-gray-100: #323232;
   --color-gray-200: #3d3d3d;

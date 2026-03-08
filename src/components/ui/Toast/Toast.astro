@@ -1,0 +1,14 @@
+---
+import styles from './Toast.module.css';
+---
+
+<div
+  id="toast"
+  class:list={[styles.toast, 'toast']}
+  role="alert"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <span class="toast-icon"></span>
+  <span class="toast-message"></span>
+</div>

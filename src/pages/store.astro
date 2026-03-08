@@ -1,747 +1,281 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
-import affiliateProducts, { categories } from '../constants/affiliateProducts';
-import '../styles/store.css';
+import { getProducts } from '@/services/productService';
+import affiliateProducts from '@/constants/affiliateProducts';
+import styles from '@/styles/store.module.css';
+import Button from '@components/ui/Button/Button.astro';
 
-const productsJson = JSON.stringify(affiliateProducts);
-const categoriesJson = JSON.stringify(categories);
+const dbProducts = await getProducts();
+const isDemoMode = dbProducts.length === 0;
+const products = isDemoMode ? affiliateProducts : dbProducts;
+
+const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
+const categories = ['Todos', ...uniqueCategories];
+
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
+};
+
+const calculateDiscount = (originalPrice: number, currentPrice: number): number => {
+  return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
+};
 ---
 
 <Layout
   title="Loja - Produtos Afiliados | Renew Digital"
   description="Encontre os melhores produtos em nossa loja de afiliados. Eletrônicos, gadgets e muito mais com ótimas ofertas."
 >
-  <div class="cart-float" id="cartFloat">
-    <button class="cart-btn" id="cartBtn" aria-label="Carrinho">
+  <div class={styles.cartFloat} id="cartFloat">
+    <button class={styles.cartBtn} id="cartBtn" aria-label="Carrinho">
       <Icon name="lucide:shopping-cart" size={24} />
-      <span class="cart-count" id="cartCount">0</span>
+      <span class={styles.cartCount} id="cartCount">0</span>
     </button>
   </div>
 
-  <div class="cart-sidebar" id="cartSidebar">
-    <div class="cart-header">
+  <div class={styles.cartSidebar} id="cartSidebar">
+    <div class={styles.cartHeader}>
       <h2><Icon name="lucide:shopping-cart" size={20} /> Carrinho</h2>
-      <button class="cart-close" id="cartClose" aria-label="Fechar carrinho">
+      <button class={styles.cartClose} id="cartClose" aria-label="Fechar carrinho">
         <Icon name="lucide:x" size={20} />
       </button>
     </div>
-    <div class="cart-items" id="cartItems">
-      <p class="cart-empty" id="cartEmpty">Seu carrinho está vazio</p>
+    <div class={styles.cartItems} id="cartItems">
+      <p class={styles.cartEmpty} id="cartEmpty">Seu carrinho está vazio</p>
     </div>
-    <div class="cart-footer">
-      <div class="cart-total">
+    <div class={styles.cartFooter}>
+      <div class={styles.cartTotal}>
         <span>Total:</span>
         <span id="cartTotal">R$ 0</span>
       </div>
-      <button class="cart-checkout" id="checkoutBtn">
+      <Button fullWidth id="checkoutBtn">
         <Icon name="lucide:credit-card" size={18} />
         Finalizar Compra
-      </button>
-      <button class="cart-clear" id="clearCartBtn">
+      </Button>
+      <Button fullWidth id="clearCartBtn" variant="danger">
         <Icon name="lucide:trash-2" size={16} />
         Limpar Carrinho
-      </button>
+      </Button>
     </div>
   </div>
 
-  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class={styles.cartOverlay} id="cartOverlay"></div>
 
-  <section class="store-filters">
+  <section class={styles.storeFilters}>
     <div class="container">
-      <div class="filters-container">
-        <div class="search-box">
+      <div class={styles.filtersContainer}>
+        <div class={styles.searchBox}>
           <input type="text" id="searchInput" placeholder="Buscar produtos..." />
-          <Icon size="20" class="search-icon" name="lucide:search" />
+          <Icon size="20" class={styles.searchIcon} name="lucide:search" />
         </div>
         <div class="category-filters" id="categoryFilters">
-          <button class="category-btn active" data-category="Todos">Todos</button>
-          {
-            categories
-              .filter((c) => c !== 'Todos')
-              .map((cat) => (
-                <button class="category-btn" data-category={cat}>
-                  {cat}
-                </button>
-              ))
-          }
+          <button class="btn btn-secondary category-btn active" data-category="Todos">Todos</button>
+          {categories.filter((c) => c !== 'Todos').map((cat) => (
+            <button class="btn btn-secondary category-btn" data-category={cat}>{cat}</button>
+          ))}
         </div>
       </div>
     </div>
   </section>
 
-  <section class="products-section">
+  <section class={styles.productsSection}>
     <div class="container">
-      <div id="urlParamsInfo"></div>
+      <div id="urlParamsInfo" class={styles.urlParamsInfo}></div>
 
-      <div class="results-info">
-        <span id="resultsInfo">Carregando produtos...</span>
+      {isDemoMode && (
+        <div class={styles.demoBanner}>
+          <Icon name="lucide:test-tube" size={20} />
+          <span>
+            <strong>Modo de Demonstração:</strong> Exibindo produtos de teste pois não há produtos reais.
+          </span>
+        </div>
+      )}
+
+      <div class="results-info" style="margin-bottom:1rem">
+        <span id="resultsInfo" style="color:var(--color-gray-400)">{products.length} produto{products.length !== 1 ? 's' : ''} encontrado{products.length !== 1 ? 's' : ''}</span>
       </div>
 
-      <div id="productsContainer" class="products-grid"></div>
+      <div id="productsContainer" class={styles.productsGrid}>
+        {products.filter((p) => p.featured).length > 0 && (
+          <h2 style="font-size:1.5rem;margin-bottom:1.5rem;grid-column:1/-1">Produtos em Destaque</h2>
+        )}
+        {products.filter((p) => p.featured).map((product) => (
+          <article class={styles.productCard} data-id={product.id} data-name={product.name.toLowerCase()} data-description={product.description.toLowerCase()} data-category={product.category}>
+            <div class={styles.productImage}>
+              <img src={product.image} alt={product.name} loading="lazy" />
+              {product.originalPrice && <span class={styles.productBadge}>Destaque</span>}
+            </div>
+            <div class={styles.productContent}>
+              <span class={styles.productCategory}>{product.category}</span>
+              <h3 class={styles.productTitle}>{product.name}</h3>
+              <p class={styles.productDescription}>{product.description}</p>
+              <div class={styles.productRating}>
+                <div class={styles.ratingStars}>
+                  {[1,2,3,4,5].map((i) => (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  ))}
+                </div>
+                <span class={styles.ratingText}>{product.rating} ({product.reviews.toLocaleString('pt-BR')} avaliações)</span>
+              </div>
+              <div class={styles.productPrice}>
+                <span class={styles.currentPrice}>{formatPrice(product.price)}</span>
+                {product.originalPrice && (
+                  <>
+                    <span class={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
+                    <span class={styles.discount}>-{calculateDiscount(product.originalPrice, product.price)}%</span>
+                  </>
+                )}
+              </div>
+              <div class={styles.productActions}>
+                <button class="btn btn-secondary add-to-cart-btn" data-id={product.id} data-name={product.name}>
+                  <Icon name="lucide:shopping-cart" size={18} /> Adicionar
+                </button>
+                <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class={`btn btn-primary ${styles.productLink}`}>
+                  <Icon name="lucide:shopping-bag" size={18} /> Comprar
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+
+        {products.filter((p) => !p.featured).length > 0 && (
+          <h2 style="font-size:1.5rem;margin:2rem 0 1.5rem;grid-column:1/-1">{products.filter((p) => p.featured).length > 0 ? 'Outros Produtos' : 'Todos os Produtos'}</h2>
+        )}
+        {products.filter((p) => !p.featured).map((product) => (
+          <article class={styles.productCard} data-id={product.id} data-name={product.name.toLowerCase()} data-description={product.description.toLowerCase()} data-category={product.category}>
+            <div class={styles.productImage}>
+              <img src={product.image} alt={product.name} loading="lazy" />
+              {product.originalPrice && <span class={styles.productBadge}>Oferta</span>}
+            </div>
+            <div class={styles.productContent}>
+              <span class={styles.productCategory}>{product.category}</span>
+              <h3 class={styles.productTitle}>{product.name}</h3>
+              <p class={styles.productDescription}>{product.description}</p>
+              <div class={styles.productRating}>
+                <div class={styles.ratingStars}>
+                  {[1,2,3,4,5].map((i) => (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  ))}
+                </div>
+                <span class={styles.ratingText}>{product.rating} ({product.reviews.toLocaleString('pt-BR')} avaliações)</span>
+              </div>
+              <div class={styles.productPrice}>
+                <span class={styles.currentPrice}>{formatPrice(product.price)}</span>
+                {product.originalPrice && (
+                  <>
+                    <span class={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
+                    <span class={styles.discount}>-{calculateDiscount(product.originalPrice, product.price)}%</span>
+                  </>
+                )}
+              </div>
+              <div class={styles.productActions}>
+                <button class="btn btn-secondary add-to-cart-btn" data-id={product.id} data-name={product.name}>
+                  <Icon name="lucide:shopping-cart" size={18} /> Adicionar
+                </button>
+                <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class={`btn btn-primary ${styles.productLink}`}>
+                  <Icon name="lucide:shopping-bag" size={18} /> Comprar
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
+
+  <template id="tpl-cart-item">
+    <div class={styles.cartItem}>
+      <img src="" alt="" class={styles.cartItemImg} />
+      <div class={styles.cartItemInfo}>
+        <h4 class="cart-item-name"></h4>
+        <span class={styles.cartItemPrice}></span>
+        <div class={styles.cartItemQty}>
+          <button class={styles.qtyBtn} data-delta="-1">-</button>
+          <span class="cart-item-qty-val"></span>
+          <button class={styles.qtyBtn} data-delta="1">+</button>
+        </div>
+      </div>
+      <button class={styles.cartItemRemove} aria-label="Remover">
+        <Icon name="lucide:x" size={16} />
+      </button>
+    </div>
+  </template>
 </Layout>
 
-<script is:inline define:vars={{ products: productsJson, categories: categoriesJson }}>
-  const CART_KEY = 'renew_cart';
+<script>
+  import { initCart } from '@/lib/cart';
 
-  function formatPriceBR(price) {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  }
-
-  function getCart() {
-    const stored = localStorage.getItem(CART_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  function saveCart(cart) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    updateCartUI();
-  }
-
-  function addToCart(product) {
-    const cart = getCart();
-    const existing = cart.find((item) => item.id === product.id);
-
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1,
-      });
+  const init = async () => {
+    try {
+      await initCart();
+    } catch (e) {
+      console.error('initCart failed:', e);
     }
+  };
 
-    saveCart(cart);
-    showToast(`${product.name} adicionado ao carrinho!`, 'success');
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+  const categoryButtons = document.querySelectorAll('.category-btn');
+  const productsContainer = document.getElementById('productsContainer');
+
+  if (searchInput) {
+    let timeout: ReturnType<typeof setTimeout>;
+    searchInput.addEventListener('input', (e) => {
+      const value = (e.target as HTMLInputElement).value.toLowerCase();
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        filterProducts(value);
+      }, 300);
+    });
   }
 
-  function removeFromCart(productId) {
-    let cart = getCart();
-    cart = cart.filter((item) => item.id !== productId);
-    saveCart(cart);
-  }
+  categoryButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category') || 'Todos';
+      categoryButtons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterProducts(searchInput?.value.toLowerCase() || '', category);
+    });
+  });
 
-  function updateQuantity(productId, delta) {
-    const cart = getCart();
-    const item = cart.find((item) => item.id === productId);
+  const filterProducts = (search: string, category = 'Todos') => {
+    if (!productsContainer) return;
+    const articles = productsContainer.querySelectorAll('article');
+    let count = 0;
 
-    if (item) {
-      item.quantity += delta;
-      if (item.quantity <= 0) {
-        removeFromCart(productId);
+    articles.forEach((article) => {
+      const el = article as HTMLElement;
+      const name = el.dataset.name || '';
+      const desc = el.dataset.description || '';
+      const cat = el.dataset.category || '';
+
+      const matchesSearch = !search || name.includes(search) || desc.includes(search);
+      const matchesCategory = category === 'Todos' || cat === category;
+
+      if (matchesSearch && matchesCategory) {
+        el.style.display = '';
+        count++;
       } else {
-        saveCart(cart);
-      }
-    }
-  }
-
-  function clearCart() {
-    localStorage.removeItem(CART_KEY);
-    updateCartUI();
-    showToast('Carrinho limpo!', 'info');
-  }
-
-  function updateCartUI() {
-    const cart = getCart();
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    document.getElementById('cartCount').textContent = String(count);
-    document.getElementById('cartTotal').textContent = formatPriceBR(total);
-
-    const cartItemsEl = document.getElementById('cartItems');
-    const cartEmptyEl = document.getElementById('cartEmpty');
-
-    if (cart.length === 0) {
-      cartEmptyEl.style.display = 'block';
-      cartItemsEl.innerHTML = '<p class="cart-empty">Seu carrinho está vazio</p>';
-    } else {
-      cartEmptyEl.style.display = 'none';
-      cartItemsEl.innerHTML = cart
-        .map(
-          (item) => `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${item.name}" class="cart-item-img" />
-          <div class="cart-item-info">
-            <h4>${item.name}</h4>
-            <span class="cart-item-price">${formatPriceBR(item.price)}</span>
-            <div class="cart-item-qty">
-              <button class="qty-btn" data-id="${item.id}" data-delta="-1">-</button>
-              <span>${item.quantity}</span>
-              <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
-            </div>
-          </div>
-          <button class="cart-item-remove" data-id="${item.id}" aria-label="Remover">
-            <Icon name="lucide:x" size={16} />
-          </button>
-        </div>
-      `
-        )
-        .join('');
-
-      cartItemsEl.querySelectorAll('.qty-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          updateQuantity(btn.dataset.id, parseInt(btn.dataset.delta));
-        });
-      });
-
-      cartItemsEl.querySelectorAll('.cart-item-remove').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          removeFromCart(btn.dataset.id);
-        });
-      });
-    }
-  }
-
-  function openCart() {
-    document.getElementById('cartSidebar').classList.add('open');
-    document.getElementById('cartOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeCart() {
-    document.getElementById('cartSidebar').classList.remove('open');
-    document.getElementById('cartOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
-  function getURLParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-      q: params.get('q') || '',
-      category: params.get('category') || 'Todos',
-      id: params.get('id') || null,
-    };
-  }
-
-  function renderStars(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-      const fill = i <= Math.round(rating) ? 'currentColor' : 'none';
-      stars += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>`;
-    }
-    return stars;
-  }
-
-  function renderProduct(product, isFeatured = false) {
-    const discount = product.originalPrice
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-      : 0;
-
-    return `
-      <article class="product-card" data-id="${product.id}" data-name="${product.name.toLowerCase()}" data-description="${product.description.toLowerCase()}" data-category="${product.category}">
-        <div class="product-image">
-          <img src="${product.image}" alt="${product.name}" loading="lazy" />
-          ${product.originalPrice ? `<span class="product-badge">${isFeatured ? 'Destaque' : 'Oferta'}</span>` : ''}
-        </div>
-        <div class="product-content">
-          <span class="product-category">${product.category}</span>
-          <h3 class="product-title">${product.name}</h3>
-          <p class="product-description">${product.description}</p>
-          <div class="product-rating">
-            <div class="rating-stars">${renderStars(product.rating)}</div>
-            <span class="rating-text">${product.rating} (${product.reviews.toLocaleString('pt-BR')} avaliações)</span>
-          </div>
-          <div class="product-price">
-            <span class="current-price">${formatPriceBR(product.price)}</span>
-            ${
-              product.originalPrice
-                ? `
-              <span class="original-price">${formatPriceBR(product.originalPrice)}</span>
-              <span class="discount">-${discount}%</span>
-            `
-                : ''
-            }
-          </div>
-          <div class="product-actions">
-            <button class="btn btn-secondary add-to-cart-btn" data-id="${product.id}">
-              <Icon name="lucide:shopping-cart" size={18} />
-              Adicionar
-            </button>
-            <a href="${product.affiliateLink}" target="_blank" rel="noopener noreferrer" class="btn btn-primary product-link">
-              <Icon name="lucide:shopping-bag" size={18} />
-              Comprar
-            </a>
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  function filterProducts() {
-    const { q, category, id } = getURLParams();
-    const productsArray = typeof products === 'string' ? JSON.parse(products) : products;
-    let filtered = [...productsArray];
-
-    if (id) {
-      filtered = filtered.filter((p) => p.id === id);
-      document.getElementById('urlParamsInfo').innerHTML =
-        `Mostrando produto específico: <code>${id}</code>`;
-      document.getElementById('urlParamsInfo').style.display = 'block';
-    } else {
-      document.getElementById('urlParamsInfo').style.display = 'none';
-
-      if (q) {
-        filtered = filtered.filter(
-          (p) =>
-            p.name.toLowerCase().includes(q.toLowerCase()) ||
-            p.description.toLowerCase().includes(q.toLowerCase()) ||
-            p.category.toLowerCase().includes(q.toLowerCase())
-        );
-      }
-
-      if (category !== 'Todos') {
-        filtered = filtered.filter((p) => p.category === category);
-      }
-    }
-
-    const featured = filtered.filter((p) => p.featured);
-    const regular = filtered.filter((p) => !p.featured);
-
-    let html = '';
-
-    if (filtered.length === 0) {
-      html = `
-        <div class="no-products" style="grid-column: 1 / -1;">
-          <h3>Nenhum produto encontrado</h3>
-          <p>Tente buscar por outros termos ou selecionar uma categoria diferente.</p>
-          <a href="/store" class="btn btn-primary" style="display: inline-block; margin-top: 1rem;">Limpar Filtros</a>
-        </div>
-      `;
-    } else {
-      if (featured.length > 0) {
-        html += `
-          <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 1.5rem; grid-column: 1 / -1;">
-            Produtos em Destaque
-          </h2>
-        `;
-        html += featured.map((p) => renderProduct(p, true)).join('');
-      }
-
-      if (regular.length > 0) {
-        html += `
-          <h2 class="section-title" style="font-size: 1.5rem; margin: 2rem 0 1.5rem; grid-column: 1 / -1; ${featured.length === 0 ? 'margin-top: 0;' : ''}">
-            ${featured.length > 0 ? 'Outros Produtos' : 'Todos os Produtos'}
-          </h2>
-        `;
-        html += regular.map((p) => renderProduct(p, false)).join('');
-      }
-    }
-
-    document.getElementById('productsContainer').innerHTML = html;
-
-    document.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const productId = btn.dataset.id;
-        const productsArray = typeof products === 'string' ? JSON.parse(products) : products;
-        const product = productsArray.find((p) => p.id === productId);
-        if (product) {
-          addToCart(product);
-        }
-      });
-    });
-
-    const filterDesc = [];
-    if (q) filterDesc.push(`"${q}"`);
-    if (category !== 'Todos') filterDesc.push(category);
-    const filterText = filterDesc.length > 0 ? ` para ${filterDesc.join(' em ')}` : '';
-
-    document.getElementById('resultsInfo').textContent =
-      `${filtered.length} produto${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}${filterText}`;
-  }
-
-  function updateURL(search, category) {
-    const params = new URLSearchParams();
-    if (search) params.set('q', search);
-    if (category && category !== 'Todos') params.set('category', category);
-    const queryString = params.toString();
-    window.location.href = `/store${queryString ? '?' + queryString : ''}`;
-  }
-
-  function init() {
-    const { q, category } = getURLParams();
-
-    const searchInput = document.getElementById('searchInput');
-    const categoryButtons = document.querySelectorAll('.category-btn');
-
-    if (searchInput) searchInput.value = q;
-
-    categoryButtons.forEach((btn) => {
-      const cat = btn.getAttribute('data-category');
-      btn.classList.toggle('active', cat === category);
-    });
-
-    filterProducts();
-
-    let searchTimeout;
-    searchInput?.addEventListener('input', (e) => {
-      const value = e.target.value;
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        const activeBtn = document.querySelector('.category-btn.active');
-        updateURL(value, activeBtn?.getAttribute('data-category') || 'Todos');
-      }, 500);
-    });
-
-    categoryButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const cat = btn.getAttribute('data-category');
-        updateURL(searchInput?.value || '', cat);
-      });
-    });
-
-    document.getElementById('cartBtn')?.addEventListener('click', openCart);
-    document.getElementById('cartClose')?.addEventListener('click', closeCart);
-    document.getElementById('cartOverlay')?.addEventListener('click', closeCart);
-    document.getElementById('clearCartBtn')?.addEventListener('click', clearCart);
-    document.getElementById('checkoutBtn')?.addEventListener('click', () => {
-      const cart = getCart();
-      if (cart.length > 0) {
-        showToast('Redirecionando para checkout...', 'info');
-      } else {
-        showToast('Carrinho vazio!', 'error');
+        el.style.display = 'none';
       }
     });
 
-    updateCartUI();
-  }
+    const resultsInfo = document.getElementById('resultsInfo');
+    if (resultsInfo) {
+      const filters: string[] = [];
+      if (search) filters.push(`"${search}"`);
+      if (category && category !== 'Todos') filters.push(category);
+      const filterText = filters.length > 0 ? ` para ${filters.join(' em ')}` : '';
+      resultsInfo.textContent = `${count} produto${count !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}${filterText}`;
+    }
+  };
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 </script>
-
-<style is:global>
-  .cart-float {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 999;
-  }
-
-  .cart-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 20px rgba(132, 20, 227, 0.4);
-    transition:
-      transform 0.2s,
-      box-shadow 0.2s;
-    position: relative;
-  }
-
-  .cart-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(132, 20, 227, 0.5);
-  }
-
-  .cart-count {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-    min-width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .cart-sidebar {
-    position: fixed;
-    top: 0;
-    right: -400px;
-    width: 100%;
-    max-width: 400px;
-    height: 100vh;
-    background: var(--color-white);
-    z-index: 1001;
-    transition: right 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
-  }
-
-  .cart-sidebar.open {
-    right: 0;
-  }
-
-  .cart-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.3s,
-      visibility 0.3s;
-  }
-
-  .cart-overlay.open {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .cart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem;
-    border-bottom: 1px solid var(--color-gray-200);
-  }
-
-  .cart-header h2 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  .cart-close {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: var(--color-gray-100);
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .cart-close:hover {
-    background: var(--color-gray-200);
-  }
-
-  .cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-  }
-
-  .cart-empty {
-    text-align: center;
-    color: var(--color-gray-400);
-    padding: 2rem;
-  }
-
-  .cart-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--color-gray-50);
-    border-radius: 12px;
-    margin-bottom: 0.75rem;
-    position: relative;
-  }
-
-  .cart-item-img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-
-  .cart-item-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .cart-item-info h4 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin: 0 0 0.25rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .cart-item-price {
-    color: var(--color-primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-  }
-
-  .cart-item-qty {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .qty-btn {
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--color-gray-200);
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .qty-btn:hover {
-    background: var(--color-gray-100);
-  }
-
-  .cart-item-remove {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: var(--color-gray-400);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .cart-item-remove:hover {
-    color: #ef4444;
-  }
-
-  .cart-footer {
-    padding: 1.25rem;
-    border-top: 1px solid var(--color-gray-200);
-  }
-
-  .cart-total {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .cart-checkout {
-    width: 100%;
-    padding: 0.875rem;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    transition: background 0.2s;
-  }
-
-  .cart-checkout:hover {
-    background: var(--color-primary-light);
-  }
-
-  .cart-clear {
-    width: 100%;
-    padding: 0.625rem;
-    background: transparent;
-    color: var(--color-gray-400);
-    border: none;
-    font-size: 0.875rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-  }
-
-  .cart-clear:hover {
-    color: #ef4444;
-  }
-
-  .product-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 6rem;
-    right: 2rem;
-    padding: 1rem 1.5rem;
-    background: var(--color-dark);
-    color: white;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    z-index: 1002;
-    opacity: 0;
-    transform: translateY(1rem);
-    transition:
-      opacity 0.3s,
-      transform 0.3s;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .toast-success {
-    background: #22c55e;
-  }
-
-  .toast-error {
-    background: #ef4444;
-  }
-
-  .toast-info {
-    background: var(--color-primary);
-  }
-
-  @media (max-width: 480px) {
-    .cart-float {
-      bottom: 1rem;
-      right: 1rem;
-    }
-
-    .cart-sidebar {
-      max-width: 100%;
-      right: -100%;
-    }
-  }
-</style>

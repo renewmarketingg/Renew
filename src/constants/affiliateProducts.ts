@@ -10,7 +10,7 @@ export interface AffiliateProduct {
   rating: number;
   reviews: number;
   featured?: boolean;
-};
+}
 
 const affiliateProducts: AffiliateProduct[] = [
   {
@@ -71,7 +71,7 @@ const affiliateProducts: AffiliateProduct[] = [
     originalPrice: 3799,
     image: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400',
     affiliateLink: '#',
-    category: 'Wearables',
+    category: 'Acessórios',
     rating: 4.7,
     reviews: 987,
     featured: true,
@@ -144,7 +144,7 @@ const affiliateProducts: AffiliateProduct[] = [
     originalPrice: 399,
     image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400',
     affiliateLink: '#',
-    category: 'Wearables',
+    category: 'Acessórios',
     rating: 4.5,
     reviews: 2341,
   },
@@ -161,14 +161,6 @@ const affiliateProducts: AffiliateProduct[] = [
   },
 ];
 
-export const categories = [
-  'Todos',
-  'Eletrônicos',
-  'Áudio',
-  'Wearables',
-  'Games',
-  'Livros',
-  'Acessórios',
-];
+export const categories = ['Todos', 'Eletrônicos', 'Áudio', 'Games', 'Livros', 'Acessórios'];
 
 export default affiliateProducts;

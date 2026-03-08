@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './AdminFilters.module.css';
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  searchPlaceholder?: string;
+  filters?: {
+    id: string;
+    label?: string;
+    options: FilterOption[];
+    type: 'select' | 'search';
+  }[];
+}
+
+const { searchPlaceholder = 'Buscar...', filters = [] } = Astro.props;
+---
+
+<div class={styles.adminFilters}>
+  <div class={styles.searchWrapper}>
+    <Icon name="lucide:search" size={20} />
+    <input type="text" id="searchInput" placeholder={searchPlaceholder} />
+  </div>
+  {
+    filters.map((filter) => (
+      <select class={styles.filterSelect} id={`${filter.id}Filter`} data-filter={filter.id}>
+        <option value="">{filter.label || 'Todos'}</option>
+        {filter.options.map((opt) => (
+          <option value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+    ))
+  }
+</div>

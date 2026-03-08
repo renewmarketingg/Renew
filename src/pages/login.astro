@@ -1,0 +1,61 @@
+---
+export const prerender = false;
+import Layout from '@/layouts/Layout.astro';
+import styles from '@/styles/pages/login.module.css';
+import Button from '@components/ui/Button/Button.astro';
+import { Image } from 'astro:assets';
+
+const url = new URL(Astro.request.url);
+const redirectUrl = url.searchParams.get('redirect_url') || '/admin';
+const hasError = url.searchParams.get('error') === '1';
+---
+
+<Layout title="Login" hideHeaderFooter={true}>
+  <div class={styles.loginPage}>
+    <div class={styles.loginContainer}>
+      <div class={styles.loginBrand}>
+        <Image
+          width={80}
+          height={80}
+          src="/renew_logo_white_64x.svg"
+          alt="Renew Digital"
+          class={styles.loginLogoImg}
+          loading="eager"
+          decoding="async"
+        />
+        <h1>Renew Digital</h1>
+        <p>Acesso do Proprietário</p>
+      </div>
+
+      <div class={styles.card}>
+        {hasError && <div class={styles.error}>Email ou senha inválidos.</div>}
+
+        <form method="post" action="/api/auth/owner/login">
+          <input type="hidden" name="redirect_url" value={redirectUrl} />
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <div class={styles.actions}>
+            <Button type="submit" variant="primary" fullWidth icon="lucide:log-in"> Entrar </Button>
+          </div>
+        </form>
+      </div>
+
+      <a href="/" class={styles.backLink}>← Voltar para o site</a>
+    </div>
+  </div>
+</Layout>

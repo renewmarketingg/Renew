@@ -1,0 +1,62 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './Button.module.css';
+
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  icon?: string;
+  iconPosition?: 'left' | 'right';
+  class?: string;
+  fullWidth?: boolean;
+  compact?: boolean;
+  id?: string;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  icon,
+  iconPosition = 'left',
+  class: className,
+  fullWidth = false,
+  compact = false,
+  id,
+}: Props = Astro.props;
+
+const variantClasses: Record<string, string> = {
+  primary: styles.btnPrimary,
+  secondary: styles.btnSecondary,
+  tertiary: '',
+  danger: styles.btnDanger,
+  ghost: styles.btnGhost,
+};
+
+const sizeClasses: Record<string, string> = {
+  sm: styles.btnSm,
+  md: '',
+  lg: styles.btnLg,
+};
+
+const variantClass = variantClasses[variant] || styles.btnPrimary;
+const sizeClass = sizeClasses[size] || '';
+
+const Tag = href ? 'a' : 'button';
+const isButton = !href;
+const props = {
+  id,
+  class: `${styles.btn} ${variantClass} ${sizeClass} ${compact ? styles.btnCompact : ''} ${fullWidth ? styles.btnFull : ''} ${className || ''}`,
+  ...(href && { href }),
+  ...(isButton && { type }),
+};
+---
+
+<Tag {...props}>
+  {icon && iconPosition === 'left' && <Icon name={icon} />}
+  <slot />
+  {icon && iconPosition === 'right' && <Icon name={icon} />}
+</Tag>

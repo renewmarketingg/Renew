@@ -4,12 +4,12 @@ Website da Renew Digital, agência de serviços digitais especializada.
 
 ## Tecnologias
 
-- **Astro 5** - Framework web moderno
-- **TypeScript** - Linguagem com tipagem estática
-- **Clerk** - Autenticação e gerenciamento de usuários
+- **Astro 5** - Framework web moderno com SSR
+- **TypeScript** - Linguagem com tipagem estática (strict mode)
+- **Astro DB (Turso)** - Banco de dados SQL remoto
 - **astro-icon** - Ícones Lucide
 - **CSS Variables** - Sistema de temas (dark/light)
-- **Vercel** - Analytics e Speed Insights
+- **Vercel** - Deploy, Analytics e Speed Insights
 
 ## Instalação
 
@@ -19,53 +19,45 @@ pnpm install
 
 ## Comandos
 
-| Comando           | Ação                        |
-| ----------------- | --------------------------- |
-| `pnpm dev`        | Servidor de desenvolvimento |
-| `pnpm build`      | Build para produção         |
-| `pnpm preview`    | Visualizar build local      |
-| `npx astro check` | Verificar tipos TypeScript  |
+| Comando        | Ação                        |
+| -------------- | --------------------------- |
+| `pnpm dev`     | Servidor de desenvolvimento |
+| `pnpm build`   | Build para produção         |
+| `pnpm preview` | Visualizar build local      |
+| `pnpm check`   | Verificar tipos TypeScript  |
+| `pnpm format`  | Formatador Prettier         |
+| `pnpm db`      | Push schema para DB remoto  |
 
-## Autenticação Admin
+## Autenticação
 
-O sistema de autenticação do admin utiliza:
+Sistema de autenticação seguro com sessão baseada em token HMAC.
 
-- **Clerk** - Plataforma de autenticação gerenciada
-- **Emails autorizados** - Apenas emails na lista branca podem acessar (configurados em `src/constants/allowedEmails.ts`)
+### Login do Proprietário
 
-### Configuração do Clerk
+- Página: `/login`
+- Usa email e senha do ambiente (`.env`)
+- Cria cookie httpOnly assinado para sessão
+- Acesso total ao admin
 
-1. Crie uma conta em [clerk.com](https://clerk.com)
-2. Crie uma nova aplicação
-3. Configure as variáveis de ambiente:
+### Segurança
 
-```env
-PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-```
+- Rate limiting (5 tentativas, 15min bloqueio)
+- HMAC-SHA256 para assinar tokens
+- Timing-safe comparison
+- Cookie httpOnly, secure, sameSite
 
-4. Adicione os emails autorizados em `src/constants/allowedEmails.ts`
-
-5. Configure as URLs de redirecionamento no Clerk Dashboard:
-   - Sign-in redirect: `/admin`
-   - Sign-up redirect: `/admin`
-
-## Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
+### Variáveis de Ambiente
 
 ```env
-# Clerk (obrigatório para admin)
-PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+# Owner (obrigatório para /login)
+ADMIN_OWNER_EMAIL=seu-email@exemplo.com
+ADMIN_PASSWORD=sua-senha-segura
+ADMIN_SESSION_SECRET=sua-chave-secreta-32-caracteres
 
-# Emails autorizados (opcional - pode adicionar diretamente no código)
-PH_EMAIL=seu-email@exemplo.com
-RAFA_EMAIL=seu-email@exemplo.com
-FABIO_EMAIL=seu-email@exemplo.com
+# Astro DB (Turso)
+ASTRO_DB_REMOTE_URL=libsql://...
+ASTRO_DB_APP_TOKEN=...
 ```
-
-Na **Vercel**, adicione as variáveis nas configurações de Environment Variables do projeto.
 
 ## Funcionalidades
 
@@ -75,58 +67,32 @@ Na **Vercel**, adicione as variáveis nas configurações de Environment Variabl
 - Acessibilidade (aria-labels, semantic HTML)
 - Componentes reutilizáveis
 - SEO otimizado (Open Graph, Schema.org, Sitemap)
-- Performance (Vercel Speed Insights)
-- Sistema de autenticação admin com Clerk
+- Chat de IA (`/ai`)
+- Painel administrativo
+- Sistema de loja com carrinho de compras
+- Produtos via banco de dados ou afiliados
 
 ## Estrutura
 
 ```
 src/
-├── components/
-│   ├── admin/
-│   │   ├── filters/
-│   │   ├── modal/
-│   │   ├── stats-grid/
-│   │   └── table/
-│   ├── button/
-│   ├── card/
-│   ├── contact/
-│   ├── footer/
-│   ├── header/
-│   ├── hero/
-│   ├── icon-wrapper/
-│   ├── list/
-│   ├── page-header/
-│   └── stats-card/
-├── constants/
-│   ├── affiliateProducts.ts
-│   ├── allowedEmails.ts
-│   ├── features.ts
-│   ├── infoCards.ts
-│   ├── quickLinks.ts
-│   ├── services.ts
-│   └── socialLinks.ts
+├── components/          # Componentes multi-arquivo
+│   └── ui/            # Componentes atômicos (Button, Card, etc)
+├── constants/          # Dados estáticos
+├── db/                 # Configuração Astro DB
+├── interfaces/         # Interfaces TypeScript
+├── layouts/            # Layouts (Layout.astro)
 ├── lib/
-│   └── admin.ts
-├── layouts/
-│   └── Layout.astro
+│   ├── ai/           # Módulo de chat IA
+│   ├── auth/         # Autenticação (owner session, credentials)
+│   └── cart/         # Sistema de carrinho
 ├── pages/
-│   ├── admin/
-│   │   ├── index.astro
-│   │   ├── login.astro
-│   │   ├── logs.astro
-│   │   ├── routes.astro
-│   │   ├── settings.astro
-│   │   └── signout.astro
-│   ├── index.astro
-│   ├── store.astro
-│   └── 404.astro
-├── styles/
-│   ├── admin.css
-│   ├── global.css
-│   ├── store.css
-│   └── variables.css
-└── middleware.ts
+│   ├── api/          # Endpoints API
+│   │   └── auth/     # API auth (login/logout owner)
+│   └── admin/        # Páginas admin
+├── services/          # Lógica de negócio
+├── styles/            # Estilos globais e módulos
+└── types/             # Tipos TypeScript
 ```
 
 ## Uso do Layout
@@ -160,3 +126,22 @@ import Layout from "../layouts/Layout.astro";
 - Mobile: < 768px
 - Tablet: 768px – 992px
 - Desktop: > 992px
+
+## Convenções de Código
+
+### TypeScript
+
+- Use `export const` em vez de `export function`
+- Organize tipos em `src/types/`
+- Use `interface` para props de componentes Astro
+
+### Componentes
+
+- Estrutura: `src/components/Nome/Nome.astro`
+- Estilos: `src/components/Nome/Nome.module.css`
+- Nomenclatura: PascalCase
+
+### Estilo
+
+- Use Prettier: `pnpm format`
+- Verifique tipos: `pnpm check`

@@ -1,0 +1,73 @@
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.aboutSection {
+  background: linear-gradient(180deg, var(--color-white) 0%, rgba(132, 20, 227, 0.03) 100%);
+  transition: background var(--transition-normal);
+}
+
+.aboutContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.aboutBadge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+}
+
+.aboutText h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--color-dark);
+}
+
+.aboutText p {
+  color: var(--color-gray-400);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.aboutCards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 992px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .aboutContent {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .aboutCards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .servicesGrid,
+  .aboutCards {
+    grid-template-columns: 1fr;
+  }
+
+  .aboutText h2 {
+    font-size: 2rem;
+  }
+}

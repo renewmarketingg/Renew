@@ -1,15 +1,15 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import PageHeader from "../../components/PageHeader.astro";
-import StatsGrid from "../../components/AdminStatsGrid.astro";
-import "../../styles/global.css";
+import Layout from '../../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import PageHeader from '@components/PageHeader/PageHeader.astro';
+import StatsGrid from '@components/ui/AdminStatsGrid/AdminStatsGrid.astro';
+import '../../styles/admin/admin.css';
 
 const stats = [
-  { label: "Visitas Hoje", value: "0", icon: "lucide:eye" },
-  { label: "Usuários", value: "0", icon: "lucide:users" },
-  { label: "Vendas", value: "0", icon: "lucide:shopping-cart" },
-  { label: "Faturamento", value: "R$ 0", icon: "lucide:trending-up" },
+  { label: 'Visitas Hoje', value: '-', statKey: 'visits', icon: 'lucide:eye' },
+  { label: 'Usuários', value: '-', statKey: 'users', icon: 'lucide:users' },
+  { label: 'Vendas', value: '-', statKey: 'sales', icon: 'lucide:shopping-cart' },
+  { label: 'Faturamento', value: '-', statKey: 'revenue', icon: 'lucide:trending-up' },
 ];
 ---
 
@@ -17,21 +17,15 @@ const stats = [
   <div class="admin-content">
     <PageHeader title="Dashboard" />
 
-    <StatsGrid stats={stats} />
+    <StatsGrid {stats} />
 
     <div class="admin-grid-2">
       <div class="card">
         <div class="card-header">
           <h3><Icon name="lucide:activity" size={20} /> Atividade Recente</h3>
         </div>
-        <div class="card-body" id="activityList">
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div class="activity-content">
-              <span class="activity-text">Dashboard carregado</span>
-              <span class="activity-time">agora</span>
-            </div>
-          </div>
+        <div class="card-body">
+          <p style="color: var(--color-gray-400);">Nenhuma atividade recente.</p>
         </div>
       </div>
       <div class="card">
@@ -39,58 +33,11 @@ const stats = [
           <h3><Icon name="lucide:info" size={20} /> Informações</h3>
         </div>
         <div class="card-body">
-          <div class="info-row"><span>Páginas</span><strong data-stat="pages">0</strong></div>
-          <div class="info-row"><span>Produtos</span><strong data-stat="products">0</strong></div>
-          <div class="info-row"><span>Uptime</span><strong id="uptime">0m</strong></div>
+          <div class="info-row"><span>Páginas</span><strong>1</strong></div>
+          <div class="info-row"><span>Produtos</span><strong data-stat="products">-</strong></div>
+          <div class="info-row"><span>Modo</span><strong>Admin</strong></div>
         </div>
       </div>
     </div>
   </div>
 </Layout>
-
-<script>
-  const products = JSON.parse(localStorage.getItem("admin_products") || "[]");
-  const routes = JSON.parse(localStorage.getItem("admin_routes") || "[]");
-  document.querySelector("[data-stat=\"pages\"]")!.textContent = String(routes.length);
-  document.querySelector("[data-stat=\"products\"]")!.textContent = String(products.length);
-
-  function updateStats() {
-    const visits = Math.floor(Math.random() * 500) + 100;
-    const users = Math.floor(Math.random() * 50) + 5;
-    const sales = Math.floor(Math.random() * 20);
-    const revenue = sales * Math.floor(Math.random() * 200) + 50;
-    document.querySelector("[data-stat=\"visits\"]")!.textContent = visits.toLocaleString();
-    document.querySelector("[data-stat=\"users\"]")!.textContent = String(users);
-    document.querySelector("[data-stat=\"sales\"]")!.textContent = String(sales);
-    document.querySelector("[data-stat=\"revenue\"]")!.textContent = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(revenue);
-  }
-
-  function updateUptime() {
-    const start = Date.now();
-    setInterval(() => {
-      const elapsed = Date.now() - start;
-      const h = Math.floor(elapsed / 3600000);
-      const m = Math.floor((elapsed % 3600000) / 60000);
-      document.getElementById("uptime")!.textContent = `${h}h ${m}m`;
-    }, 60000);
-    document.getElementById("uptime")!.textContent = "0m";
-  }
-
-  function addActivity(text: string) {
-    const list = document.getElementById("activityList");
-    if (!list) return;
-    const time = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    list.insertAdjacentHTML(
-      "afterbegin",
-      `<div class="activity-item"><div class="activity-dot"></div><div class="activity-content"><span class="activity-text">${text}</span><span class="activity-time">${time}</span></div></div>`
-    );
-  }
-
-  updateStats();
-  updateUptime();
-  addActivity("Dashboard carregado");
-  setInterval(updateStats, 30000);
-</script>

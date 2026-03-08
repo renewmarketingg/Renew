@@ -1,42 +1,46 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import PageHeader from "../../components/PageHeader.astro";
-import Button from "../../components/Button.astro";
-import StatsGrid from "../../components/AdminStatsGrid.astro";
-import Filters from "../../components/AdminFilters.astro";
-import Modal from "../../components/AdminModal.astro";
-import affiliateProducts, { categories } from "../../constants/affiliateProducts";
-import "../../styles/global.css";
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { getProducts } from '@/services/productService';
+import '@/styles/global.css';
+import AdminFilters from '@/components/ui/AdminFilters/AdminFilters.astro';
+import AdminStatsGrid from '@/components/ui/AdminStatsGrid/AdminStatsGrid.astro';
+import Button from '@/components/ui/Button/Button.astro';
+import PageHeader from '@/components/PageHeader/PageHeader.astro';
+import AdminModal from '@/components/ui/AdminModal/AdminModal.astro';
 
-const productCategories = categories.filter((c) => c !== "Todos");
+const products = await getProducts();
+const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
+const productCategories = uniqueCategories.length
+  ? uniqueCategories
+  : ['Eletrônicos', 'Áudio', 'Wearables'];
 
 const stats = [
-  { label: "Total", value: "0", icon: "lucide:package" },
-  { label: "Destaques", value: "0", icon: "lucide:star" },
-  { label: "Valor Médio", value: "R$ 0", icon: "lucide:tag" },
-  { label: "Categorias", value: "0", icon: "lucide:folder" },
+  { label: 'Total', value: '0', icon: 'lucide:package' },
+  { label: 'Destaques', value: '0', icon: 'lucide:star' },
+  { label: 'Valor Médio', value: 'R$ 0', icon: 'lucide:tag' },
+  { label: 'Categorias', value: '0', icon: 'lucide:folder' },
 ];
 
 const filters = [
   {
-    id: "category",
-    label: "Categoria",
-    type: "select" as const,
+    id: 'category',
+    label: 'Categoria',
+    type: 'select' as const,
     options: productCategories.map((c) => ({ value: c, label: c })),
   },
   {
-    id: "featured",
-    label: "Status",
-    type: "select" as const,
+    id: 'featured',
+    label: 'Status',
+    type: 'select' as const,
     options: [
-      { value: "true", label: "Destaque" },
-      { value: "false", label: "Ativo" },
+      { value: 'true', label: 'Destaque' },
+      { value: 'false', label: 'Ativo' },
     ],
   },
 ];
 
-const productsJson = JSON.stringify(affiliateProducts);
+const productsJson = JSON.stringify(products);
 ---
 
 <Layout title="Gerenciar Produtos" adm={true} activePage="/admin/store">
@@ -47,9 +51,9 @@ const productsJson = JSON.stringify(affiliateProducts);
       </Button>
     </PageHeader>
 
-    <StatsGrid stats={stats} />
+    <AdminStatsGrid {stats} />
 
-    <Filters searchPlaceholder="Buscar produtos..." filters={filters} />
+    <AdminFilters searchPlaceholder="Buscar produtos..." {filters} />
 
     <div class="table-wrapper">
       <table class="table">
@@ -67,7 +71,7 @@ const productsJson = JSON.stringify(affiliateProducts);
     </div>
   </div>
 
-  <Modal id="itemModal" title="Novo">
+  <AdminModal id="itemModal" title="Novo">
     <form id="itemForm">
       <input type="hidden" id="itemId" />
       <div class="form-group">
@@ -119,53 +123,62 @@ const productsJson = JSON.stringify(affiliateProducts);
       <Button id="cancelBtn" variant="secondary">Cancelar</Button>
       <Button id="saveBtn" variant="primary">Salvar</Button>
     </div>
-  </Modal>
+  </AdminModal>
 
-  <Modal id="deleteModal" title="Excluir?" size="sm">
+  <AdminModal id="deleteModal" title="Excluir?" size="sm">
     <p>Excluir <strong id="deleteName"></strong>?</p>
     <div slot="footer">
       <Button id="cancelDeleteBtn" variant="secondary">Cancelar</Button>
       <Button id="confirmDeleteBtn" variant="danger">Excluir</Button>
     </div>
-  </Modal>
+  </AdminModal>
 </Layout>
 
-<script define:vars={{ productsJson }}>
-  const formatPrice = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-  const generateId = (prefix) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
+<script is:inline define:vars={{ productsJson }}>
+  const formatPrice = (value) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
-  const STORAGE_KEY = "admin_products";
   let items = JSON.parse(productsJson);
   let deleteId = null;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) items = JSON.parse(stored);
-  else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  async function fetchItems() {
+    try {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      if (res.ok) {
+        items = data;
+        render();
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function render() {
-    const search = document.getElementById("searchInput")?.value?.toLowerCase() || "";
-    const cat = document.getElementById("categoryFilter")?.value || "";
-    const feat = document.getElementById("featuredFilter")?.value || "";
+    const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+    const cat = document.getElementById('categoryFilter')?.value || '';
+    const feat = document.getElementById('featuredFilter')?.value || '';
 
     const filtered = items.filter((p) => {
-      const matchSearch = !search || p.name.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search);
+      const matchSearch =
+        !search ||
+        p.name.toLowerCase().includes(search) ||
+        p.description?.toLowerCase().includes(search);
       const matchCat = !cat || p.category === cat;
-      const matchFeat = !feat || (feat === "true" ? p.featured : !p.featured);
+      const matchFeat = !feat || (feat === 'true' ? p.featured : !p.featured);
       return matchSearch && matchCat && matchFeat;
     });
 
-    const tbody = document.getElementById("tableBody");
+    const tbody = document.getElementById('tableBody');
     if (!tbody) return;
     if (filtered.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">Nenhum produto</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = filtered.map((p) => `
+    tbody.innerHTML = filtered
+      .map(
+        (p) => `
       <tr data-id="${p.id}">
         <td>
           <div class="product-cell">
@@ -177,8 +190,8 @@ const productsJson = JSON.stringify(affiliateProducts);
           </div>
         </td>
         <td>${p.category}</td>
-        <td>${formatPrice(p.price)}${p.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">${formatPrice(p.originalPrice)}</span>` : ""}</td>
-        <td><span class="badge ${p.featured ? "badge-featured" : "badge-active"}">${p.featured ? "Destaque" : "Ativo"}</span></td>
+        <td>${formatPrice(p.price)}${p.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">${formatPrice(p.originalPrice)}</span>` : ''}</td>
+        <td><span class="badge ${p.featured ? 'badge-featured' : 'badge-active'}">${p.featured ? 'Destaque' : 'Ativo'}</span></td>
         <td>
           <div class="flex gap-1">
             <button class="action-btn edit-btn" data-id="${p.id}"><Icon name="lucide:pencil" size={16} /></button>
@@ -186,10 +199,18 @@ const productsJson = JSON.stringify(affiliateProducts);
           </div>
         </td>
       </tr>
-    `).join("");
+    `
+      )
+      .join('');
 
-    document.querySelectorAll(".edit-btn").forEach((btn) => btn.addEventListener("click", () => edit(btn.dataset.id)));
-    document.querySelectorAll(".delete-btn").forEach((btn) => btn.addEventListener("click", () => showDelete(btn.dataset.id, btn.dataset.name)));
+    document
+      .querySelectorAll('.edit-btn')
+      .forEach((btn) => btn.addEventListener('click', () => edit(btn.dataset.id)));
+    document
+      .querySelectorAll('.delete-btn')
+      .forEach((btn) =>
+        btn.addEventListener('click', () => showDelete(btn.dataset.id, btn.dataset.name))
+      );
     updateStats();
   }
 
@@ -207,85 +228,130 @@ const productsJson = JSON.stringify(affiliateProducts);
   function edit(id) {
     const p = items.find((x) => x.id === id);
     if (!p) return;
-    document.getElementById("modalTitle").textContent = "Editar";
-    document.getElementById("itemId").value = p.id;
-    document.getElementById("name").value = p.name;
-    document.getElementById("description").value = p.description || "";
-    document.getElementById("price").value = p.price;
-    document.getElementById("originalPrice").value = p.originalPrice || "";
-    document.getElementById("category").value = p.category;
-    document.getElementById("rating").value = p.rating || 4.5;
-    document.getElementById("image").value = p.image;
-    document.getElementById("affiliateLink").value = p.affiliateLink;
-    document.getElementById("featured").checked = p.featured;
-    document.getElementById("itemModal").classList.add("visible");
+    document.getElementById('modalTitle').textContent = 'Editar';
+    document.getElementById('itemId').value = p.id;
+    document.getElementById('name').value = p.name;
+    document.getElementById('description').value = p.description || '';
+    document.getElementById('price').value = p.price;
+    document.getElementById('originalPrice').value = p.originalPrice || '';
+    document.getElementById('category').value = p.category;
+    document.getElementById('rating').value = p.rating || 4.5;
+    document.getElementById('image').value = p.image;
+    document.getElementById('affiliateLink').value = p.affiliateLink;
+    document.getElementById('featured').checked = p.featured;
+    document.getElementById('itemModal').classList.add('visible');
   }
 
-  function saveItem() {
-    const id = document.getElementById("itemId").value;
+  async function saveItem() {
+    const id = document.getElementById('itemId').value;
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+
     const data = {
-      id: id || generateId("prod"),
-      name: document.getElementById("name").value,
-      description: document.getElementById("description").value,
-      price: parseFloat(document.getElementById("price").value),
-      originalPrice: parseFloat(document.getElementById("originalPrice").value) || undefined,
-      category: document.getElementById("category").value,
-      rating: parseFloat(document.getElementById("rating").value) || 4.5,
-      reviews: id ? items.find((x) => x.id === id)?.reviews || 0 : 0,
-      image: document.getElementById("image").value,
-      affiliateLink: document.getElementById("affiliateLink").value,
-      featured: document.getElementById("featured").checked,
+      name: document.getElementById('name').value,
+      description: document.getElementById('description').value,
+      price: parseFloat(document.getElementById('price').value),
+      originalPrice: parseFloat(document.getElementById('originalPrice').value) || undefined,
+      category: document.getElementById('category').value,
+      rating: parseFloat(document.getElementById('rating').value) || 4.5,
+      image: document.getElementById('image').value,
+      affiliateLink: document.getElementById('affiliateLink').value,
+      featured: document.getElementById('featured').checked,
     };
-    if (id) {
-      const idx = items.findIndex((x) => x.id === id);
-      if (idx !== -1) items[idx] = data;
-    } else {
-      items.unshift(data);
+
+    try {
+      const url = id ? `/api/products/${id}` : '/api/products';
+      const method = id ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        await fetchItems();
+        document.getElementById('itemModal').classList.remove('visible');
+      } else {
+        const errorData = await res.json();
+        alert('Erro ao salvar: ' + JSON.stringify(errorData));
+      }
+    } catch (err) {
+      alert('Erro inesperado: ' + err.message);
+    } finally {
+      saveBtn.disabled = false;
     }
-    save();
-    render();
-    document.getElementById("itemModal").classList.remove("visible");
   }
 
   function showDelete(id, name) {
     deleteId = id;
-    document.getElementById("deleteName").textContent = name;
-    document.getElementById("deleteModal").classList.add("visible");
+    document.getElementById('deleteName').textContent = name;
+    document.getElementById('deleteModal').classList.add('visible');
   }
 
-  function deleteItem() {
+  async function deleteItem() {
     if (!deleteId) return;
-    items = items.filter((p) => p.id !== deleteId);
-    save();
-    render();
-    document.getElementById("deleteModal").classList.remove("visible");
-    deleteId = null;
+
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    confirmBtn.disabled = true;
+
+    try {
+      const res = await fetch(`/api/products/${deleteId}`, { method: 'DELETE' });
+      if (res.ok) {
+        await fetchItems();
+        document.getElementById('deleteModal').classList.remove('visible');
+      } else {
+        alert('Erro ao excluir.');
+      }
+    } catch (err) {
+      alert('Erro inesperado: ' + err.message);
+    } finally {
+      confirmBtn.disabled = false;
+      deleteId = null;
+    }
   }
 
-  document.getElementById("addBtn")?.addEventListener("click", () => {
-    document.getElementById("modalTitle").textContent = "Novo";
-    document.getElementById("itemForm").reset();
-    document.getElementById("itemId").value = "";
-    document.getElementById("itemModal").classList.add("visible");
+  document.getElementById('addBtn')?.addEventListener('click', () => {
+    document.getElementById('modalTitle').textContent = 'Novo';
+    document.getElementById('itemForm').reset();
+    document.getElementById('itemId').value = '';
+    document.getElementById('itemModal').classList.add('visible');
   });
 
-  document.getElementById("cancelBtn")?.addEventListener("click", () => document.getElementById("itemModal").classList.remove("visible"));
-  document.getElementById("saveBtn")?.addEventListener("click", saveItem);
-  document.getElementById("cancelDeleteBtn")?.addEventListener("click", () => document.getElementById("deleteModal").classList.remove("visible"));
-  document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteItem);
-  document.getElementById("searchInput")?.addEventListener("input", render);
-  document.getElementById("categoryFilter")?.addEventListener("change", render);
-  document.getElementById("featuredFilter")?.addEventListener("change", render);
+  document
+    .getElementById('cancelBtn')
+    ?.addEventListener('click', () =>
+      document.getElementById('itemModal').classList.remove('visible')
+    );
+  document.getElementById('saveBtn')?.addEventListener('click', saveItem);
+  document
+    .getElementById('cancelDeleteBtn')
+    ?.addEventListener('click', () =>
+      document.getElementById('deleteModal').classList.remove('visible')
+    );
+  document.getElementById('confirmDeleteBtn')?.addEventListener('click', deleteItem);
+  document.getElementById('searchInput')?.addEventListener('input', render);
+  document.getElementById('categoryFilter')?.addEventListener('change', render);
+  document.getElementById('featuredFilter')?.addEventListener('change', render);
 
-  document.querySelectorAll("[data-close]").forEach((btn) => {
-    btn.addEventListener("click", () => document.getElementById(btn.dataset.close)?.classList.remove("visible"));
+  document.querySelectorAll('[data-close]').forEach((btn) => {
+    btn.addEventListener('click', () =>
+      document.getElementById(btn.dataset.close)?.classList.remove('visible')
+    );
   });
 
-  document.querySelectorAll(".modal-overlay").forEach((modal) => {
-    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("visible"); });
+  document.querySelectorAll('.modal-overlay').forEach((modal) => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('visible');
+    });
   });
 
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".modal-overlay.visible").forEach((m) => m.classList.remove("visible")); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape')
+      document
+        .querySelectorAll('.modal-overlay.visible')
+        .forEach((m) => m.classList.remove('visible'));
+  });
 
   render();
 </script>

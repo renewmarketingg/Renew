@@ -1,13 +1,12 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/astro/server';
+import { hasValidOwnerSession } from '@lib/auth/ownerSession';
+import { defineMiddleware } from 'astro:middleware';
 
-const isProtectedRoute = createRouteMatcher(['/admin(.*)']);
+const isProtectedRoute = (pathname: string) => pathname.startsWith('/admin');
 
-export const onRequest = clerkMiddleware(async (auth, context, next) => {
-  if (isProtectedRoute(context.request)) {
-    const { userId, redirectToSignIn } = auth();
-
-    if (!userId) {
-      return redirectToSignIn();
+export const onRequest = defineMiddleware(async ({ url, cookies }, next) => {
+  if (isProtectedRoute(url.pathname)) {
+    if (!hasValidOwnerSession(cookies)) {
+      return Response.redirect(new URL('/', url), 303);
     }
   }
 

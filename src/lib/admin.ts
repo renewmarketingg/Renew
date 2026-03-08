@@ -1,30 +1,27 @@
-export function formatPrice(value: number, currency = 'BRL'): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(value);
-}
+export const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info'): void => {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
 
-export function formatDate(isoString: string): string {
-  return new Date(isoString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
+  const msgEl = toast.querySelector('.toast-message');
+  if (msgEl) msgEl.textContent = message;
 
-export function formatDateTime(isoString: string): string {
-  return new Date(isoString).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+  const icons: Record<string, string> = { success: '✓', error: '✕', info: 'ℹ' };
+  const iconEl = toast.querySelector('.toast-icon');
+  if (iconEl) iconEl.textContent = icons[type] ?? '';
 
-export function generateId(prefix = 'item'): string {
-  return `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
-}
+  toast.dataset.type = type;
+  toast.classList.add('show');
 
-export function initModals(): void {
+  clearTimeout(
+    (toast as HTMLElement & { _toastTimer?: ReturnType<typeof setTimeout> })._toastTimer
+  );
+  (toast as HTMLElement & { _toastTimer?: ReturnType<typeof setTimeout> })._toastTimer = setTimeout(
+    () => toast.classList.remove('show'),
+    3000
+  );
+};
+
+export const initModals = (): void => {
   document.querySelectorAll<HTMLElement>('[data-close]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.close;
@@ -45,59 +42,40 @@ export function initModals(): void {
         .forEach((m) => m.classList.remove('visible'));
     }
   });
-}
+};
 
-export function openModal(id: string): void {
+export const openModal = (id: string): void => {
   document.getElementById(id)?.classList.add('visible');
-}
+};
 
-export function closeModal(id: string): void {
+export const closeModal = (id: string): void => {
   document.getElementById(id)?.classList.remove('visible');
-}
+};
 
-export function showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
+export const formatDateTime = (isoString: string): string => {
+  return new Date(isoString).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 
-export function getItems<T>(key: string, defaultValue: T[]): T[] {
+export const getItems = <T>(key: string, defaultValue: T[]): T[] => {
   const stored = localStorage.getItem(key);
   return stored ? JSON.parse(stored) : defaultValue;
-}
+};
 
-export function setItems<T>(key: string, items: T[]): void {
+export const setItems = <T>(key: string, items: T[]): void => {
   localStorage.setItem(key, JSON.stringify(items));
-}
+};
 
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-}
+export const generateId = (prefix = 'item'): string => {
+  return `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
+};
 
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-export function truncate(text: string, maxLength: number): string {
+export const truncate = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength - 3) + '...';
-}
+};

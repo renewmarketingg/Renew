@@ -1,0 +1,394 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '@/layouts/Layout.astro';
+import styles from '@/styles/admin/videos.module.css';
+import '@/styles/global.css';
+import Button from '@/components/ui/Button/Button.astro';
+import PageHeader from '@/components/PageHeader/PageHeader.astro';
+---
+
+<Layout title="Criador de Vídeos" adm={true} activePage="/admin/videos">
+  <div class="admin-content">
+    <PageHeader
+      title="Criador de Vídeos"
+      subtitle="Gere títulos, descrição, hashtags e roteiro rápido"
+    >
+      <Button id="generateBtn" variant="primary" icon="lucide:sparkles"> Gerar </Button>
+    </PageHeader>
+
+    <div class={`admin-grid-2 ${styles.videosGrid}`}>
+      <div class="card">
+        <div class="card-header">
+          <h3><Icon name="lucide:clipboard-list" size={20} /> Briefing</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="platform">Plataforma</label>
+            <select id="platform">
+              <option value="tiktok">TikTok</option>
+              <option value="yt-shorts">YouTube Shorts</option>
+              <option value="youtube">YouTube</option>
+              <option value="instagram">Instagram Reels</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="topic">Tema</label>
+            <input id="topic" type="text" placeholder="Ex: Como criar um site que vende" />
+          </div>
+
+          <div class="form-group">
+            <label for="audience">Público</label>
+            <input id="audience" type="text" placeholder="Ex: pequenos empresários, lojas locais" />
+          </div>
+
+          <div class="form-group">
+            <label for="tone">Tom</label>
+            <select id="tone">
+              <option value="direto">Direto</option>
+              <option value="didatico">Didático</option>
+              <option value="leve">Leve</option>
+              <option value="premium">Premium</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="duration">Duração (s)</label>
+              <input id="duration" type="number" min="5" max="300" value="30" />
+            </div>
+            <div class="form-group">
+              <label for="cta">CTA</label>
+              <input id="cta" type="text" placeholder="Ex: Chame no Whats" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Observações</label>
+            <textarea id="notes" rows="4" placeholder="Pontos-chave, oferta, diferenciais..."
+            ></textarea>
+          </div>
+
+          <div class={styles.actionsRow}>
+            <Button id="saveDraftBtn" variant="secondary" icon="lucide:save">
+              Salvar rascunho
+            </Button>
+            <Button id="clearBtn" variant="ghost" icon="lucide:rotate-ccw"> Limpar </Button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><Icon name="lucide:wand-2" size={20} /> Resultado</h3>
+          <div class={styles.headerTools}>
+            <Button id="copyAllBtn" variant="ghost" icon="lucide:copy" compact>
+              Copiar tudo
+            </Button>
+          </div>
+        </div>
+        <div class={`card-body ${styles.outputBody}`}>
+          <div class={`form-group ${styles.outputBlock}`}>
+            <div class={styles.outputTop}>
+              <h4>Títulos</h4>
+              <button class={styles.copyBtn} id="copyTitlesBtn" aria-label="Copiar títulos">
+                <Icon name="lucide:copy" size={16} />
+              </button>
+            </div>
+            <textarea id="titlesOutput" readonly rows="5" placeholder="Clique em Gerar..."
+            ></textarea>
+          </div>
+
+          <div class={`form-group ${styles.outputBlock}`}>
+            <div class={styles.outputTop}>
+              <h4>Descrição</h4>
+              <button class={styles.copyBtn} id="copyDescBtn" aria-label="Copiar descrição">
+                <Icon name="lucide:copy" size={16} />
+              </button>
+            </div>
+            <textarea id="descOutput" readonly rows="6" placeholder="Clique em Gerar..."></textarea>
+          </div>
+
+          <div class={`form-group ${styles.outputBlock}`}>
+            <div class={styles.outputTop}>
+              <h4>Hashtags</h4>
+              <button class={styles.copyBtn} id="copyTagsBtn" aria-label="Copiar hashtags">
+                <Icon name="lucide:copy" size={16} />
+              </button>
+            </div>
+            <textarea id="tagsOutput" readonly rows="3" placeholder="Clique em Gerar..."></textarea>
+          </div>
+
+          <div class={`form-group ${styles.outputBlock}`}>
+            <div class={styles.outputTop}>
+              <h4>Roteiro</h4>
+              <button class={styles.copyBtn} id="copyScriptBtn" aria-label="Copiar roteiro">
+                <Icon name="lucide:copy" size={16} />
+              </button>
+            </div>
+            <textarea id="scriptOutput" readonly rows="10" placeholder="Clique em Gerar..."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline type="module">
+    import { generateId, getItems, setItems, showToast, truncate } from '../../lib/admin';
+
+    const DRAFTS_KEY = 'admin_video_drafts';
+
+    const els = {
+      platform: document.getElementById('platform'),
+      topic: document.getElementById('topic'),
+      audience: document.getElementById('audience'),
+      tone: document.getElementById('tone'),
+      duration: document.getElementById('duration'),
+      cta: document.getElementById('cta'),
+      notes: document.getElementById('notes'),
+      titlesOutput: document.getElementById('titlesOutput'),
+      descOutput: document.getElementById('descOutput'),
+      tagsOutput: document.getElementById('tagsOutput'),
+      scriptOutput: document.getElementById('scriptOutput'),
+      generateBtn: document.getElementById('generateBtn'),
+      saveDraftBtn: document.getElementById('saveDraftBtn'),
+      clearBtn: document.getElementById('clearBtn'),
+      copyAllBtn: document.getElementById('copyAllBtn'),
+      copyTitlesBtn: document.getElementById('copyTitlesBtn'),
+      copyDescBtn: document.getElementById('copyDescBtn'),
+      copyTagsBtn: document.getElementById('copyTagsBtn'),
+      copyScriptBtn: document.getElementById('copyScriptBtn'),
+    };
+
+    function val(id) {
+      const el = els[id];
+      if (!el) return '';
+      if (el instanceof HTMLInputElement) return el.value.trim();
+      if (el instanceof HTMLTextAreaElement) return el.value.trim();
+      if (el instanceof HTMLSelectElement) return el.value;
+      return '';
+    }
+
+    function setText(id, text) {
+      const el = els[id];
+      if (!el) return;
+      if (el instanceof HTMLTextAreaElement) el.value = text;
+    }
+
+    function toHashtag(word) {
+      return (
+        '#' +
+        word
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '')
+      );
+    }
+
+    function buildTitles({ topic, platform, tone }) {
+      const base = topic || 'seu tema';
+      const caps = base.charAt(0).toUpperCase() + base.slice(1);
+
+      const frames = [
+        `Como ${base} (passo a passo)`,
+        `3 erros que estão travando ${base}`,
+        `O jeito mais simples de ${base} em 2026`,
+        `Se você quer ${base}, veja isso`,
+        `${caps}: o que ninguém te conta`,
+      ];
+
+      const toneBoost =
+        tone === 'premium' ? ' (sem enrolação)' : tone === 'urgente' ? ' (urgente)' : '';
+
+      const limited = frames.map((t) => {
+        if (platform === 'tiktok' || platform === 'yt-shorts' || platform === 'instagram') {
+          return truncate(t + toneBoost, 80);
+        }
+        return t + toneBoost;
+      });
+
+      return limited.join('\n');
+    }
+
+    function buildDescription({ topic, audience, platform, cta, notes }) {
+      const p =
+        platform === 'youtube'
+          ? 'YouTube'
+          : platform === 'tiktok'
+            ? 'TikTok'
+            : platform === 'yt-shorts'
+              ? 'Shorts'
+              : 'Reels';
+      const lines = [
+        `Tema: ${topic || '(preencha o tema)'}`,
+        audience ? `Para: ${audience}` : '',
+        '',
+        'No vídeo de hoje eu mostro um jeito prático de aplicar isso no seu negócio.',
+        notes ? `Obs: ${notes}` : '',
+        '',
+        cta ? `CTA: ${cta}` : 'CTA: Fale com a Renew Digital',
+        p === 'YouTube' ? '' : '',
+      ].filter(Boolean);
+
+      return lines.join('\n');
+    }
+
+    function buildHashtags({ topic, platform }) {
+      const base = [
+        'renewdigital',
+        'marketingdigital',
+        'negocios',
+        'empreendedorismo',
+        'site',
+        'redessociais',
+      ];
+      const topicWords = (topic || '')
+        .split(/\s+/)
+        .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ''))
+        .filter(Boolean)
+        .slice(0, 4);
+
+      const plat =
+        platform === 'tiktok'
+          ? ['tiktokbr', 'paravoce', 'fyp']
+          : platform === 'yt-shorts'
+            ? ['shorts']
+            : platform === 'instagram'
+              ? ['reels']
+              : [];
+
+      const tags = [...base, ...plat, ...topicWords].map(toHashtag);
+      return Array.from(new Set(tags)).join(' ');
+    }
+
+    function buildScript({ topic, audience, duration, tone, cta, notes }) {
+      const sec = Number(duration || 30);
+      const hook = sec <= 20 ? 'Hook (0-2s)' : 'Hook (0-3s)';
+      const style =
+        tone === 'didatico'
+          ? '(tom didático, exemplos rápidos)'
+          : tone === 'leve'
+            ? '(tom leve, natural)'
+            : tone === 'premium'
+              ? '(tom premium, confiante)'
+              : tone === 'urgente'
+                ? '(tom urgente, direto ao ponto)'
+                : '(tom direto)';
+
+      const script = [
+        `${hook}:`,
+        `- "Se você é ${audience || 'dono de negócio'} e quer ${topic || 'um resultado melhor'}, faz isso aqui."`,
+        '',
+        'Corpo:',
+        `- Ponto 1: O problema mais comum (${style})`,
+        '- Ponto 2: O que fazer agora (passo simples)',
+        '- Ponto 3: Exemplo rápido aplicado',
+        notes ? `- Extra: ${notes}` : '',
+        '',
+        'Encerramento:',
+        `- "Quer que eu te ajude com isso? ${cta || 'Chama no Whats'}."`,
+      ].filter(Boolean);
+
+      return script.join('\n');
+    }
+
+    function generateAll() {
+      const data = {
+        platform: val('platform'),
+        topic: val('topic'),
+        audience: val('audience'),
+        tone: val('tone'),
+        duration: val('duration'),
+        cta: val('cta'),
+        notes: val('notes'),
+      };
+
+      if (!data.topic) {
+        showToast('Preencha o tema para gerar.', 'error');
+        return;
+      }
+
+      setText('titlesOutput', buildTitles(data));
+      setText('descOutput', buildDescription(data));
+      setText('tagsOutput', buildHashtags(data));
+      setText('scriptOutput', buildScript(data));
+      showToast('Conteudo gerado!', 'success');
+    }
+
+    async function copy(text) {
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      showToast('Copiado!', 'success');
+    }
+
+    function saveDraft() {
+      const draft = {
+        id: generateId('video'),
+        createdAt: new Date().toISOString(),
+        platform: val('platform'),
+        topic: val('topic'),
+        audience: val('audience'),
+        tone: val('tone'),
+        duration: val('duration'),
+        cta: val('cta'),
+        notes: val('notes'),
+        titles: els.titlesOutput instanceof HTMLTextAreaElement ? els.titlesOutput.value : '',
+        description: els.descOutput instanceof HTMLTextAreaElement ? els.descOutput.value : '',
+        hashtags: els.tagsOutput instanceof HTMLTextAreaElement ? els.tagsOutput.value : '',
+        script: els.scriptOutput instanceof HTMLTextAreaElement ? els.scriptOutput.value : '',
+      };
+
+      const drafts = getItems(DRAFTS_KEY, []);
+      drafts.unshift(draft);
+      setItems(DRAFTS_KEY, drafts.slice(0, 50));
+      showToast('Rascunho salvo!', 'success');
+    }
+
+    function clearAll() {
+      ['topic', 'audience', 'cta', 'notes'].forEach((k) => {
+        const el = els[k];
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) el.value = '';
+      });
+      ['titlesOutput', 'descOutput', 'tagsOutput', 'scriptOutput'].forEach((k) => setText(k, ''));
+      showToast('Limpo.', 'info');
+    }
+
+    els.generateBtn?.addEventListener('click', generateAll);
+    els.saveDraftBtn?.addEventListener('click', saveDraft);
+    els.clearBtn?.addEventListener('click', clearAll);
+
+    els.copyAllBtn?.addEventListener('click', () => {
+      const all = [
+        'TITULOS:\n' +
+          (els.titlesOutput instanceof HTMLTextAreaElement ? els.titlesOutput.value : ''),
+        '\nDESCRICAO:\n' +
+          (els.descOutput instanceof HTMLTextAreaElement ? els.descOutput.value : ''),
+        '\nHASHTAGS:\n' +
+          (els.tagsOutput instanceof HTMLTextAreaElement ? els.tagsOutput.value : ''),
+        '\nROTEIRO:\n' +
+          (els.scriptOutput instanceof HTMLTextAreaElement ? els.scriptOutput.value : ''),
+      ].join('\n');
+      void copy(all.trim());
+    });
+
+    els.copyTitlesBtn?.addEventListener(
+      'click',
+      () => void copy(els.titlesOutput instanceof HTMLTextAreaElement ? els.titlesOutput.value : '')
+    );
+    els.copyDescBtn?.addEventListener(
+      'click',
+      () => void copy(els.descOutput instanceof HTMLTextAreaElement ? els.descOutput.value : '')
+    );
+    els.copyTagsBtn?.addEventListener(
+      'click',
+      () => void copy(els.tagsOutput instanceof HTMLTextAreaElement ? els.tagsOutput.value : '')
+    );
+    els.copyScriptBtn?.addEventListener(
+      'click',
+      () => void copy(els.scriptOutput instanceof HTMLTextAreaElement ? els.scriptOutput.value : '')
+    );
+  </script>
+</Layout>

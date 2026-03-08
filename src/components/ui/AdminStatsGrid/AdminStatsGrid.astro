@@ -1,0 +1,48 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './AdminStatsGrid.module.css';
+
+interface Stat {
+  label: string;
+  value: string | number;
+  statKey?: string;
+  icon?: string;
+  iconBg?: string;
+  iconColor?: string;
+}
+
+interface Props {
+  stats: Stat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<div class={styles.statsGrid}>
+  {
+    stats.map((stat) => (
+      <div class={styles.statCard}>
+        <div
+          class={styles.statIcon}
+          style={
+            stat.iconBg ? `background: ${stat.iconBg}` : 'background: var(--color-primary-alpha-10)'
+          }
+        >
+          {stat.icon && (
+            <Icon
+              name={stat.icon}
+              size={24}
+              style={stat.iconColor ? `color: ${stat.iconColor}` : ''}
+            />
+          )}
+        </div>
+        <div class={styles.statContent}>
+          <h3>{stat.label}</h3>
+          <div class={styles.value} data-stat={stat.statKey}>
+            {stat.value}
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>

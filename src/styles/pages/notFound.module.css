@@ -1,0 +1,48 @@
+.errorPage {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  padding-top: calc(80px + 2rem);
+  text-align: center;
+}
+
+.errorContent {
+  max-width: 560px;
+}
+
+.errorCode {
+  font-size: 8rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.errorTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  margin-bottom: 1rem;
+}
+
+.errorDescription {
+  font-size: 1.125rem;
+  color: var(--color-gray-400);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 768px) {
+  .errorCode {
+    font-size: 5rem;
+  }
+
+  .errorTitle {
+    font-size: 1.5rem;
+  }
+}

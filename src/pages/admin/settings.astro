@@ -1,9 +1,9 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import PageHeader from "../../components/PageHeader.astro";
-import Button from "../../components/Button.astro";
-import "../../styles/global.css";
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import PageHeader from '@components/PageHeader/PageHeader.astro';
+import Button from '@components/ui/Button/Button.astro';
+import styles from '@/styles/admin/settings.module.css';
 ---
 
 <Layout title="Configurações" adm={true} activePage="/admin/settings">
@@ -15,13 +15,13 @@ import "../../styles/global.css";
       </Button>
     </PageHeader>
 
-    <div class="settings-grid" id="settingsForm">
-      <div class="settings-section">
-        <div class="settings-header">
+    <div class={styles.settingsGrid} id="settingsForm">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:globe" size={24} />
           <h2>Informações do Site</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="siteName">Nome do Site</label>
             <input type="text" id="siteName" data-field="siteName" />
@@ -45,12 +45,12 @@ import "../../styles/global.css";
         </div>
       </div>
 
-      <div class="settings-section">
-        <div class="settings-header">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:palette" size={24} />
           <h2>Aparência</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="themeSelect">Tema Padrão</label>
             <select id="themeSelect" data-field="theme">
@@ -61,35 +61,45 @@ import "../../styles/global.css";
           </div>
           <div class="form-group">
             <label for="primaryColor">Cor Primária</label>
-            <div class="color-input-wrapper">
+            <div class={styles.colorInputWrapper}>
               <input type="color" id="primaryColor" data-field="primaryColor" />
               <input type="text" id="primaryColorText" data-sync="primaryColor" />
             </div>
           </div>
           <div class="form-group">
             <label for="secondaryColor">Cor Secundária</label>
-            <div class="color-input-wrapper">
+            <div class={styles.colorInputWrapper}>
               <input type="color" id="secondaryColor" data-field="secondaryColor" />
               <input type="text" id="secondaryColorText" data-sync="secondaryColor" />
             </div>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="enableAnimations" data-field-bool="enableAnimations" checked />
+            <input
+              type="checkbox"
+              id="enableAnimations"
+              data-field-bool="enableAnimations"
+              checked
+            />
             <label for="enableAnimations">Habilitar Animações</label>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="enableTransitions" data-field-bool="enableTransitions" checked />
+            <input
+              type="checkbox"
+              id="enableTransitions"
+              data-field-bool="enableTransitions"
+              checked
+            />
             <label for="enableTransitions">Habilitar Transições</label>
           </div>
         </div>
       </div>
 
-      <div class="settings-section">
-        <div class="settings-header">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:shopping-cart" size={24} />
           <h2>Loja de Produtos</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="storeTitle">Título da Página</label>
             <input type="text" id="storeTitle" data-field="storeTitle" />
@@ -100,7 +110,13 @@ import "../../styles/global.css";
           </div>
           <div class="form-group">
             <label for="productsPerPage">Produtos por Página</label>
-            <input type="number" id="productsPerPage" data-field-num="productsPerPage" min="6" max="50" />
+            <input
+              type="number"
+              id="productsPerPage"
+              data-field-num="productsPerPage"
+              min="6"
+              max="50"
+            />
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="showPrices" data-field-bool="showPrices" checked />
@@ -111,21 +127,32 @@ import "../../styles/global.css";
             <label for="showDiscounts">Mostrar Descontos</label>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="enableAffiliateLinks" data-field-bool="enableAffiliateLinks" checked />
+            <input
+              type="checkbox"
+              id="enableAffiliateLinks"
+              data-field-bool="enableAffiliateLinks"
+              checked
+            />
             <label for="enableAffiliateLinks">Habilitar Links de Afiliado</label>
           </div>
         </div>
       </div>
 
-      <div class="settings-section">
-        <div class="settings-header">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:shield" size={24} />
           <h2>Segurança</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="sessionTimeout">Timeout da Sessão (minutos)</label>
-            <input type="number" id="sessionTimeout" data-field-num="sessionTimeout" min="15" max="480" />
+            <input
+              type="number"
+              id="sessionTimeout"
+              data-field-num="sessionTimeout"
+              min="15"
+              max="480"
+            />
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="enable2FA" data-field-bool="enable2FA" />
@@ -136,18 +163,23 @@ import "../../styles/global.css";
             <label for="logAdminActions">Registrar Ações do Admin</label>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="requireEmailVerification" data-field-bool="requireEmailVerification" checked />
+            <input
+              type="checkbox"
+              id="requireEmailVerification"
+              data-field-bool="requireEmailVerification"
+              checked
+            />
             <label for="requireEmailVerification">Exigir Verificação de Email</label>
           </div>
         </div>
       </div>
 
-      <div class="settings-section">
-        <div class="settings-header">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:search" size={24} />
           <h2>SEO</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="metaTitle">Title Tag Padrão</label>
             <input type="text" id="metaTitle" data-field="metaTitle" />
@@ -158,11 +190,21 @@ import "../../styles/global.css";
           </div>
           <div class="form-group">
             <label for="googleAnalyticsId">Google Analytics ID</label>
-            <input type="text" id="googleAnalyticsId" data-field="googleAnalyticsId" placeholder="G-XXXXXXXXXX" />
+            <input
+              type="text"
+              id="googleAnalyticsId"
+              data-field="googleAnalyticsId"
+              placeholder="G-XXXXXXXXXX"
+            />
           </div>
           <div class="form-group">
             <label for="googleTagManagerId">Google Tag Manager ID</label>
-            <input type="text" id="googleTagManagerId" data-field="googleTagManagerId" placeholder="GTM-XXXXXXX" />
+            <input
+              type="text"
+              id="googleTagManagerId"
+              data-field="googleTagManagerId"
+              placeholder="GTM-XXXXXXX"
+            />
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="enableSitemap" data-field-bool="enableSitemap" checked />
@@ -171,12 +213,12 @@ import "../../styles/global.css";
         </div>
       </div>
 
-      <div class="settings-section">
-        <div class="settings-header">
+      <div class={styles.settingsSection}>
+        <div class={styles.settingsHeader}>
           <Icon name="lucide:mail" size={24} />
           <h2>Email</h2>
         </div>
-        <div class="settings-body">
+        <div class={styles.settingsBody}>
           <div class="form-group">
             <label for="smtpHost">Servidor SMTP</label>
             <input type="text" id="smtpHost" data-field="smtpHost" placeholder="smtp.example.com" />
@@ -191,10 +233,20 @@ import "../../styles/global.css";
           </div>
           <div class="form-group">
             <label for="smtpPassword">Senha SMTP</label>
-            <input type="password" id="smtpPassword" data-field="smtpPassword" placeholder="••••••••" />
+            <input
+              type="password"
+              id="smtpPassword"
+              data-field="smtpPassword"
+              placeholder="••••••••"
+            />
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="enableEmailNotifications" data-field-bool="enableEmailNotifications" checked />
+            <input
+              type="checkbox"
+              id="enableEmailNotifications"
+              data-field-bool="enableEmailNotifications"
+              checked
+            />
             <label for="enableEmailNotifications">Habilitar Notificações por Email</label>
           </div>
         </div>
@@ -204,21 +256,23 @@ import "../../styles/global.css";
 </Layout>
 
 <script>
-  const STORAGE_KEY = "site_settings";
+  import { showToast } from '../../lib/admin';
+
+  const STORAGE_KEY = 'site_settings';
 
   const defaultSettings = {
-    siteName: "Renew Digital",
-    siteDescription: "Serviços digitais especializados para impulsionar seu negócio",
-    siteUrl: "https://renewdigital.com.br",
-    contactEmail: "contato@renewdigital.com.br",
-    contactPhone: "+5543998280078",
-    theme: "dark",
-    primaryColor: "#8414e3",
-    secondaryColor: "#c51be4",
+    siteName: 'Renew Digital',
+    siteDescription: 'Serviços digitais especializados para impulsionar seu negócio',
+    siteUrl: 'https://renewdigital.com.br',
+    contactEmail: 'contato@renewdigital.com.br',
+    contactPhone: '+5543998280078',
+    theme: 'dark',
+    primaryColor: '#8414e3',
+    secondaryColor: '#c51be4',
     enableAnimations: true,
     enableTransitions: true,
-    storeTitle: "Nossos Produtos",
-    storeSubtitle: "Produtos selecionados para você",
+    storeTitle: 'Nossos Produtos',
+    storeSubtitle: 'Produtos selecionados para você',
     productsPerPage: 12,
     showPrices: true,
     showDiscounts: true,
@@ -227,15 +281,15 @@ import "../../styles/global.css";
     enable2FA: false,
     logAdminActions: true,
     requireEmailVerification: true,
-    metaTitle: "{title} | Renew Digital",
-    metaDescription: "Serviços digitais especializados para impulsionar seu negócio",
-    googleAnalyticsId: "",
-    googleTagManagerId: "",
+    metaTitle: '{title} | Renew Digital',
+    metaDescription: 'Serviços digitais especializados para impulsionar seu negócio',
+    googleAnalyticsId: '',
+    googleTagManagerId: '',
     enableSitemap: true,
-    smtpHost: "",
+    smtpHost: '',
     smtpPort: 587,
-    smtpUser: "",
-    smtpPassword: "",
+    smtpUser: '',
+    smtpPassword: '',
     enableEmailNotifications: true,
   };
 
@@ -246,46 +300,46 @@ import "../../styles/global.css";
 
   function saveSettings() {
     const settings: Record<string, unknown> = {};
-    
-    document.querySelectorAll<HTMLInputElement>("[data-field]").forEach((el) => {
+
+    document.querySelectorAll<HTMLInputElement>('[data-field]').forEach((el) => {
       settings[el.dataset.field!] = el.value;
     });
-    
-    document.querySelectorAll<HTMLInputElement>("[data-field-num]").forEach((el) => {
+
+    document.querySelectorAll<HTMLInputElement>('[data-field-num]').forEach((el) => {
       settings[el.dataset.fieldNum!] = parseInt(el.value) || 0;
     });
-    
-    document.querySelectorAll<HTMLInputElement>("[data-field-bool]").forEach((el) => {
+
+    document.querySelectorAll<HTMLInputElement>('[data-field-bool]').forEach((el) => {
       settings[el.dataset.fieldBool!] = el.checked;
     });
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    showToast("Configurações salvas com sucesso!", "success");
+    showToast('Configurações salvas com sucesso!', 'success');
   }
 
   function populateForm(settings: Record<string, unknown>) {
-    document.querySelectorAll<HTMLInputElement>("[data-field]").forEach((el) => {
+    document.querySelectorAll<HTMLInputElement>('[data-field]').forEach((el) => {
       if (settings[el.dataset.field!]) el.value = settings[el.dataset.field!] as string;
     });
-    
-    document.querySelectorAll<HTMLInputElement>("[data-field-num]").forEach((el) => {
+
+    document.querySelectorAll<HTMLInputElement>('[data-field-num]').forEach((el) => {
       const key = el.dataset.fieldNum!;
       if (settings[key]) el.value = String(settings[key]);
     });
-    
-    document.querySelectorAll<HTMLInputElement>("[data-field-bool]").forEach((el) => {
+
+    document.querySelectorAll<HTMLInputElement>('[data-field-bool]').forEach((el) => {
       el.checked = Boolean(settings[el.dataset.fieldBool!]);
     });
 
     const primaryColor = settings.primaryColor as string;
     const secondaryColor = settings.secondaryColor as string;
     if (primaryColor) {
-      (document.getElementById("primaryColor") as HTMLInputElement).value = primaryColor;
-      (document.getElementById("primaryColorText") as HTMLInputElement).value = primaryColor;
+      (document.getElementById('primaryColor') as HTMLInputElement).value = primaryColor;
+      (document.getElementById('primaryColorText') as HTMLInputElement).value = primaryColor;
     }
     if (secondaryColor) {
-      (document.getElementById("secondaryColor") as HTMLInputElement).value = secondaryColor;
-      (document.getElementById("secondaryColorText") as HTMLInputElement).value = secondaryColor;
+      (document.getElementById('secondaryColor') as HTMLInputElement).value = secondaryColor;
+      (document.getElementById('secondaryColorText') as HTMLInputElement).value = secondaryColor;
     }
   }
 
@@ -293,118 +347,19 @@ import "../../styles/global.css";
     const colorInput = document.getElementById(colorId) as HTMLInputElement;
     const textInput = document.getElementById(textId) as HTMLInputElement;
 
-    colorInput?.addEventListener("input", () => {
+    colorInput?.addEventListener('input', () => {
       if (textInput) textInput.value = colorInput.value;
     });
 
-    textInput?.addEventListener("input", () => {
+    textInput?.addEventListener('input', () => {
       if (colorInput) colorInput.value = textInput.value;
     });
   }
 
-  function showToast(message: string, type: "success" | "error" | "info" = "info") {
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add("show"), 10);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
+  document.getElementById('saveSettingsBtn')?.addEventListener('click', saveSettings);
 
-  document.getElementById("saveSettingsBtn")?.addEventListener("click", saveSettings);
-
-  syncColorInputs("primaryColor", "primaryColorText");
-  syncColorInputs("secondaryColor", "secondaryColorText");
+  syncColorInputs('primaryColor', 'primaryColorText');
+  syncColorInputs('secondaryColor', 'secondaryColorText');
 
   populateForm(loadSettings());
 </script>
-
-<style>
-  .settings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .settings-section {
-    background: var(--color-white);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid var(--color-gray-200);
-    overflow: hidden;
-  }
-
-  :global([data-theme="dark"]) .settings-section {
-    background: #1e1e1e;
-    border-color: #333;
-  }
-
-  .settings-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem;
-    background: linear-gradient(135deg, rgba(132, 20, 227, 0.08), rgba(197, 27, 228, 0.04));
-    border-bottom: 1px solid var(--color-gray-200);
-  }
-
-  :global([data-theme="dark"]) .settings-header {
-    background: linear-gradient(135deg, rgba(132, 20, 227, 0.15), rgba(197, 27, 228, 0.08));
-    border-color: #333;
-  }
-
-  .settings-header svg {
-    color: var(--color-primary);
-  }
-
-  .settings-header h2 {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin: 0;
-  }
-
-  :global([data-theme="dark"]) .settings-header h2 {
-    color: #fff;
-  }
-
-  .settings-body {
-    padding: 1.25rem;
-  }
-
-  .settings-body .form-group {
-    margin-bottom: 1rem;
-  }
-
-  .settings-body .form-group:last-child {
-    margin-bottom: 0;
-  }
-
-  .color-input-wrapper {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .color-input-wrapper input[type="color"] {
-    width: 48px;
-    height: 44px;
-    padding: 0.25rem;
-    border: 2px solid var(--color-gray-200);
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .color-input-wrapper input[type="text"] {
-    flex: 1;
-    font-family: "Fira Code", monospace;
-  }
-
-  @media (max-width: 768px) {
-    .settings-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

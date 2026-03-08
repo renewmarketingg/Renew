@@ -1,5 +1,1 @@
-export default [
-  "Equipe especializada",
-  "Projetos sob demanda",
-  "Atendimento personalizado",
-];
+export default ['Equipe especializada', 'Projetos sob demanda', 'Atendimento personalizado'];

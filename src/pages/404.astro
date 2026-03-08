@@ -1,63 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
+import styles from '@/styles/pages/notFound.module.css';
+import Button from '@components/ui/Button/Button.astro';
 ---
 
 <Layout title="Página Não Encontrada | Renew Digital">
-  <section class="error-page">
-    <div class="error-content">
-      <h1 class="error-code">4<span class="zero">0</span>4</h1>
-      <h2 class="error-title">Página Não Encontrada</h2>
-      <p class="error-description">
+  <section class={styles.errorPage}>
+    <div class={styles.errorContent}>
+      <h1 class={styles.errorCode}>4<span>0</span>4</h1>
+      <h2 class={styles.errorTitle}>Página Não Encontrada</h2>
+      <p class={styles.errorDescription}>
         Desculpe, a página que você está procurando não existe ou foi movida.
       </p>
-      <a href="/" class="btn btn-primary">Voltar ao Início</a>
+      <Button href="/" variant="primary">Voltar ao Início</Button>
     </div>
   </section>
 </Layout>
-
-<style>
-  .error-page {
-    min-height: calc(100vh - 80px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    padding-top: calc(80px + 2rem);
-    text-align: center;
-  }
-
-  .error-code {
-    font-size: 8rem;
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    margin-bottom: 1rem;
-  }
-
-  .error-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin-bottom: 1rem;
-  }
-
-  .error-description {
-    font-size: 1.125rem;
-    color: var(--color-gray-400);
-    max-width: 500px;
-    margin: 0 auto 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .error-code {
-      font-size: 5rem;
-    }
-
-    .error-title {
-      font-size: 1.5rem;
-    }
-  }
-</style>

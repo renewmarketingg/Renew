@@ -1,0 +1,68 @@
+---
+import pricingPlans from '@/constants/pricingPlans';
+import Button from '@components/ui/Button/Button.astro';
+import Card from '@components/ui/Card/Card.astro';
+import IconWrapper from '@components/ui/IconWrapper/IconWrapper.astro';
+import styles from './PricingSection.module.css';
+---
+
+<section id="precos" class={`section ${styles.pricingSection}`}>
+  <div class="container">
+    <h2 class="section-title">Preços dos Serviços</h2>
+    <p class="section-subtitle">
+      Valores a partir de. Podemos ajustar conforme escopo e necessidades do seu projeto.
+    </p>
+
+    <div class={styles.grid}>
+      {
+        pricingPlans.map((plan: any) => (
+          <Card
+            size="md"
+            variant={plan.highlight ? 'gradient' : 'default'}
+            hoverable={false}
+            class={styles.pricingCard}
+          >
+            <div class={styles.card} data-highlight={plan.highlight ? 'true' : 'false'}>
+              <div class={styles.cardTop}>
+                <IconWrapper
+                  name={plan.icon}
+                  variant={plan.highlight ? 'gradient' : 'default'}
+                  size={32}
+                />
+                <span class={styles.badge}>{plan.badge}</span>
+              </div>
+
+              <h3 class={styles.title}>{plan.title}</h3>
+              <p class={styles.description}>{plan.description}</p>
+
+              <div
+                class={styles.priceRow}
+                aria-label={`Preço: ${plan.price}${plan.cadence ? ' ' + plan.cadence : ''}`}
+              >
+                <span class={styles.price}>{plan.price}</span>
+                {plan.cadence && <span class={styles.cadence}>{plan.cadence}</span>}
+              </div>
+
+              <ul class={styles.features}>
+                {plan.features.map((f: string) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+
+              <div class={styles.actions}>
+                <Button
+                  href="#contato"
+                  variant={plan.highlight ? 'primary' : 'secondary'}
+                  icon="lucide:message-circle"
+                  fullWidth
+                >
+                  Pedir orçamento
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))
+      }
+    </div>
+  </div>
+</section>

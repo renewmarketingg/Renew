@@ -1,6 +1,7 @@
 # build output
 dist/
-.vercel/
+.vercel
+
 
 # generated types
 .astro/
@@ -17,11 +18,14 @@ pnpm-debug.log*
 #ias 
 .agent/
 .claude/
+KILO.md
 GEMINI.md
 AGENTS.md
+OPENCODE.md
 
 # environment variables
 .env
+.env*.local
 .env.production
 
 # macOS-specific files

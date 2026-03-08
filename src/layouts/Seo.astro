@@ -1,0 +1,84 @@
+---
+import type { SeoProps } from '@/types/seo';
+
+const devTitle = 'Dev | Renew Digital';
+const adminTitle = 'Admin | Renew Digital';
+
+const {
+  adm,
+  image = '/renew.png',
+  icon = '/renew_favicon_64x.svg',
+  title = import.meta.env.DEV ? devTitle : adm ? adminTitle : 'Home - Renew Digital',
+  description = 'Renew Digital - Serviços digitais especializados para impulsionar seu negócio',
+}: SeoProps = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const fontsUrl = (str: 'gstatic' | 'googleapis' = 'googleapis') => `https://fonts.${str}.com`;
+---
+
+<head>
+  <!-- Basic meta tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#8414e3" />
+  <link rel="canonical" href={canonicalURL} />
+  <link rel="icon" type="image/svg+xml" href={icon} />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href={fontsUrl()} />
+  <link crossorigin rel="preconnect" href={fontsUrl('gstatic')} />
+  <link
+    as="style"
+    rel="preload"
+    href={`${fontsUrl()}/css2?family=Inter:wght@400;500;600;700;800&display=swap`}
+  />
+  <link
+    media="print"
+    rel="stylesheet"
+    onload="this.setAttribute('media', 'all')"
+    href={`${fontsUrl()}/css2?family=Inter:wght@400;500;600;700;800&display=swap`}
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href={`${fontsUrl()}/css2?family=Inter:wght@400;500;600;700;800&display=swap`}
+    /></noscript
+  >
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(image, Astro.site ?? canonicalURL)} />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalURL} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={new URL(image, Astro.site ?? canonicalURL)} />
+
+  <title>{title}</title>
+
+  <script is:inline type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Renew Digital",
+      "description": "Agência de serviços digitais especializados",
+      "url": "https://renewdigital.com.br",
+      "telephone": "+5543998280078",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Manoel Ribas",
+        "addressRegion": "PR",
+        "addressCountry": "BR"
+      },
+      "priceRange": "$$",
+      "openingHours": "Mo-Fr 09:00-18:00",
+      "sameAs": []
+    }
+  </script>
+</head>

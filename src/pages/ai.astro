@@ -1,9 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Button from '@components/ui/Button/Button.astro';
 import { Icon } from 'astro-icon/components';
-import Button from "../components/Button.astro";
-import '../styles/global.css';
-import '../styles/ai.css';
+import Layout from '@/layouts/Layout.astro';
+import '@/styles/ai.css';
+import '@/styles/global.css';
 ---
 
 <Layout
@@ -96,7 +96,8 @@ import '../styles/ai.css';
 
         <div class="ai-header-right">
           <button class="theme-toggle" id="themeToggleBtn" aria-label="Alternar tema">
-            <Icon name="lucide:sun" size={18} />
+            <Icon name="lucide:sun" size={18} class="icon-sun" />
+            <Icon name="lucide:moon" size={18} class="icon-moon" />
           </button>
           <Button variant="danger" id="clearChatBtn" aria-label="Limpar conversa">
             <Icon name="lucide:trash-2" size={18} />
@@ -138,14 +139,13 @@ import '../styles/ai.css';
           <button class="ai-input-action" id="attachBtn" aria-label="Anexar imagem">
             <Icon name="lucide:paperclip" size={20} />
           </button>
-          
+
           <div class="ai-input-wrapper">
-            <textarea 
-              id="chatInput" 
-              placeholder="Digite sua mensagem..." 
+            <textarea
+              id="chatInput"
+              placeholder="Digite sua mensagem..."
               rows="1"
-              autocomplete="off"
-            ></textarea>
+              autocomplete="off"></textarea>
             <div class="ai-input-tools">
               <button class="ai-tool-btn" id="voiceBtn" aria-label="Usar voz">
                 <Icon name="lucide:mic" size={18} />
@@ -179,7 +179,12 @@ import '../styles/ai.css';
         <div class="ai-connect-folder">
           <Icon name="lucide:folder-open" size={48} />
           <p>Conecte uma pasta do seu computador para que a IA possa analisar seus arquivos</p>
-          <Button variant="secondary" icon="lucide:folder-plus" class="ai-connect-btn" id="connectFolderBtn">
+          <Button
+            variant="secondary"
+            icon="lucide:folder-plus"
+            class="ai-connect-btn"
+            id="connectFolderBtn"
+          >
             Selecionar Pasta
           </Button>
         </div>
@@ -210,5 +215,93 @@ import '../styles/ai.css';
     </div>
   </div>
 
-  <script src="../lib/ai.ts"></script>
+  <!-- ─── HTML Templates (cloned by src/lib/ai/ui.ts) ─── -->
+
+  <!-- User message -->
+  <template id="tpl-message-user">
+    <div class="ai-message ai-message-user">
+      <div class="ai-message-avatar">
+        <Icon name="ai-user" width={20} height={20} />
+      </div>
+      <div class="ai-message-content">
+        <div class="ai-message-images" hidden></div>
+        <div class="ai-message-text"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Assistant message -->
+  <template id="tpl-message-assistant">
+    <div class="ai-message ai-message-assistant">
+      <div class="ai-message-avatar">
+        <Icon name="ai-star" width={20} height={20} />
+      </div>
+      <div class="ai-message-content">
+        <div class="ai-message-images" hidden></div>
+        <div class="ai-message-text"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Typing indicator -->
+  <template id="tpl-typing">
+    <div class="ai-message ai-message-assistant">
+      <div class="ai-message-avatar">
+        <Icon name="ai-star" width={16} height={16} />
+      </div>
+      <div class="ai-message-content">
+        <div class="ai-message-text typing">
+          <span class="ai-typing-dot"></span>
+          <span class="ai-typing-dot"></span>
+          <span class="ai-typing-dot"></span>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Sidebar chat item -->
+  <template id="tpl-chat-item">
+    <button class="ai-chat-item">
+      <span class="chat-title"></span>
+      <button class="chat-delete-btn" aria-label="Excluir conversa">
+        <Icon name="ai-close" width={14} height={14} />
+      </button>
+    </button>
+  </template>
+
+  <!-- Connected project item -->
+  <template id="tpl-project-connected">
+    <div class="ai-project-item">
+      <Icon name="ai-folder" width={24} height={24} />
+      <div class="ai-project-info">
+        <div class="ai-project-name"></div>
+        <div class="ai-project-path"></div>
+      </div>
+    </div>
+    <button class="btn btn-danger disconnect-btn" style="width:100%;margin-top:0.5rem;">
+      <Icon name="ai-disconnect" width={16} height={16} />
+      Desconectar
+    </button>
+  </template>
+
+  <!-- Project list item -->
+  <template id="tpl-project-list-item">
+    <div class="ai-project-item">
+      <Icon name="ai-folder" width={24} height={24} />
+      <div class="ai-project-info">
+        <div class="ai-project-name"></div>
+        <div class="ai-project-path"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Empty state -->
+  <template id="tpl-project-empty">
+    <div class="ai-project-empty"><p>Nenhum projeto conectado</p></div>
+  </template>
+
+  <script>
+    import { initAI } from '../lib/ai/index';
+    initAI();
+  </script>
 </Layout>

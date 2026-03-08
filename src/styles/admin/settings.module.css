@@ -1,0 +1,76 @@
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.settingsSection {
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(132, 20, 227, 0.08), rgba(197, 27, 228, 0.04));
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+:global([data-theme='dark']) .settingsHeader {
+  background: linear-gradient(135deg, rgba(132, 20, 227, 0.15), rgba(197, 27, 228, 0.08));
+}
+
+.settingsHeader svg {
+  color: var(--color-primary);
+}
+
+.settingsHeader h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.settingsBody {
+  padding: 1.25rem;
+}
+
+.settingsBody .form-group {
+  margin-bottom: 1rem;
+}
+
+.settingsBody .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.colorInputWrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.colorInputWrapper input[type='color'] {
+  width: 48px;
+  height: 44px;
+  padding: 0.25rem;
+  border: 2px solid var(--color-gray-200);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.colorInputWrapper input[type='text'] {
+  flex: 1;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+}
+
+@media (max-width: 768px) {
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+}

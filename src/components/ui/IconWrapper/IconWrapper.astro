@@ -1,0 +1,16 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './IconWrapper.module.css';
+
+interface Props {
+  name: string;
+  size?: number;
+  variant?: 'default' | 'gradient';
+}
+
+const { name, size = 32, variant = 'default' } = Astro.props;
+---
+
+<div class={`${styles.iconWrapper} ${variant === 'gradient' ? styles.gradient : styles.default}`}>
+  <Icon {name} width={size} height={size} />
+</div>
