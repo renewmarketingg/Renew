@@ -56,6 +56,19 @@ const redirectWithError = (url: URL, redirectUrl: string): Response => {
   return Response.redirect(new URL(`/login?${q.toString()}`, url).toString(), 303);
 };
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Accept',
+};
+
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+};
+
 export const POST: APIRoute = async ({ request, cookies, url }) => {
   const clientIP = getClientIP(request);
 
@@ -64,7 +77,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: errorMsg }), {
         status: 429,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
     return redirectWithError(url, '/admin');
@@ -80,7 +93,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: 'Email e senha são obrigatórios' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
     return redirectWithError(url, redirectUrl);
@@ -91,7 +104,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: 'Email ou senha inválidos' }), {
         status: 401,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
     return redirectWithError(url, redirectUrl);
@@ -105,9 +118,16 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
   if (isAjaxRequest(request)) {
     return new Response(JSON.stringify({ success: true, redirectUrl }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 
   return Response.redirect(new URL(redirectUrl, url).toString(), 303);
+};
+
+export const GET: APIRoute = async () => {
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+  });
 };

@@ -77,13 +77,18 @@ const hasError = url.searchParams.get('error') === '1';
     try {
       const res = await fetch('/api/auth/owner/login', {
         method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+        },
         body: formData,
       });
 
-      if (res.ok || res.status === 303) {
-        window.location.href = res.url || redirectUrl;
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = data.redirectUrl || redirectUrl;
       } else {
-        const data = await res.json();
         errorEl.textContent = data.error || 'Erro ao fazer login';
         errorEl.style.display = 'block';
       }
