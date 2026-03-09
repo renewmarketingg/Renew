@@ -4,13 +4,6 @@ export type { LayoutProps } from './layout';
 export type { SeoProps, SeoMeta, SeoFonts } from './seo';
 export type { Chat, ChatMessage, Project, ConnectedProject, AiModel, AiQuickAction } from './ai';
 
-export type ClerkEmailAddress = { id: string; emailAddress: string };
-
-export type ClerkUserLike = {
-  primaryEmailAddressId?: string | null;
-  emailAddresses?: ClerkEmailAddress[];
-};
-
 export type OwnerCredentials = {
   email: string;
   password: string;
@@ -27,9 +20,11 @@ export interface Product {
   category: string;
   rating: number;
   reviews: number;
-  featured: boolean;
+  featured?: boolean;
   createdAt?: Date;
 }
+
+export type AffiliateProduct = Product;
 
 export interface CartItem {
   id: string;

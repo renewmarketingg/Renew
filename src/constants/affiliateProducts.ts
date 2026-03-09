@@ -1,4 +1,4 @@
-import type { AffiliateProduct } from "@/interfaces/AffiliateProduct";
+import type { AffiliateProduct } from '@/types';
 
 const affiliateProducts: AffiliateProduct[] = [
   {

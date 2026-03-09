@@ -112,7 +112,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
 
   loginAttempts.delete(clientIP);
 
-  const token = createOwnerSessionToken(ok.email);
+  const token = await createOwnerSessionToken(ok.email);
   setOwnerSessionCookie(cookies, token);
 
   if (isAjaxRequest(request)) {

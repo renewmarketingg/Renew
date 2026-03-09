@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ params }) => {
 };
 
 export const PUT: APIRoute = async ({ request, params, cookies }) => {
-  if (!hasValidOwnerSession(cookies)) {
+  if (!(await hasValidOwnerSession(cookies))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 
@@ -50,7 +50,7 @@ export const PUT: APIRoute = async ({ request, params, cookies }) => {
 };
 
 export const DELETE: APIRoute = async ({ params, cookies }) => {
-  if (!hasValidOwnerSession(cookies)) {
+  if (!(await hasValidOwnerSession(cookies))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 

@@ -12,7 +12,7 @@ O projeto utiliza **Astro DB** com driver **Turso (SQLite)** para persistência 
 
 ### Users
 
-Tabela de usuários do sistema (para autenticação future).
+Tabela de usuários do sistema (reservado para uso futuro).
 
 ```typescript
 const Users = DefineTable({
@@ -21,24 +21,20 @@ const Users = DefineTable({
     email: column.text({ unique: true, notNull: true }),
     name: column.text(),
     password: column.text(),
-    googleId: column.text(),
-    avatar: column.text(),
     role: column.text({ default: 'admin' }),
     createdAt: column.date({ default: new Date() }),
   },
 });
 ```
 
-| Coluna    | Tipo | Constraints      | Descrição               |
-| --------- | ---- | ---------------- | ----------------------- |
-| id        | TEXT | PK               | ID único do usuário     |
-| email     | TEXT | UNIQUE, NOT NULL | Email do usuário        |
-| name      | TEXT | -                | Nome completo           |
-| password  | TEXT | -                | Senha hash (se local)   |
-| googleId  | TEXT | -                | ID do Google (se OAuth) |
-| avatar    | TEXT | -                | URL do avatar           |
-| role      | TEXT | DEFAULT 'admin'  | Papel no sistema        |
-| createdAt | DATE | DEFAULT NOW      | Data de criação         |
+| Coluna    | Tipo | Constraints      | Descrição           |
+| --------- | ---- | ---------------- | ------------------- |
+| id        | TEXT | PK               | ID único do usuário |
+| email     | TEXT | UNIQUE, NOT NULL | Email do usuário    |
+| name      | TEXT | -                | Nome completo       |
+| password  | TEXT | -                | Senha hash          |
+| role      | TEXT | DEFAULT 'admin'  | Papel no sistema    |
+| createdAt | DATE | DEFAULT NOW      | Data de criação     |
 
 ---
 
@@ -111,15 +107,9 @@ const CartItems = DefineTable({
 ## Relacionamentos
 
 ```
-Users (1:N) - (0) Products
-  └── Um usuário pode gerenciar múltiplos produtos (futuro)
-
 Products (1:N) - (0,N) CartItems
   └── Um produto pode estar em múltiplos carrinhos
   └── Cada carrinho pode ter múltiplos produtos
-
-Sessions (1:N) - (0,N) CartItems
-  └── Uma sessão pode ter múltiplos itens no carrinho
 ```
 
 ---

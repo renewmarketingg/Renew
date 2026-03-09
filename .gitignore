@@ -2,7 +2,6 @@
 dist/
 .vercel
 
-
 # generated types
 .astro/
 

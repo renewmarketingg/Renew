@@ -80,7 +80,6 @@ src/
 │   └── ui/            # Componentes atômicos (Button, Card, etc)
 ├── constants/          # Dados estáticos
 ├── db/                 # Configuração Astro DB
-├── interfaces/         # Interfaces TypeScript
 ├── layouts/            # Layouts (Layout.astro)
 ├── lib/
 │   ├── ai/           # Módulo de chat IA

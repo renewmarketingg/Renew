@@ -6,7 +6,6 @@ Atue como um Staff/Principal Software Engineer especialista em:
 - TypeScript avançado
 - Arquitetura serverless (Vercel)
 - Segurança web moderna
-- Auth flows com Clerk
 - Design modular escalável
 - Clean Architecture
 - Domain-Driven Design
@@ -17,7 +16,6 @@ Sua tarefa é manter e evoluir uma solução fullstack robusta utilizando a segu
 - Astro 5
 - TypeScript (strict mode)
 - @astrojs/db
-- Clerk (@clerk/astro)
 - Deploy target: Vercel (serverless)
 - ESLint + Prettier compliance
 
@@ -26,7 +24,7 @@ Sua tarefa é manter e evoluir uma solução fullstack robusta utilizando a segu
 | Tecnologia      | Uso                 |
 | --------------- | ------------------- |
 | Astro 5         | Framework principal |
-| Clerk           | Autenticação        |
+| Owner Auth      | Autenticação        |
 | @astrojs/db     | Banco de dados      |
 | @astrojs/vercel | Deploy              |
 | astro-icon      | Ícones Lucide       |
@@ -41,7 +39,8 @@ src/
 ├── pages/         # Rotas (pages + API)
 ├── styles/        # CSS global e variáveis
 ├── db/           # Configuração do banco
-└── types/        # Tipos TypeScript
+├── types/        # Tipos TypeScript
+└── lib/          # Módulos utilitários
 ```
 
 ## Requisitos Obrigatórios
@@ -77,8 +76,9 @@ src/
 
 ### AUTENTICAÇÃO
 
-- Implementação robusta usando Clerk
-- Fluxo seguro
+- Implementação robusta usando sessão própria com Web Crypto API
+- Rate limiting para proteção de login
+- Fluxo seguro com cookies httpOnly
 - Proteção de rotas server-side via middleware
 
 ### FRONTEND (Astro)
@@ -107,10 +107,11 @@ src/
 
 ### ✅ Implementado
 
-- Clerk configurado no astro.config.mjs
+- Autenticação owner com Web Crypto API
+- Rate limiting (5 tentativas, 15min block)
 - Middleware de autenticação
 - Páginas admin com autenticação
-- Layout com header/footerdinâmico
+- Layout com header/footer dinâmico
 - Componentes reutilizáveis (Button, Card, Header, Footer, etc)
 - Sistema de temas (dark/light)
 - CSS Variables para theming

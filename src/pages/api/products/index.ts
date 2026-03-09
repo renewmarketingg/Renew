@@ -16,8 +16,7 @@ export const GET: APIRoute = async () => {
 };
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  // Authorization Check
-  if (!hasValidOwnerSession(cookies)) {
+  if (!(await hasValidOwnerSession(cookies))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 

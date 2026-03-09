@@ -5,7 +5,7 @@ const isProtectedRoute = (pathname: string) => pathname.startsWith('/admin');
 
 export const onRequest = defineMiddleware(async ({ url, cookies }, next) => {
   if (isProtectedRoute(url.pathname)) {
-    if (!hasValidOwnerSession(cookies)) {
+    if (!(await hasValidOwnerSession(cookies))) {
       return Response.redirect(new URL('/', url), 303);
     }
   }
