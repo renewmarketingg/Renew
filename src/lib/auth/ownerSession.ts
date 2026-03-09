@@ -1,5 +1,5 @@
 import type { AstroCookies } from 'astro';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 
 const COOKIE_NAME = 'renew_admin_session';
 

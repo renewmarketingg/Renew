@@ -9,7 +9,7 @@ import icon from 'astro-icon';
 export default defineConfig({
   output: 'server',
   adapter: vercel({
-    edgeMiddleware: true
+    edgeMiddleware: true,
   }),
   site: 'https://renew-digital.vercel.app/',
   security: {
