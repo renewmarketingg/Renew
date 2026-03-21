@@ -99,11 +99,6 @@ import { Icon } from 'astro-icon/components';
         </div>
         <div class="tree-item folder indent">
           <Icon name="lucide:folder" size={16} />
-          <code>api/</code>
-          <span>Helpers de resposta API</span>
-        </div>
-        <div class="tree-item folder indent">
-          <Icon name="lucide:folder" size={16} />
           <code>ai/</code>
           <span>Modulo de Inteligencia Artificial</span>
         </div>
@@ -115,12 +110,17 @@ import { Icon } from 'astro-icon/components';
         <div class="tree-item folder indent">
           <Icon name="lucide:folder" size={16} />
           <code>cart/</code>
-          <span>Sistema de carrinho (store, client)</span>
+          <span>Sistema de carrinho (store, client, api)</span>
         </div>
-        <div class="tree-item folder indent">
+        <div class="tree-item folder">
+          <Icon name="lucide:file-text" size={16} />
+          <strong>middleware.ts</strong>
+          <span>Middleware (auth, rate limiting, headers)</span>
+        </div>
+        <div class="tree-item folder">
           <Icon name="lucide:folder" size={16} />
-          <code>utils/</code>
-          <span>Funcoes utilitarias</span>
+          <strong>utils/</strong>
+          <span>Funcoes helper (ID, formatacao)</span>
         </div>
         <div class="tree-item folder">
           <Icon name="lucide:folder" size={16} />

@@ -1,7 +1,7 @@
-import { escapeHtml } from "@/utils/format";
-import { z } from "astro/zod";
-import { ActionError, defineAction } from "astro:actions";
-import { Resend } from "resend";
+import { escapeHtml } from '@/utils/format';
+import { z } from 'astro/zod';
+import { ActionError, defineAction } from 'astro:actions';
+import { Resend } from 'resend';
 
 if (!import.meta.env.RESEND_API_KEY) {
   throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: 'Missing RESEND_API_KEY' });
@@ -32,7 +32,7 @@ export const sendEmail = defineAction({
     const safeName = escapeHtml(input.name);
     const safeEmail = escapeHtml(input.email);
     const safeMessage = escapeHtml(input.message);
-  
+
     const { data, error } = await resend.emails.send({
       from: `Renew <delivered@resend.dev>`,
       to: 'renewmarketingg@gmail.com',
@@ -50,14 +50,14 @@ export const sendEmail = defineAction({
         <p>${safeMessage.replace(/\n/g, '<br>')}</p>
       `,
     });
-  
+
     if (error) {
       throw new ActionError({
         code: 'BAD_REQUEST',
         message: error.message,
-      })
-    };
-  
+      });
+    }
+
     return data;
   },
-})
+});

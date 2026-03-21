@@ -71,9 +71,10 @@ ADMIN_SESSION_SECRET=chave-secreta-minimo-32-caracteres</pre>
       <ul class="feature-list">
         <li><strong>Assinatura HMAC-SHA256:</strong> Tokens de sessao assinados com chave secreta</li>
         <li><strong>Timing Attack Protection:</strong> Comparacao segura de senhas</li>
-        <li><strong>Rate Limiting:</strong> Maximo 5 tentativas de login por IP</li>
+        <li><strong>Rate Limiting:</strong> Maximo 100 requisicoes por minuto por IP nas APIs</li>
         <li><strong>Cookie Seguro:</strong> httpOnly, secure, sameSite</li>
         <li><strong>Input Sanitization:</strong> Trim e validacao de formato</li>
+        <li><strong>Security Headers:</strong> X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy</li>
       </ul>
 
       <h2><Icon name="lucide:folder" size={20} /> Arquivos Relacionados</h2>

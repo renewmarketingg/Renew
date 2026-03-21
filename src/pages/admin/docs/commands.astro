@@ -95,7 +95,8 @@ import { Icon } from 'astro-icon/components';
       <h2><Icon name="lucide:zap" size={20} /> Teste Rapido</h2>
       <p>Execute um teste especifico:</p>
       <pre>pnpm vitest run src/path/to/test.spec.ts
-pnpm vitest run --reporter=verbose src/path/to/test.spec.ts</pre>
+pnpm vitest run --reporter=verbose src/path/to/test.spec.ts
+pnpm vitest run --test-name-pattern="nome do teste" src/</pre>
 
       <h2><Icon name="lucide:package" size={20} /> Dependencies</h2>
       <div class="command-card">

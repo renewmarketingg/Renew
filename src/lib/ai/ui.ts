@@ -1,5 +1,6 @@
 import { getAllChats, getCurrentChatIdLocal } from './chat';
-import type { ChatMessage, ToastType } from './storage';
+import type { ChatMessage } from './storage';
+import type { ToastType } from '@/types/toast';
 
 const getToastEl = () => {
   return document.getElementById('toast');
