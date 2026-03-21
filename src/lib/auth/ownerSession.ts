@@ -56,9 +56,14 @@ export const getOwnerSessionCookieName = (): string => {
 };
 
 export const getOwnerSessionSecret = (): string => {
-  return (
-    import.meta.env.ADMIN_SESSION_SECRET || import.meta.env.CLERK_SECRET_KEY || 'default-secret'
-  );
+  const secret = import.meta.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    throw new Error('ADMIN_SESSION_SECRET não está configurado. Defina a variável de ambiente.');
+  }
+  if (secret.length < 32) {
+    throw new Error('ADMIN_SESSION_SECRET deve ter pelo menos 32 caracteres.');
+  }
+  return secret;
 };
 
 export const createOwnerSessionToken = async (

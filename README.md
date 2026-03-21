@@ -4,9 +4,10 @@ Website da Renew Digital, agência de serviços digitais especializada.
 
 ## Tecnologias
 
-- **Astro 5** - Framework web moderno com SSR
+- **Astro 5** - Framework web moderno com Vercel Adapter para SSR
 - **TypeScript** - Linguagem com tipagem estática (strict mode)
 - **Astro DB (Turso)** - Banco de dados SQL remoto
+- **AI SDK (Vercel)** - Abstração de múltiplos provedores de IA
 - **astro-icon** - Ícones Lucide
 - **CSS Variables** - Sistema de temas (dark/light)
 - **Vercel** - Deploy, Analytics e Speed Insights
@@ -43,8 +44,8 @@ Sistema de autenticação seguro com sessão baseada em token HMAC.
 
 - Rate limiting (5 tentativas, 15min bloqueio)
 - HMAC-SHA256 para assinar tokens
-- Timing-safe comparison
 - Cookie httpOnly, secure, sameSite
+- bcrypt para hash de senha
 
 ### Variáveis de Ambiente
 
@@ -55,20 +56,19 @@ ADMIN_PASSWORD=sua-senha-segura
 ADMIN_SESSION_SECRET=sua-chave-secreta-32-caracteres
 
 # Astro DB (Turso)
-ASTRO_DB_REMOTE_URL=libsql://...
-ASTRO_DB_APP_TOKEN=...
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
 ```
 
 ## Funcionalidades
 
-- Tema claro/escuro com toggle (localStorage)
+- Tema claro/escuro com toggle
 - Design responsivo (mobile, tablet, desktop)
 - Animações CSS suaves
 - Acessibilidade (aria-labels, semantic HTML)
-- Componentes reutilizáveis
 - SEO otimizado (Open Graph, Schema.org, Sitemap)
-- Chat de IA (`/ai`)
-- Painel administrativo
+- Chat de IA com múltiplos provedores (`/ai`): OpenAI, Anthropic, Google, Groq, Mistral
+- Painel administrativo completo
 - Sistema de loja com carrinho de compras
 - Produtos via banco de dados ou afiliados
 
@@ -76,38 +76,24 @@ ASTRO_DB_APP_TOKEN=...
 
 ```
 src/
-├── components/          # Componentes multi-arquivo
-│   └── ui/            # Componentes atômicos (Button, Card, etc)
-├── constants/          # Dados estáticos
-├── db/                 # Configuração Astro DB
-├── layouts/            # Layouts (Layout.astro)
+├── actions/           # Server actions
+├── components/        # Componentes Astro
+│   └── ui/            # Componentes atômicos (Button, Card, Toast, etc)
+├── constants/         # Dados estáticos
+├── db/                # Configuração Astro DB
+├── layouts/           # Layouts (Layout.astro)
 ├── lib/
-│   ├── ai/           # Módulo de chat IA
-│   ├── auth/         # Autenticação (owner session, credentials)
-│   └── cart/         # Sistema de carrinho
+│   ├── ai/            # Módulo de chat IA
+│   ├── auth/          # Autenticação
+│   ├── cart/          # Sistema de carrinho
+│   └── ui.ts          # Utilitários (toast, modal, format)
 ├── pages/
-│   ├── api/          # Endpoints API
-│   │   └── auth/     # API auth (login/logout owner)
-│   └── admin/        # Páginas admin
+│   ├── admin/         # Páginas admin
+│   └── api/           # Endpoints API
+├── schemas/           # Schemas Zod
 ├── services/          # Lógica de negócio
-├── styles/            # Estilos globais e módulos
+├── styles/            # Estilos globais e módulos CSS
 └── types/             # Tipos TypeScript
-```
-
-## Uso do Layout
-
-```astro
----
-import Layout from "../layouts/Layout.astro";
----
-
-<!-- Layout normal -->
-<Layout title="Minha Página">...</Layout>
-
-<!-- Layout admin -->
-<Layout title="Admin" adm={true} activePage="/admin">
-  ...
-</Layout>
 ```
 
 ## Cores (CSS Variables)
@@ -131,7 +117,6 @@ import Layout from "../layouts/Layout.astro";
 ### TypeScript
 
 - Use `export const` em vez de `export function`
-- Organize tipos em `src/types/`
 - Use `interface` para props de componentes Astro
 
 ### Componentes

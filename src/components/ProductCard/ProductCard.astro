@@ -1,0 +1,90 @@
+---
+import type { AffiliateProduct } from '@/types';
+import { calculateDiscount, formatPrice } from '@/utils/format';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import styles from './ProductCard.module.css';
+
+interface Props {
+  product: AffiliateProduct;
+}
+
+const { product }: Props = Astro.props;
+const discount =
+  product.originalPrice && product.originalPrice > 0
+    ? calculateDiscount(product.originalPrice, product.price)
+    : 0;
+---
+
+<article
+  class={styles.productCard}
+  data-id={product.id}
+  data-name={product.name.toLowerCase()}
+  data-description={product.description.toLowerCase()}
+  data-category={product.category}
+>
+  <div class={styles.productImage}>
+    <Image width={220} height={220} loading="lazy" alt={product.name} src={product.image} />
+    {
+      product.originalPrice && (
+        <span class={styles.productBadge}>{discount > 0 ? `-${discount}%` : 'Oferta'}</span>
+      )
+    }
+  </div>
+  <div class={styles.productContent}>
+    <span class={styles.productCategory}>{product.category}</span>
+    <h3 class={styles.productTitle}>{product.name}</h3>
+    <p class={styles.productDescription}>{product.description}</p>
+    <div class={styles.productRating}>
+      <div class={styles.ratingStars}>
+        {
+          [1, 2, 3, 4, 5].map((i) => (
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          ))
+        }
+      </div>
+      <span class={styles.ratingText}>
+        {product.rating} ({product.reviews.toLocaleString('pt-BR')})
+      </span>
+    </div>
+    <div class={styles.productPrice}>
+      <span class={styles.currentPrice}>{formatPrice(product.price)}</span>
+      {
+        product.originalPrice && (
+          <>
+            <span class={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
+            <span class={styles.discount}>-{discount}%</span>
+          </>
+        )
+      }
+    </div>
+    <div class={styles.productActions}>
+      <button
+        class="btn btn-secondary add-to-cart-btn"
+        data-id={product.id}
+        data-name={product.name}
+        data-price={product.price}
+        data-image={product.image}
+      >
+        <Icon name="lucide:shopping-cart" size={18} /> Adicionar
+      </button>
+      <a
+        href={product.affiliateLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class={`btn btn-primary ${styles.productLink}`}
+      >
+        <Icon name="lucide:shopping-bag" size={18} /> Comprar
+      </a>
+    </div>
+  </div>
+</article>

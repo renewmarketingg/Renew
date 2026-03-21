@@ -1,10 +1,7 @@
 import { and, CartItems, db, eq, Products } from 'astro:db';
 import type { AddToCartInput } from '../schemas/cartSchema';
 import type { Product } from '@/types';
-
-const generateId = (): string => {
-  return 'cart-' + Math.random().toString(36).substring(2, 9);
-};
+import { generateCartId } from '@/utils/id';
 
 let localProducts: Product[] = [];
 
@@ -62,7 +59,7 @@ export const addToCart = async (sessionId: string, input: AddToCartInput): Promi
     }
 
     const newItem = {
-      id: generateId(),
+      id: generateCartId(),
       sessionId,
       productId: input.productId,
       quantity: input.quantity,
@@ -89,7 +86,7 @@ const addToLocalCart = (sessionId: string, input: AddToCartInput): unknown => {
 
   const product = localProducts.find((p) => p.id === input.productId);
   const newItem = {
-    id: generateId(),
+    id: generateCartId(),
     sessionId,
     productId: input.productId,
     quantity: input.quantity,

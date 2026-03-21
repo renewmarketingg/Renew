@@ -1,0 +1,47 @@
+---
+import styles from './AdminTable.module.css';
+
+interface Column {
+  key: string;
+  label: string;
+  class?: string;
+}
+
+interface Props {
+  columns: Column[];
+  data: Record<string, unknown>[];
+  emptyMessage?: string;
+  class?: string;
+}
+
+const { columns, data, emptyMessage = 'Nenhum registro encontrado', class: className } = Astro.props;
+---
+
+<div class={`${styles.tableWrapper} ${className || ''}`}>
+  <table class={styles.table}>
+    <thead>
+      <tr>
+        {columns.map((col) => (
+          <th class={col.class}>{col.label}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {data.length === 0 ? (
+        <tr>
+          <td colspan={columns.length} class={styles.empty}>
+            {emptyMessage}
+          </td>
+        </tr>
+      ) : (
+        data.map((row) => (
+          <tr>
+            {columns.map((col) => (
+              <td>{row[col.key] as string}</td>
+            ))}
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>

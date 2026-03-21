@@ -1,6 +1,7 @@
 .ai-container {
   display: flex;
   height: 100vh;
+  overflow: hidden;
   background: var(--color-white);
   color: var(--color-dark);
   transition:
@@ -73,9 +74,9 @@
 .ai-chat-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   width: 100%;
-  padding: 0.625rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   background: transparent;
   border: none;
   border-radius: var(--border-radius-sm);
@@ -87,14 +88,51 @@
   margin-bottom: 0.25rem;
 }
 
+.chat-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.ai-chat-item:hover .chat-delete-btn {
+  opacity: 1;
+}
+
+.chat-delete-btn:hover {
+  background: var(--color-primary-alpha-15);
+  color: var(--color-danger);
+}
+
 .ai-chat-item:hover {
   background: var(--color-primary-alpha-10);
   color: var(--color-dark);
 }
 
 .ai-chat-item.active {
-  background: var(--color-primary-alpha-20);
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.ai-chat-item.active:hover {
+  background: var(--color-primary);
+  color: white;
 }
 
 .ai-main {
@@ -102,6 +140,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
 
 .ai-header {
@@ -132,24 +171,82 @@
   gap: 0.5rem;
 }
 
-.theme-toggle {
+.ai-settings-btn,
+.ai-theme-toggle,
+.ai-clear-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: transparent;
-  border: 1px solid var(--color-gray-200);
-  border-radius: var(--border-radius-sm);
-  color: var(--color-gray-400);
+  border-radius: var(--border-radius-full);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  border: none;
+}
+
+.ai-settings-btn:hover,
+.ai-theme-toggle:hover,
+.ai-clear-btn:hover {
+  background: var(--color-primary);
+}
+
+.ai-settings-btn:hover svg,
+.ai-theme-toggle:hover svg,
+.ai-clear-btn:hover svg {
+  color: white;
+}
+
+.ai-settings-btn svg,
+.ai-theme-toggle svg,
+.ai-clear-btn svg {
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  border: none;
 }
 
 .theme-toggle:hover {
-  background: var(--color-primary-alpha-10);
+  background: var(--color-primary);
+}
+
+.theme-toggle:hover svg {
+  color: white;
+}
+
+.theme-toggle svg {
+  position: absolute;
+  width: 20px;
+  height: 20px;
   color: var(--color-primary);
-  border-color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.theme-toggle .icon-moon {
+  display: none;
+}
+
+[data-theme='dark'] .theme-toggle .icon-sun {
+  display: none;
+}
+
+[data-theme='dark'] .theme-toggle .icon-moon {
+  display: block;
 }
 
 .ai-model-selector {
@@ -180,7 +277,9 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
-  min-width: 220px;
+  min-width: 280px;
+  max-height: 400px;
+  overflow-y: auto;
   background: var(--color-white);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--border-radius-md);
@@ -196,6 +295,23 @@
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+.ai-model-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-model-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-model-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 3px;
+}
+
+.ai-model-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
 }
 
 .ai-model-option {
@@ -234,6 +350,31 @@
 .ai-model-desc {
   font-size: 0.75rem;
   color: var(--color-gray-400);
+}
+
+.ai-model-group {
+  padding: 0.25rem 0;
+}
+
+.ai-model-group + .ai-model-group {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.ai-model-group-label {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary);
+  background: var(--color-primary-alpha-08);
+  margin: 0.25rem 0;
+}
+
+.ai-model-group:first-child .ai-model-group-label {
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 .ai-header-actions {
@@ -670,6 +811,90 @@
   margin-top: 1rem;
 }
 
+.ai-settings-modal .modal,
+.ai-imagine-modal .modal {
+  max-width: 480px;
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  margin-top: 0.25rem;
+}
+
+.ai-providers-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ai-provider-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-gray-100);
+  border-radius: var(--border-radius-sm);
+}
+
+.provider-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray-300);
+}
+
+.ai-provider-item.configured .provider-status-dot {
+  background: var(--color-success, #22c55e);
+}
+
+.provider-name {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--color-dark);
+}
+
+.provider-link {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.provider-link:hover {
+  background: var(--color-primary-alpha-15);
+}
+
+input[type='range'] {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-gray-200);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+}
+
 @media (max-width: 768px) {
   .ai-sidebar {
     position: fixed;
@@ -695,4 +920,99 @@
   .ai-input-area {
     padding: 1rem;
   }
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+[data-theme='dark'] .ai-container {
+  background: var(--color-white);
+}
+
+[data-theme='dark'] .ai-sidebar {
+  background: var(--color-white);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ai-header {
+  background: var(--color-white);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ai-chat-item {
+  color: var(--color-dark);
+}
+
+[data-theme='dark'] .ai-chat-item:hover {
+  color: var(--color-dark);
+}
+
+[data-theme='dark'] .ai-model-dropdown {
+  background: var(--color-white);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ai-model-option {
+  color: var(--color-dark);
+}
+
+[data-theme='dark'] .ai-model-option:hover {
+  background: var(--color-primary-alpha-10);
+}
+
+[data-theme='dark'] .ai-model-group-label {
+  background: var(--color-gray-100);
+}
+
+[data-theme='dark'] .ai-settings-btn,
+[data-theme='dark'] .ai-clear-btn {
+  background: var(--color-white);
+}
+
+[data-theme='dark'] .ai-settings-btn:hover,
+[data-theme='dark'] .ai-clear-btn:hover {
+  background: var(--color-primary);
+}
+
+[data-theme='dark'] .ai-settings-btn:hover svg,
+[data-theme='dark'] .ai-clear-btn:hover svg {
+  color: white;
+}
+
+[data-theme='dark'] .ai-settings-btn svg,
+[data-theme='dark'] .ai-clear-btn svg {
+  color: var(--color-primary);
+}
+
+[data-theme='dark'] .ai-welcome h2 {
+  color: var(--color-dark);
+}
+
+[data-theme='dark'] .ai-welcome p {
+  color: var(--color-gray-400);
+}
+
+[data-theme='dark'] .ai-input-area {
+  background: var(--color-white);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ai-input-container {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] #chatInput {
+  background: var(--color-gray-100);
+  color: var(--color-dark);
+}
+
+[data-theme='dark'] .ai-tool-btn {
+  color: var(--color-gray-400);
+}
+
+[data-theme='dark'] .ai-tool-btn:hover {
+  background: var(--color-gray-200);
+  color: var(--color-primary);
 }

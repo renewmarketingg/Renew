@@ -1,32 +1,52 @@
-import type { OwnerCredentials } from '@types';
+import bcrypt from 'bcryptjs';
+import { z } from 'astro/zod';
 
-const normalizeEmail = (email: string): string => {
-  return email.trim().toLowerCase();
-};
+const EmailSchema = z.string().email('Email inválido').max(254);
+
+const normalizeEmail = (email: string): string => email.trim().toLowerCase();
 
 export const getOwnerEmailFromEnv = (): string | null => {
-  const direct = import.meta.env.ADMIN_OWNER_EMAIL?.trim();
-  return direct ? normalizeEmail(direct) : null;
+  const raw = import.meta.env.ADMIN_OWNER_EMAIL;
+  if (!raw) return null;
+  try {
+    return normalizeEmail(EmailSchema.parse(raw));
+  } catch {
+    return null;
+  }
 };
 
-export const getOwnerCredentialsFromEnv = (): OwnerCredentials | null => {
-  const email = getOwnerEmailFromEnv();
-  const password = import.meta.env.ADMIN_PASSWORD;
-  if (!email || !password) return null;
-  return { email, password };
+export const getOwnerHashedPasswordFromEnv = (): string | null => {
+  return import.meta.env.ADMIN_PASSWORD_HASH || null;
 };
 
-export const verifyOwnerCredentials = (input: {
+export const isPasswordConfigured = (): boolean => {
+  return Boolean(getOwnerEmailFromEnv() && getOwnerHashedPasswordFromEnv());
+};
+
+export const verifyOwnerCredentials = async (input: {
   email: string;
   password: string;
-}): { email: string } | null => {
-  const creds = getOwnerCredentialsFromEnv();
-  if (!creds) return null;
+}): Promise<{ email: string } | null> => {
+  const email = normalizeEmail(EmailSchema.parse(input.email));
+  const expectedEmail = getOwnerEmailFromEnv();
+  const plainPassword = import.meta.env.ADMIN_PASSWORD;
+  const hashedPassword = getOwnerHashedPasswordFromEnv();
 
-  const email = normalizeEmail(input.email);
-  const password = String(input.password);
-  if (email !== creds.email) return null;
-  if (password !== creds.password) return null;
+  if (!expectedEmail) return null;
+  if (email !== expectedEmail) return null;
 
-  return { email };
+  if (plainPassword && String(input.password) === plainPassword) {
+    return { email };
+  }
+
+  if (hashedPassword && hashedPassword.length > 20) {
+    try {
+      const isValid = await bcrypt.compare(String(input.password), hashedPassword);
+      if (isValid) return { email };
+    } catch {
+      // bcrypt failed
+    }
+  }
+
+  return null;
 };

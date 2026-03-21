@@ -1,0 +1,332 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Comandos - Documentacao" adm={true} activePage="/admin/docs">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-nav">
+        <div class="docs-nav-section">
+          <h3>Getting Started</h3>
+          <ul>
+            <li><a href="/admin/docs">Visao Geral</a></li>
+            <li><a href="/admin/docs/structure">Estrutura</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Sistema</h3>
+          <ul>
+            <li><a href="/admin/docs/auth">Autenticacao</a></li>
+            <li><a href="/admin/docs/store">Loja e Carrinho</a></li>
+            <li><a href="/admin/docs/ai">Inteligencia Artificial</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Backend</h3>
+          <ul>
+            <li><a href="/admin/docs/database">Banco de Dados</a></li>
+            <li><a href="/admin/docs/api">APIs</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Configuracao</h3>
+          <ul>
+            <li><a href="/admin/docs/env">Variaveis de Ambiente</a></li>
+            <li><a href="/admin/docs/commands" class="active">Comandos</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="docs-content">
+      <h1><Icon name="lucide:terminal" size={24} /> Comandos do Projeto</h1>
+      <p class="lead">
+        Utilize <code>pnpm</code> como gerenciador de pacotes. Todos os comandos estao
+        configurados no package.json.
+      </p>
+
+      <h2><Icon name="lucide:play" size={20} /> Desenvolvimento</h2>
+      <div class="command-card">
+        <code>pnpm dev</code>
+        <span>Inicia servidor de desenvolvimento com hot reload</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm build</code>
+        <span>Build de producao com banco de dados remoto</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm preview</code>
+        <span>Preview do build de producao localmente</span>
+      </div>
+
+      <h2><Icon name="lucide:check-circle" size={20} /> Verificacao</h2>
+      <div class="command-card">
+        <code>pnpm check</code>
+        <span>Executa verificacao de tipos TypeScript e lint</span>
+      </div>
+
+      <h2><Icon name="lucide:database" size={20} /> Banco de Dados</h2>
+      <div class="command-card">
+        <code>pnpm db</code>
+        <span>Sincroniza schema com banco Turso remoto</span>
+      </div>
+
+      <h2><Icon name="lucide:sparkles" size={20} /> Qualidade de Codigo</h2>
+      <div class="command-card">
+        <code>pnpm format</code>
+        <span>Executa Prettier em todos os arquivos</span>
+      </div>
+
+      <h2><Icon name="lucide:test-tube" size={20} /> Testes</h2>
+      <div class="command-card">
+        <code>pnpm test</code>
+        <span>Executa testes com Vitest (modo run)</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm test:watch</code>
+        <span>Executa testes em modo watch</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm test:coverage</code>
+        <span>Executa testes com relatorio de cobertura</span>
+      </div>
+
+      <h2><Icon name="lucide:zap" size={20} /> Teste Rapido</h2>
+      <p>Execute um teste especifico:</p>
+      <pre>pnpm vitest run src/path/to/test.spec.ts
+pnpm vitest run --reporter=verbose src/path/to/test.spec.ts</pre>
+
+      <h2><Icon name="lucide:package" size={20} /> Dependencies</h2>
+      <div class="command-card">
+        <code>pnpm install</code>
+        <span>Instala todas as dependencias do projeto</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm add [package]</code>
+        <span>Adiciona uma nova dependencia</span>
+      </div>
+      <div class="command-card">
+        <code>pnpm add -D [package]</code>
+        <span>Adiciona uma dependencia de desenvolvimento</span>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .docs-layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 70px auto;
+    padding: 2rem;
+  }
+
+  .docs-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .docs-nav {
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 1rem;
+  }
+
+  .docs-nav-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .docs-nav-section h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+  }
+
+  .docs-nav-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .docs-nav-section a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-gray-400);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .docs-nav-section a:hover {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-dark);
+  }
+
+  .docs-nav-section a.active {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .docs-content {
+    flex: 1;
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 2rem;
+  }
+
+  .docs-content h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+  }
+
+  .docs-content h1 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary-alpha-20);
+  }
+
+  .docs-content h2:first-of-type {
+    margin-top: 0;
+  }
+
+  .docs-content h2 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content .lead {
+    font-size: 1.125rem;
+    color: var(--color-gray-400);
+    line-height: 1.7;
+  }
+
+  .docs-content p {
+    color: var(--color-gray-400);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content code {
+    font-family: monospace;
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+  }
+
+  .docs-content pre {
+    background: var(--color-gray-900);
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .command-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    background: var(--color-gray-50);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-gray-200);
+    margin-bottom: 0.5rem;
+  }
+
+  .command-card code {
+    font-family: monospace;
+    font-weight: 600;
+    background: var(--color-gray-900);
+    color: #10b981;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+  }
+
+  .command-card span {
+    color: var(--color-gray-400);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 992px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+
+    .docs-sidebar {
+      width: 100%;
+      position: static;
+    }
+
+    .docs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .command-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .command-card code {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  :global([data-theme='dark']) .docs-nav,
+  :global([data-theme='dark']) .docs-content {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .docs-content h1,
+  :global([data-theme='dark']) .docs-content h2 {
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) .docs-content p,
+  :global([data-theme='dark']) .command-card span {
+    color: #a0a0a0;
+  }
+
+  :global([data-theme='dark']) .command-card {
+    background: #252525;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .command-card code {
+    background: #0d0d0d;
+  }
+</style>

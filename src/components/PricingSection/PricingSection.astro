@@ -4,6 +4,14 @@ import Button from '@components/ui/Button/Button.astro';
 import Card from '@components/ui/Card/Card.astro';
 import IconWrapper from '@components/ui/IconWrapper/IconWrapper.astro';
 import styles from './PricingSection.module.css';
+
+const calculateDiscountPercent = (original: string, current: string): number => {
+  const parsePrice = (str: string) => parseFloat(str.replace(/[R$\s.]/g, '').replace(',', '.'));
+  const originalNum = parsePrice(original);
+  const currentNum = parsePrice(current);
+  if (originalNum <= 0) return 0;
+  return Math.round(((originalNum - currentNum) / originalNum) * 100);
+};
 ---
 
 <section id="precos" class={`section ${styles.pricingSection}`}>
@@ -39,8 +47,21 @@ import styles from './PricingSection.module.css';
                 class={styles.priceRow}
                 aria-label={`Preço: ${plan.price}${plan.cadence ? ' ' + plan.cadence : ''}`}
               >
-                <span class={styles.price}>{plan.price}</span>
-                {plan.cadence && <span class={styles.cadence}>{plan.cadence}</span>}
+                {plan.originalPrice && plan.price !== plan.originalPrice && (
+                  <div class={styles.priceWithOriginal}>
+                    <span class={styles.originalPrice}>{plan.originalPrice}</span>
+                    {(() => {
+                      const discount = calculateDiscountPercent(plan.originalPrice!, plan.price);
+                      return discount > 0 ? (
+                        <span class={styles.discountBadge}>-{discount}%</span>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+                <span class={styles.price}>
+                  {plan.price}
+                  {plan.cadence && <span class={styles.cadence}>{plan.cadence}</span>}
+                </span>
               </div>
 
               <ul class={styles.features}>

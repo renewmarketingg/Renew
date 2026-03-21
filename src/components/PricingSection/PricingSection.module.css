@@ -14,7 +14,11 @@
 
 .pricingCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(132, 20, 227, 0.35);
+  box-shadow: var(--shadow-md);
+}
+
+.card[data-highlight='true'].pricingCard:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .card {
@@ -59,9 +63,36 @@
 
 .priceRow {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.priceWithOriginal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.originalPrice {
+  font-size: 1.1rem;
+  color: var(--color-gray-400);
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.discountBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: var(--color-success);
 }
 
 .price {
@@ -77,6 +108,8 @@
 .cadence {
   color: var(--color-gray-400);
   font-weight: 700;
+  font-size: 0.875rem;
+  margin-left: 0.25rem;
 }
 
 .features {

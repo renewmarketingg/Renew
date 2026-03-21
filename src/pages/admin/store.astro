@@ -1,7 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
-import { getProducts } from '@/services/productService';
 import '@/styles/global.css';
 import AdminFilters from '@/components/ui/AdminFilters/AdminFilters.astro';
 import AdminStatsGrid from '@/components/ui/AdminStatsGrid/AdminStatsGrid.astro';
@@ -9,20 +8,21 @@ import Button from '@/components/ui/Button/Button.astro';
 import PageHeader from '@/components/PageHeader/PageHeader.astro';
 import AdminModal from '@/components/ui/AdminModal/AdminModal.astro';
 
-const products = await getProducts();
-const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
-const productCategories = uniqueCategories.length
-  ? uniqueCategories
-  : ['Eletrônicos', 'Áudio', 'Wearables'];
+const productCategories = ['Todos', 'Eletrônicos', 'Áudio', 'Acessórios', 'Games', 'Livros'];
 
 const stats = [
-  { label: 'Total', value: '0', icon: 'lucide:package' },
-  { label: 'Destaques', value: '0', icon: 'lucide:star' },
-  { label: 'Valor Médio', value: 'R$ 0', icon: 'lucide:tag' },
-  { label: 'Categorias', value: '0', icon: 'lucide:folder' },
+  { label: 'Total', value: '0', statKey: 'total', icon: 'lucide:package' },
+  { label: 'Destaques', value: '0', statKey: 'featured', icon: 'lucide:star' },
+  { label: 'Valor Médio', value: 'R$ 0', statKey: 'avg', icon: 'lucide:tag' },
+  { label: 'Categorias', value: '0', statKey: 'categories', icon: 'lucide:folder' },
 ];
 
 const filters = [
+  {
+    id: 'isTest',
+    label: 'Produtos de teste',
+    type: 'checkbox' as const,
+  },
   {
     id: 'category',
     label: 'Categoria',
@@ -39,8 +39,6 @@ const filters = [
     ],
   },
 ];
-
-const productsJson = JSON.stringify(products);
 ---
 
 <Layout title="Gerenciar Produtos" adm={true} activePage="/admin/store">
@@ -134,224 +132,7 @@ const productsJson = JSON.stringify(products);
   </AdminModal>
 </Layout>
 
-<script is:inline define:vars={{ productsJson }}>
-  const formatPrice = (value) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-
-  let items = JSON.parse(productsJson);
-  let deleteId = null;
-
-  async function fetchItems() {
-    try {
-      const res = await fetch('/api/products');
-      const data = await res.json();
-      if (res.ok) {
-        items = data;
-        render();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  function render() {
-    const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
-    const cat = document.getElementById('categoryFilter')?.value || '';
-    const feat = document.getElementById('featuredFilter')?.value || '';
-
-    const filtered = items.filter((p) => {
-      const matchSearch =
-        !search ||
-        p.name.toLowerCase().includes(search) ||
-        p.description?.toLowerCase().includes(search);
-      const matchCat = !cat || p.category === cat;
-      const matchFeat = !feat || (feat === 'true' ? p.featured : !p.featured);
-      return matchSearch && matchCat && matchFeat;
-    });
-
-    const tbody = document.getElementById('tableBody');
-    if (!tbody) return;
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">Nenhum produto</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = filtered
-      .map(
-        (p) => `
-      <tr data-id="${p.id}">
-        <td>
-          <div class="product-cell">
-            <img src="${p.image}" alt="" class="product-thumb" loading="lazy" />
-            <div class="product-info">
-              <h4>${p.name}</h4>
-              <span>${p.reviews?.toLocaleString() || 0} avaliações</span>
-            </div>
-          </div>
-        </td>
-        <td>${p.category}</td>
-        <td>${formatPrice(p.price)}${p.originalPrice ? `<span class="text-sm text-gray-400 line-through ml-2">${formatPrice(p.originalPrice)}</span>` : ''}</td>
-        <td><span class="badge ${p.featured ? 'badge-featured' : 'badge-active'}">${p.featured ? 'Destaque' : 'Ativo'}</span></td>
-        <td>
-          <div class="flex gap-1">
-            <button class="action-btn edit-btn" data-id="${p.id}"><Icon name="lucide:pencil" size={16} /></button>
-            <button class="action-btn delete-btn" data-id="${p.id}" data-name="${p.name}"><Icon name="lucide:trash-2" size={16} /></button>
-          </div>
-        </td>
-      </tr>
-    `
-      )
-      .join('');
-
-    document
-      .querySelectorAll('.edit-btn')
-      .forEach((btn) => btn.addEventListener('click', () => edit(btn.dataset.id)));
-    document
-      .querySelectorAll('.delete-btn')
-      .forEach((btn) =>
-        btn.addEventListener('click', () => showDelete(btn.dataset.id, btn.dataset.name))
-      );
-    updateStats();
-  }
-
-  function updateStats() {
-    const total = items.length;
-    const featured = items.filter((p) => p.featured).length;
-    const avg = items.reduce((s, p) => s + p.price, 0) / total || 0;
-    const cats = new Set(items.map((p) => p.category)).size;
-    document.querySelector('[data-stat="total"]').textContent = String(total);
-    document.querySelector('[data-stat="featured"]').textContent = String(featured);
-    document.querySelector('[data-stat="avg"]').textContent = formatPrice(avg);
-    document.querySelector('[data-stat="categories"]').textContent = String(cats);
-  }
-
-  function edit(id) {
-    const p = items.find((x) => x.id === id);
-    if (!p) return;
-    document.getElementById('modalTitle').textContent = 'Editar';
-    document.getElementById('itemId').value = p.id;
-    document.getElementById('name').value = p.name;
-    document.getElementById('description').value = p.description || '';
-    document.getElementById('price').value = p.price;
-    document.getElementById('originalPrice').value = p.originalPrice || '';
-    document.getElementById('category').value = p.category;
-    document.getElementById('rating').value = p.rating || 4.5;
-    document.getElementById('image').value = p.image;
-    document.getElementById('affiliateLink').value = p.affiliateLink;
-    document.getElementById('featured').checked = p.featured;
-    document.getElementById('itemModal').classList.add('visible');
-  }
-
-  async function saveItem() {
-    const id = document.getElementById('itemId').value;
-    const saveBtn = document.getElementById('saveBtn');
-    saveBtn.disabled = true;
-
-    const data = {
-      name: document.getElementById('name').value,
-      description: document.getElementById('description').value,
-      price: parseFloat(document.getElementById('price').value),
-      originalPrice: parseFloat(document.getElementById('originalPrice').value) || undefined,
-      category: document.getElementById('category').value,
-      rating: parseFloat(document.getElementById('rating').value) || 4.5,
-      image: document.getElementById('image').value,
-      affiliateLink: document.getElementById('affiliateLink').value,
-      featured: document.getElementById('featured').checked,
-    };
-
-    try {
-      const url = id ? `/api/products/${id}` : '/api/products';
-      const method = id ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        await fetchItems();
-        document.getElementById('itemModal').classList.remove('visible');
-      } else {
-        const errorData = await res.json();
-        alert('Erro ao salvar: ' + JSON.stringify(errorData));
-      }
-    } catch (err) {
-      alert('Erro inesperado: ' + err.message);
-    } finally {
-      saveBtn.disabled = false;
-    }
-  }
-
-  function showDelete(id, name) {
-    deleteId = id;
-    document.getElementById('deleteName').textContent = name;
-    document.getElementById('deleteModal').classList.add('visible');
-  }
-
-  async function deleteItem() {
-    if (!deleteId) return;
-
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    confirmBtn.disabled = true;
-
-    try {
-      const res = await fetch(`/api/products/${deleteId}`, { method: 'DELETE' });
-      if (res.ok) {
-        await fetchItems();
-        document.getElementById('deleteModal').classList.remove('visible');
-      } else {
-        alert('Erro ao excluir.');
-      }
-    } catch (err) {
-      alert('Erro inesperado: ' + err.message);
-    } finally {
-      confirmBtn.disabled = false;
-      deleteId = null;
-    }
-  }
-
-  document.getElementById('addBtn')?.addEventListener('click', () => {
-    document.getElementById('modalTitle').textContent = 'Novo';
-    document.getElementById('itemForm').reset();
-    document.getElementById('itemId').value = '';
-    document.getElementById('itemModal').classList.add('visible');
-  });
-
-  document
-    .getElementById('cancelBtn')
-    ?.addEventListener('click', () =>
-      document.getElementById('itemModal').classList.remove('visible')
-    );
-  document.getElementById('saveBtn')?.addEventListener('click', saveItem);
-  document
-    .getElementById('cancelDeleteBtn')
-    ?.addEventListener('click', () =>
-      document.getElementById('deleteModal').classList.remove('visible')
-    );
-  document.getElementById('confirmDeleteBtn')?.addEventListener('click', deleteItem);
-  document.getElementById('searchInput')?.addEventListener('input', render);
-  document.getElementById('categoryFilter')?.addEventListener('change', render);
-  document.getElementById('featuredFilter')?.addEventListener('change', render);
-
-  document.querySelectorAll('[data-close]').forEach((btn) => {
-    btn.addEventListener('click', () =>
-      document.getElementById(btn.dataset.close)?.classList.remove('visible')
-    );
-  });
-
-  document.querySelectorAll('.modal-overlay').forEach((modal) => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('visible');
-    });
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape')
-      document
-        .querySelectorAll('.modal-overlay.visible')
-        .forEach((m) => m.classList.remove('visible'));
-  });
-
-  render();
+<script>
+  import { initStore } from '@/lib/store-admin';
+  initStore();
 </script>

@@ -1,21 +1,19 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
-import defaultRoutes from '@/constants/quickLinks';
 import PageHeader from '@components/PageHeader/PageHeader.astro';
 import Button from '@components/ui/Button/Button.astro';
 import AdminStatsGrid from '@components/ui/AdminStatsGrid/AdminStatsGrid.astro';
 import AdminFilters from '@components/ui/AdminFilters/AdminFilters.astro';
 import AdminModal from '@components/ui/AdminModal/AdminModal.astro';
 
-const categories = ['Público', 'Admin', 'Sistema', 'Blog', 'API', 'Custom'];
-const routesJson = JSON.stringify(defaultRoutes);
+const categories = ['Público', 'Documentação', 'Admin', 'Sistema', 'Blog', 'API', 'Custom'];
 
 const stats = [
-  { label: 'Total', value: '0', icon: 'lucide:route' },
-  { label: 'Dinâmicas', value: '0', icon: 'lucide:git-branch' },
-  { label: 'Categorias', value: '0', icon: 'lucide:folder' },
-  { label: 'Ativas', value: '0', icon: 'lucide:toggle-left' },
+  { label: 'Total', value: '0', statKey: 'total', icon: 'lucide:route' },
+  { label: 'Dinâmicas', value: '0', statKey: 'dynamic', icon: 'lucide:git-branch' },
+  { label: 'Categorias', value: '0', statKey: 'categories', icon: 'lucide:folder' },
+  { label: 'Ativas', value: '0', statKey: 'active', icon: 'lucide:toggle-left' },
 ];
 
 const filters = [
@@ -58,42 +56,6 @@ const filters = [
     <div class="card-grid" id="grid"></div>
   </div>
 
-  <template id="tpl-route-card">
-    <div class="route-card">
-      <div class="route-card-header">
-        <span class="badge category-badge"></span>
-        <span class="badge badge-dynamic dynamic-badge" style="display: none;">Dinâmica</span>
-        <div class="route-actions">
-          <button class="action-btn edit-btn" data-id="">
-            <Icon name="lucide:pencil" size={16} />
-          </button>
-          <button class="action-btn toggle-btn" data-id="">
-            <Icon
-              name="lucide:toggle-right"
-              size={16}
-              class="icon-toggle-right"
-              style="display: none;"
-            />
-            <Icon
-              name="lucide:toggle-left"
-              size={16}
-              class="icon-toggle-left"
-              style="display: none;"
-            />
-          </button>
-          <button class="action-btn delete-btn" data-id="" data-name="">
-            <Icon name="lucide:trash-2" size={16} />
-          </button>
-        </div>
-      </div>
-      <div class="route-card-body">
-        <h4 class="font-bold mb-2 route-label"></h4>
-        <code class="route-path"></code>
-        <p class="text-sm text-gray-400 mt-2 route-description" style="display: none;"></p>
-      </div>
-    </div>
-  </template>
-
   <AdminModal id="itemModal" title="Nova Rota">
     <form id="itemForm">
       <input type="hidden" id="itemId" />
@@ -109,9 +71,7 @@ const filters = [
       <div class="form-row">
         <div class="form-group">
           <label for="category">Categoria</label>
-          <select id="category" required
-            >{categories.map((c) => <option value={c}>{c}</option>)}</select
-          >
+          <select id="category" required>{categories.map((c) => <option value={c}>{c}</option>)}</select>
         </div>
         <div class="form-group">
           <div class="checkbox-group mt-4">
@@ -138,222 +98,7 @@ const filters = [
   </AdminModal>
 </Layout>
 
-<script is:inline define:vars={{ routesJson }}>
-  const generateId = (prefix) =>
-    `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).substring(2, 5)}`;
-  const STORAGE_KEY = 'admin_routes';
-  let items = JSON.parse(routesJson);
-  let deleteId = null;
-
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) items = JSON.parse(stored);
-  else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }
-
-  function render() {
-    const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    const cat = document.getElementById('categoryFilter')?.value || '';
-    const dyn = document.getElementById('dynamicFilter')?.value || '';
-    const status = document.getElementById('statusFilter')?.value || '';
-
-    const filtered = items.filter((r) => {
-      const matchSearch =
-        !search || r.label.toLowerCase().includes(search) || r.path.toLowerCase().includes(search);
-      const matchCat = !cat || r.category === cat;
-      const matchDyn = !dyn || (dyn === 'true' ? r.dynamic : !r.dynamic);
-      const matchStatus = !status || (status === 'active' ? r.active : !r.active);
-      return matchSearch && matchCat && matchDyn && matchStatus;
-    });
-
-    const grid = document.getElementById('grid');
-    if (!grid) return;
-    if (filtered.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><Icon name="lucide:route" size={48}/><h3>Nenhuma rota</h3></div>`;
-      return;
-    }
-
-    grid.innerHTML = '';
-    const template = document.getElementById('tpl-route-card');
-
-    filtered.forEach((r) => {
-      const clone = template.content.cloneNode(true);
-      const card = clone.querySelector('.route-card');
-      if (card && !r.active) card.classList.add('inactive');
-
-      const catBadge = clone.querySelector('.category-badge');
-      if (catBadge) {
-        catBadge.textContent = r.category;
-        catBadge.classList.add(`badge-${r.category.toLowerCase()}`);
-      }
-
-      if (r.dynamic) {
-        const dynBadge = clone.querySelector('.dynamic-badge');
-        if (dynBadge) dynBadge.style.display = 'inline-block';
-      }
-
-      const editBtn = clone.querySelector('.edit-btn');
-      if (editBtn) {
-        editBtn.dataset.id = r.id;
-        editBtn.addEventListener('click', () => edit(r.id));
-      }
-
-      const toggleBtn = clone.querySelector('.toggle-btn');
-      if (toggleBtn) {
-        toggleBtn.dataset.id = r.id;
-        const toggleRight = toggleBtn.querySelector('.icon-toggle-right');
-        const toggleLeft = toggleBtn.querySelector('.icon-toggle-left');
-        if (r.active && toggleRight) toggleRight.style.display = 'block';
-        if (!r.active && toggleLeft) toggleLeft.style.display = 'block';
-        toggleBtn.addEventListener('click', () => toggle(r.id));
-      }
-
-      const deleteBtn = clone.querySelector('.delete-btn');
-      if (deleteBtn) {
-        deleteBtn.dataset.id = r.id;
-        deleteBtn.dataset.name = r.label;
-        deleteBtn.addEventListener('click', () => showDelete(r.id, r.label));
-      }
-
-      const labelEl = clone.querySelector('.route-label');
-      if (labelEl) labelEl.textContent = r.label;
-
-      const pathEl = clone.querySelector('.route-path');
-      if (pathEl) pathEl.textContent = r.path;
-
-      if (r.description) {
-        const descEl = clone.querySelector('.route-description');
-        if (descEl) {
-          descEl.textContent = r.description;
-          descEl.style.display = 'block';
-        }
-      }
-
-      grid.appendChild(clone);
-    });
-
-    updateStats();
-  }
-
-  function updateStats() {
-    const total = items.length;
-    const dynamic = items.filter((r) => r.dynamic).length;
-    const cats = new Set(items.map((r) => r.category)).size;
-    const active = items.filter((r) => r.active).length;
-    document.querySelector('[data-stat="total"]').textContent = String(total);
-    document.querySelector('[data-stat="dynamic"]').textContent = String(dynamic);
-    document.querySelector('[data-stat="categories"]').textContent = String(cats);
-    document.querySelector('[data-stat="active"]').textContent = String(active);
-  }
-
-  function edit(id) {
-    const r = items.find((x) => x.id === id);
-    if (!r) return;
-    document.getElementById('modalTitle').textContent = 'Editar';
-    document.getElementById('itemId').value = r.id;
-    document.getElementById('label').value = r.label;
-    document.getElementById('path').value = r.path;
-    document.getElementById('description').value = r.description || '';
-    document.getElementById('category').value = r.category;
-    document.getElementById('dynamic').checked = r.dynamic || false;
-    document.getElementById('dynamicParams').value = r.dynamicParams || '';
-    document.getElementById('paramsGroup').style.display = r.dynamic ? 'block' : 'none';
-    document.getElementById('itemModal').classList.add('visible');
-  }
-
-  function saveItem() {
-    const id = document.getElementById('itemId').value;
-    const data = {
-      id: id || generateId('route'),
-      label: document.getElementById('label').value,
-      path: document.getElementById('path').value,
-      description: document.getElementById('description').value,
-      category: document.getElementById('category').value,
-      dynamic: document.getElementById('dynamic').checked,
-      dynamicParams: document.getElementById('dynamicParams').value || undefined,
-      active: true,
-    };
-    if (id) {
-      const idx = items.findIndex((x) => x.id === id);
-      if (idx !== -1) items[idx] = { ...items[idx], ...data };
-    } else items.unshift(data);
-    save();
-    render();
-    document.getElementById('itemModal').classList.remove('visible');
-  }
-
-  function toggle(id) {
-    const r = items.find((x) => x.id === id);
-    if (r) {
-      r.active = !r.active;
-      save();
-      render();
-    }
-  }
-
-  function showDelete(id, name) {
-    deleteId = id;
-    document.getElementById('deleteName').textContent = name;
-    document.getElementById('deleteModal').classList.add('visible');
-  }
-
-  function deleteItem() {
-    if (!deleteId) return;
-    items = items.filter((r) => r.id !== deleteId);
-    save();
-    render();
-    document.getElementById('deleteModal').classList.remove('visible');
-    deleteId = null;
-  }
-
-  document.getElementById('addBtn')?.addEventListener('click', () => {
-    document.getElementById('modalTitle').textContent = 'Nova';
-    document.getElementById('itemForm').reset();
-    document.getElementById('itemId').value = '';
-    document.getElementById('paramsGroup').style.display = 'none';
-    document.getElementById('itemModal').classList.add('visible');
-  });
-
-  document
-    .getElementById('cancelBtn')
-    ?.addEventListener('click', () =>
-      document.getElementById('itemModal').classList.remove('visible')
-    );
-  document.getElementById('saveBtn')?.addEventListener('click', saveItem);
-  document
-    .getElementById('cancelDeleteBtn')
-    ?.addEventListener('click', () =>
-      document.getElementById('deleteModal').classList.remove('visible')
-    );
-  document.getElementById('confirmDeleteBtn')?.addEventListener('click', deleteItem);
-  document.getElementById('searchInput')?.addEventListener('input', render);
-  document.getElementById('categoryFilter')?.addEventListener('change', render);
-  document.getElementById('dynamicFilter')?.addEventListener('change', render);
-  document.getElementById('statusFilter')?.addEventListener('change', render);
-  document.getElementById('dynamic')?.addEventListener('change', (e) => {
-    document.getElementById('paramsGroup').style.display = e.target.checked ? 'block' : 'none';
-  });
-
-  document
-    .querySelectorAll('[data-close]')
-    .forEach((btn) =>
-      btn.addEventListener('click', () =>
-        document.getElementById(btn.dataset.close)?.classList.remove('visible')
-      )
-    );
-  document.querySelectorAll('.modal-overlay').forEach((modal) =>
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('visible');
-    })
-  );
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape')
-      document
-        .querySelectorAll('.modal-overlay.visible')
-        .forEach((m) => m.classList.remove('visible'));
-  });
-
-  render();
+<script>
+  import { initRoutesAdmin } from '@/lib/routes-admin';
+  initRoutesAdmin();
 </script>

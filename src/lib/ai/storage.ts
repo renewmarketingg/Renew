@@ -1,7 +1,6 @@
-import type { Chat, ChatMessage, Project, ConnectedProject } from '@/types/ai';
+import type { Chat, ChatMessage, ConnectedProject, Project } from '@/types/ai';
 
-export type { ChatMessage, Chat, Project, ConnectedProject };
-export type ToastType = 'success' | 'error' | 'info';
+export type { Chat, ChatMessage, ConnectedProject, Project };
 
 const STORAGE_KEYS = {
   CHATS: 'ai_chats',

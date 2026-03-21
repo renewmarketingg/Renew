@@ -1,9 +1,4 @@
-import type { ToastType } from '@/types';
-
-export interface ToastConfig {
-  duration?: number;
-  position?: 'top' | 'bottom';
-}
+import type { ToastConfig, ToastType } from '@/types/toast';
 
 export const defaultToastConfig: ToastConfig = {
   duration: 3000,

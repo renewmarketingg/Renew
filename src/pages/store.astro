@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import { getProducts } from '@/services/productService';
 import affiliateProducts from '@/constants/affiliateProducts';
+import ProductCard from '@components/ProductCard/ProductCard.astro';
 import styles from '@/styles/store.module.css';
 import Button from '@components/ui/Button/Button.astro';
 
@@ -10,21 +11,13 @@ const dbProducts = await getProducts();
 const isDemoMode = dbProducts.length === 0;
 const products = isDemoMode ? affiliateProducts : dbProducts;
 
-const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
-const categories = ['Todos', ...uniqueCategories];
-
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
-};
-
-const calculateDiscount = (originalPrice: number, currentPrice: number): number => {
-  return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
-};
+const featuredProducts = products.filter((p) => p.featured);
+const otherProducts = products.filter((p) => !p.featured);
 ---
 
 <Layout
   title="Loja - Produtos Afiliados | Renew Digital"
-  description="Encontre os melhores produtos em nossa loja de afiliados. Eletrônicos, gadgets e muito mais com ótimas ofertas."
+  description="Encontre os melhores produtos em nossa loja de afiliados. Eletrônicos, acessórios e muito mais com ótimas ofertas."
 >
   <div class={styles.cartFloat} id="cartFloat">
     <button class={styles.cartBtn} id="cartBtn" aria-label="Carrinho">
@@ -46,7 +39,7 @@ const calculateDiscount = (originalPrice: number, currentPrice: number): number 
     <div class={styles.cartFooter}>
       <div class={styles.cartTotal}>
         <span>Total:</span>
-        <span id="cartTotal">R$ 0</span>
+        <span id="cartTotal">{'R$ 0'}</span>
       </div>
       <Button fullWidth id="checkoutBtn">
         <Icon name="lucide:credit-card" size={18} />
@@ -70,9 +63,13 @@ const calculateDiscount = (originalPrice: number, currentPrice: number): number 
         </div>
         <div class="category-filters" id="categoryFilters">
           <button class="btn btn-secondary category-btn active" data-category="Todos">Todos</button>
-          {categories.filter((c) => c !== 'Todos').map((cat) => (
-            <button class="btn btn-secondary category-btn" data-category={cat}>{cat}</button>
-          ))}
+          {
+            ['Eletrônicos', 'Áudio', 'Games', 'Livros', 'Acessórios'].map((cat) => (
+              <button class="btn btn-secondary category-btn" data-category={cat}>
+                {cat}
+              </button>
+            ))
+          }
         </div>
       </div>
     </div>
@@ -80,123 +77,56 @@ const calculateDiscount = (originalPrice: number, currentPrice: number): number 
 
   <section class={styles.productsSection}>
     <div class="container">
-      <div id="urlParamsInfo" class={styles.urlParamsInfo}></div>
+      {
+        isDemoMode && (
+          <div class={styles.demoBanner}>
+            <Icon name="lucide:test-tube" size={20} />
+            <span>
+              <strong>Modo de Demonstração:</strong> Exibindo produtos de teste pois não há produtos
+              reais.
+            </span>
+          </div>
+        )
+      }
 
-      {isDemoMode && (
-        <div class={styles.demoBanner}>
-          <Icon name="lucide:test-tube" size={20} />
-          <span>
-            <strong>Modo de Demonstração:</strong> Exibindo produtos de teste pois não há produtos reais.
-          </span>
-        </div>
-      )}
-
-      <div class="results-info" style="margin-bottom:1rem">
-        <span id="resultsInfo" style="color:var(--color-gray-400)">{products.length} produto{products.length !== 1 ? 's' : ''} encontrado{products.length !== 1 ? 's' : ''}</span>
+      <div class={styles.resultsInfo} id="resultsInfo">
+        {products.length} produto{products.length !== 1 ? 's' : ''} encontrado{products.length !== 1 ? 's' : ''}
       </div>
 
-      <div id="productsContainer" class={styles.productsGrid}>
-        {products.filter((p) => p.featured).length > 0 && (
-          <h2 style="font-size:1.5rem;margin-bottom:1.5rem;grid-column:1/-1">Produtos em Destaque</h2>
+      <div id="productsContainer">
+        {featuredProducts.length > 0 && (
+          <section class={styles.productsSection}>
+            <h2 class={styles.sectionTitle}>Produtos em Destaque</h2>
+            <div class={styles.productsGrid}>
+              {featuredProducts.map((product) => <ProductCard product={product as any} />)}
+            </div>
+          </section>
         )}
-        {products.filter((p) => p.featured).map((product) => (
-          <article class={styles.productCard} data-id={product.id} data-name={product.name.toLowerCase()} data-description={product.description.toLowerCase()} data-category={product.category}>
-            <div class={styles.productImage}>
-              <img src={product.image} alt={product.name} loading="lazy" />
-              {product.originalPrice && <span class={styles.productBadge}>Destaque</span>}
-            </div>
-            <div class={styles.productContent}>
-              <span class={styles.productCategory}>{product.category}</span>
-              <h3 class={styles.productTitle}>{product.name}</h3>
-              <p class={styles.productDescription}>{product.description}</p>
-              <div class={styles.productRating}>
-                <div class={styles.ratingStars}>
-                  {[1,2,3,4,5].map((i) => (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
-                </div>
-                <span class={styles.ratingText}>{product.rating} ({product.reviews.toLocaleString('pt-BR')} avaliações)</span>
-              </div>
-              <div class={styles.productPrice}>
-                <span class={styles.currentPrice}>{formatPrice(product.price)}</span>
-                {product.originalPrice && (
-                  <>
-                    <span class={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
-                    <span class={styles.discount}>-{calculateDiscount(product.originalPrice, product.price)}%</span>
-                  </>
-                )}
-              </div>
-              <div class={styles.productActions}>
-                <button class="btn btn-secondary add-to-cart-btn" data-id={product.id} data-name={product.name}>
-                  <Icon name="lucide:shopping-cart" size={18} /> Adicionar
-                </button>
-                <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class={`btn btn-primary ${styles.productLink}`}>
-                  <Icon name="lucide:shopping-bag" size={18} /> Comprar
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
 
-        {products.filter((p) => !p.featured).length > 0 && (
-          <h2 style="font-size:1.5rem;margin:2rem 0 1.5rem;grid-column:1/-1">{products.filter((p) => p.featured).length > 0 ? 'Outros Produtos' : 'Todos os Produtos'}</h2>
+        {otherProducts.length > 0 && (
+          <section class={styles.productsSection}>
+            <h2 class={styles.sectionTitle}>
+              {featuredProducts.length > 0 ? 'Outros Produtos' : 'Todos os Produtos'}
+            </h2>
+            <div class={styles.productsGrid}>
+              {otherProducts.map((product) => <ProductCard product={product as any} />)}
+            </div>
+          </section>
         )}
-        {products.filter((p) => !p.featured).map((product) => (
-          <article class={styles.productCard} data-id={product.id} data-name={product.name.toLowerCase()} data-description={product.description.toLowerCase()} data-category={product.category}>
-            <div class={styles.productImage}>
-              <img src={product.image} alt={product.name} loading="lazy" />
-              {product.originalPrice && <span class={styles.productBadge}>Oferta</span>}
-            </div>
-            <div class={styles.productContent}>
-              <span class={styles.productCategory}>{product.category}</span>
-              <h3 class={styles.productTitle}>{product.name}</h3>
-              <p class={styles.productDescription}>{product.description}</p>
-              <div class={styles.productRating}>
-                <div class={styles.ratingStars}>
-                  {[1,2,3,4,5].map((i) => (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill={i <= Math.round(product.rating) ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
-                </div>
-                <span class={styles.ratingText}>{product.rating} ({product.reviews.toLocaleString('pt-BR')} avaliações)</span>
-              </div>
-              <div class={styles.productPrice}>
-                <span class={styles.currentPrice}>{formatPrice(product.price)}</span>
-                {product.originalPrice && (
-                  <>
-                    <span class={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
-                    <span class={styles.discount}>-{calculateDiscount(product.originalPrice, product.price)}%</span>
-                  </>
-                )}
-              </div>
-              <div class={styles.productActions}>
-                <button class="btn btn-secondary add-to-cart-btn" data-id={product.id} data-name={product.name}>
-                  <Icon name="lucide:shopping-cart" size={18} /> Adicionar
-                </button>
-                <a href={product.affiliateLink} target="_blank" rel="noopener noreferrer" class={`btn btn-primary ${styles.productLink}`}>
-                  <Icon name="lucide:shopping-bag" size={18} /> Comprar
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
       </div>
     </div>
   </section>
 
   <template id="tpl-cart-item">
     <div class={styles.cartItem}>
-      <img src="" alt="" class={styles.cartItemImg} />
+      <div class={styles.cartItemImg}></div>
       <div class={styles.cartItemInfo}>
         <h4 class="cart-item-name"></h4>
         <span class={styles.cartItemPrice}></span>
         <div class={styles.cartItemQty}>
-          <button class={styles.qtyBtn} data-delta="-1">-</button>
-          <span class="cart-item-qty-val"></span>
-          <button class={styles.qtyBtn} data-delta="1">+</button>
+          <button class={styles.qtyBtn} data-action="decrease">−</button>
+          <span class="cart-item-qty-val">1</span>
+          <button class={styles.qtyBtn} data-action="increase">+</button>
         </div>
       </div>
       <button class={styles.cartItemRemove} aria-label="Remover">
@@ -209,9 +139,9 @@ const calculateDiscount = (originalPrice: number, currentPrice: number): number 
 <script>
   import { initCart } from '@/lib/cart';
 
-  const init = async () => {
+  const init = () => {
     try {
-      await initCart();
+      initCart();
     } catch (e) {
       console.error('initCart failed:', e);
     }
@@ -269,7 +199,9 @@ const calculateDiscount = (originalPrice: number, currentPrice: number): number 
       if (search) filters.push(`"${search}"`);
       if (category && category !== 'Todos') filters.push(category);
       const filterText = filters.length > 0 ? ` para ${filters.join(' em ')}` : '';
-      resultsInfo.textContent = `${count} produto${count !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}${filterText}`;
+      const word = count === 1 ? 'produto' : 'produtos';
+      const found = count === 1 ? 'encontrado' : 'encontrados';
+      resultsInfo.textContent = `${count} ${word} ${found}${filterText}`;
     }
   };
 

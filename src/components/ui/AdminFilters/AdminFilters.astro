@@ -7,14 +7,16 @@ interface FilterOption {
   label: string;
 }
 
+interface Filter {
+  id: string;
+  label?: string;
+  options?: FilterOption[];
+  type: 'select' | 'checkbox';
+}
+
 interface Props {
   searchPlaceholder?: string;
-  filters?: {
-    id: string;
-    label?: string;
-    options: FilterOption[];
-    type: 'select' | 'search';
-  }[];
+  filters?: Filter[];
 }
 
 const { searchPlaceholder = 'Buscar...', filters = [] } = Astro.props;
@@ -26,13 +28,23 @@ const { searchPlaceholder = 'Buscar...', filters = [] } = Astro.props;
     <input type="text" id="searchInput" placeholder={searchPlaceholder} />
   </div>
   {
-    filters.map((filter) => (
-      <select class={styles.filterSelect} id={`${filter.id}Filter`} data-filter={filter.id}>
-        <option value="">{filter.label || 'Todos'}</option>
-        {filter.options.map((opt) => (
-          <option value={opt.value}>{opt.label}</option>
-        ))}
-      </select>
-    ))
+    filters.map((filter) => {
+      if (filter.type === 'checkbox') {
+        return (
+          <label class={styles.checkboxLabel}>
+            <input type="checkbox" id={`${filter.id}Filter`} data-filter={filter.id} />
+            <span>{filter.label}</span>
+          </label>
+        );
+      }
+      return (
+        <select class={styles.filterSelect} id={`${filter.id}Filter`} data-filter={filter.id}>
+          <option value="">{filter.label || 'Todos'}</option>
+          {filter.options?.map((opt) => (
+            <option value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      );
+    })
   }
 </div>

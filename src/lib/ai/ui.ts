@@ -144,8 +144,13 @@ export const renderMessages = (messages: ChatMessage[]): void => {
   if (!container) return;
 
   container.innerHTML = '';
-  hideElement('welcomeScreen');
 
+  if (messages.length === 0) {
+    showElement('welcomeScreen');
+    return;
+  }
+
+  hideElement('welcomeScreen');
   messages.forEach((msg) => addMessageToUI(msg.role, msg.content, msg.images));
 };
 

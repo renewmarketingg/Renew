@@ -52,41 +52,115 @@ import '@/styles/global.css';
             <Icon name="lucide:chevron-down" size={16} />
           </button>
           <div class="ai-model-dropdown" id="modelDropdown">
-            <button class="ai-model-option" data-model="gpt-4">
-              <Icon name="lucide:brain" size={16} />
-              <div class="ai-model-info">
-                <span class="ai-model-name">GPT-4</span>
-                <span class="ai-model-desc">Modelo mais avançado</span>
-              </div>
-            </button>
-            <button class="ai-model-option" data-model="gpt-4o">
-              <Icon name="lucide:brain" size={16} />
-              <div class="ai-model-info">
-                <span class="ai-model-name">GPT-4o</span>
-                <span class="ai-model-desc">Omnichannel</span>
-              </div>
-            </button>
-            <button class="ai-model-option" data-model="claude">
-              <Icon name="lucide:bot" size={16} />
-              <div class="ai-model-info">
-                <span class="ai-model-name">Claude 3</span>
-                <span class="ai-model-desc">Análise profunda</span>
-              </div>
-            </button>
-            <button class="ai-model-option" data-model="gemini">
-              <Icon name="lucide:gem" size={16} />
-              <div class="ai-model-info">
-                <span class="ai-model-name">Gemini</span>
-                <span class="ai-model-desc">Google AI</span>
-              </div>
-            </button>
-            <button class="ai-model-option" data-model="llama">
-              <Icon name="lucide:bird" size={16} />
-              <div class="ai-model-info">
-                <span class="ai-model-name">Llama 3</span>
-                <span class="ai-model-desc">Meta AI</span>
-              </div>
-            </button>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">OpenAI</span>
+              <button class="ai-model-option" data-model="gpt-4o" data-provider="openai">
+                <Icon name="lucide:sparkles" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">GPT-4o</span>
+                  <span class="ai-model-desc">Mais capaz e rápido</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="gpt-4o-mini" data-provider="openai">
+                <Icon name="lucide:sparkles" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">GPT-4o Mini</span>
+                  <span class="ai-model-desc">Rápido e econômico</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="gpt-4-turbo" data-provider="openai">
+                <Icon name="lucide:sparkles" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">GPT-4 Turbo</span>
+                  <span class="ai-model-desc">Alto desempenho</span>
+                </div>
+              </button>
+            </div>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">Anthropic</span>
+              <button class="ai-model-option" data-model="claude-3-5-sonnet-20241022" data-provider="anthropic">
+                <Icon name="lucide:bot" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Claude 3.5 Sonnet</span>
+                  <span class="ai-model-desc">Análise profunda e código</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="claude-3-5-haiku-20241022" data-provider="anthropic">
+                <Icon name="lucide:bot" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Claude 3.5 Haiku</span>
+                  <span class="ai-model-desc">Rápido e preciso</span>
+                </div>
+              </button>
+            </div>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">Google</span>
+              <button class="ai-model-option" data-model="gemini-1.5-pro" data-provider="google">
+                <Icon name="lucide:gem" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Gemini 1.5 Pro</span>
+                  <span class="ai-model-desc">Contexto longo (2M tokens)</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="gemini-1.5-flash" data-provider="google">
+                <Icon name="lucide:gem" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Gemini 1.5 Flash</span>
+                  <span class="ai-model-desc">Rápido e eficiente</span>
+                </div>
+              </button>
+            </div>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">Mistral</span>
+              <button class="ai-model-option" data-model="mistral-large-latest" data-provider="mistral">
+                <Icon name="lucide:wind" size={16} />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Mistral Large</span>
+                  <span class="ai-model-desc">Alto desempenho</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="mistral-small-latest" data-provider="mistral">
+                <Icon name="lucide:wind" size="16" />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Mistral Small</span>
+                  <span class="ai-model-desc">Rápido e econômico</span>
+                </div>
+              </button>
+            </div>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">Groq</span>
+              <button class="ai-model-option" data-model="llama-3.1-70b-versatile" data-provider="groq">
+                <Icon name="lucide:bird" size="16" />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Llama 3.1 70B</span>
+                  <span class="ai-model-desc">Versátil e rápido</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="mixtral-8x7b-32768" data-provider="groq">
+                <Icon name="lucide:bird" size="16" />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Mixtral 8x7B</span>
+                  <span class="ai-model-desc">Alta qualidade</span>
+                </div>
+              </button>
+            </div>
+            <div class="ai-model-group">
+              <span class="ai-model-group-label">Cohere</span>
+              <button class="ai-model-option" data-model="command-r-plus" data-provider="cohere">
+                <Icon name="lucide:cpu" size="16" />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Command R+</span>
+                  <span class="ai-model-desc">RAG otimizado</span>
+                </div>
+              </button>
+              <button class="ai-model-option" data-model="command-r" data-provider="cohere">
+                <Icon name="lucide:cpu" size="16" />
+                <div class="ai-model-info">
+                  <span class="ai-model-name">Command R</span>
+                  <span class="ai-model-desc">Eficiente</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -95,13 +169,16 @@ import '@/styles/global.css';
         </div>
 
         <div class="ai-header-right">
-          <button class="theme-toggle" id="themeToggleBtn" aria-label="Alternar tema">
-            <Icon name="lucide:sun" size={18} class="icon-sun" />
-            <Icon name="lucide:moon" size={18} class="icon-moon" />
+          <button class="ai-settings-btn" id="settingsBtn" aria-label="Configurações">
+            <Icon name="lucide:settings" size={20} />
           </button>
-          <Button variant="danger" id="clearChatBtn" aria-label="Limpar conversa">
-            <Icon name="lucide:trash-2" size={18} />
-          </Button>
+          <button class="theme-toggle ai-theme-toggle" id="themeToggleBtn" aria-label="Alternar tema">
+            <Icon name="lucide:sun" size={20} class="icon-sun" />
+            <Icon name="lucide:moon" size={20} class="icon-moon" />
+          </button>
+          <button class="ai-clear-btn" id="clearChatBtn" aria-label="Limpar conversa">
+            <Icon name="lucide:trash-2" size={20} />
+          </button>
         </div>
       </header>
 
@@ -215,6 +292,150 @@ import '@/styles/global.css';
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="modal-overlay ai-settings-modal" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Configurações</h2>
+        <button class="modal-close" id="closeSettingsModal" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Provedores de IA</label>
+          <div class="ai-providers-status" id="providersStatus">
+            <div class="ai-provider-item" data-provider="openai">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">OpenAI</span>
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+            <div class="ai-provider-item" data-provider="anthropic">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">Anthropic</span>
+              <a href="https://console.anthropic.com/" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+            <div class="ai-provider-item" data-provider="google">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">Google</span>
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+            <div class="ai-provider-item" data-provider="mistral">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">Mistral</span>
+              <a href="https://console.mistral.ai/api-keys/" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+            <div class="ai-provider-item" data-provider="groq">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">Groq</span>
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+            <div class="ai-provider-item" data-provider="cohere">
+              <span class="provider-status-dot"></span>
+              <span class="provider-name">Cohere</span>
+              <a href="https://dashboard.cohere.com/api-keys" target="_blank" rel="noopener" class="provider-link">Obter chave</a>
+            </div>
+          </div>
+          <p class="form-hint">Configure as variáveis de ambiente para ativar os provedores</p>
+        </div>
+        <div class="form-group">
+          <label for="defaultModel">Modelo Padrão</label>
+          <select id="defaultModel">
+            <optgroup label="OpenAI">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            </optgroup>
+            <optgroup label="Anthropic">
+              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+              <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+            </optgroup>
+            <optgroup label="Google">
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            </optgroup>
+            <optgroup label="Mistral">
+              <option value="mistral-large-latest">Mistral Large</option>
+              <option value="mistral-small-latest">Mistral Small</option>
+            </optgroup>
+            <optgroup label="Groq">
+              <option value="llama-3.1-70b-versatile">Llama 3.1 70B</option>
+              <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+            </optgroup>
+            <optgroup label="Cohere">
+              <option value="command-r-plus">Command R+</option>
+              <option value="command-r">Command R</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="aiTemperature">Temperature: <span id="tempValue">0.7</span></label>
+          <input type="range" id="aiTemperature" min="0" max="2" step="0.1" value="0.7" />
+          <p class="form-hint">Baixo = mais preciso, Alto = mais criativo</p>
+        </div>
+        <div class="form-group">
+          <label for="aiTopP">Top P: <span id="topPValue">1.0</span></label>
+          <input type="range" id="aiTopP" min="0" max="1" step="0.05" value="1.0" />
+          <p class="form-hint">Nucleus sampling (0.8-1.0 recomendado)</p>
+        </div>
+        <div class="form-group">
+          <label for="aiPresencePenalty">Presence Penalty: <span id="presencePenaltyValue">0.0</span></label>
+          <input type="range" id="aiPresencePenalty" min="-2" max="2" step="0.1" value="0.0" />
+          <p class="form-hint">Incentiva novos tópicos (-2 a 2)</p>
+        </div>
+        <div class="form-group">
+          <label for="aiFrequencyPenalty">Frequency Penalty: <span id="frequencyPenaltyValue">0.0</span></label>
+          <input type="range" id="aiFrequencyPenalty" min="-2" max="2" step="0.1" value="0.0" />
+          <p class="form-hint">Reduz repetições (-2 a 2)</p>
+        </div>
+        <div class="form-group">
+          <label for="maxTokens">Máximo de Tokens</label>
+          <select id="maxTokens">
+            <option value="1024">1,024</option>
+            <option value="2048">2,048</option>
+            <option value="4096" selected>4,096</option>
+            <option value="8192">8,192</option>
+            <option value="16384">16,384</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="systemPrompt">Prompt do Sistema</label>
+          <textarea id="systemPrompt" rows="4" placeholder="Instruções para o assistente...">Você é um assistente de IA prestativo. Responda em Português (Brasil), a menos que seja explicitamente solicitado de outra forma.</textarea>
+        </div>
+        <Button variant="primary" id="saveSettingsBtn" class="btn-full">
+          <Icon name="lucide:save" size={18} />
+          Salvar Configurações
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Imagine Modal -->
+  <div class="modal-overlay ai-imagine-modal" id="imagineModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Criar Imagem</h2>
+        <button class="modal-close" id="closeImagineModal" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="imagePrompt">Descreva a imagem que deseja criar</label>
+          <textarea id="imagePrompt" rows="4" placeholder="Ex: Um gato dourado sentado em uma poltrona azul..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="imageStyle">Estilo</label>
+          <select id="imageStyle">
+            <option value="natural">Natural</option>
+            <option value="vivid">Vibrante</option>
+            <option value="artistic">Artístico</option>
+          </select>
+        </div>
+        <Button variant="primary" id="generateImageBtn" class="btn-full">
+          <Icon name="lucide:sparkles" size={18} />
+          Gerar Imagem
+        </Button>
+      </div>
+    </div>
+  </div>
+
   <!-- ─── HTML Templates (cloned by src/lib/ai/ui.ts) ─── -->
 
   <!-- User message -->
@@ -261,12 +482,12 @@ import '@/styles/global.css';
 
   <!-- Sidebar chat item -->
   <template id="tpl-chat-item">
-    <button class="ai-chat-item">
+    <div class="ai-chat-item">
       <span class="chat-title"></span>
       <button class="chat-delete-btn" aria-label="Excluir conversa">
-        <Icon name="ai-close" width={14} height={14} />
+        <Icon name="lucide:x" width={14} height={14} />
       </button>
-    </button>
+    </div>
   </template>
 
   <!-- Connected project item -->

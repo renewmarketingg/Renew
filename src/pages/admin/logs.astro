@@ -11,10 +11,11 @@ const categories = ['auth', 'api', 'system'];
 const levels = ['info', 'warning', 'error', 'success'];
 
 const stats = [
-  { label: 'Total', value: '0', icon: 'lucide:file-text' },
+  { label: 'Total', value: '0', statKey: 'total', icon: 'lucide:file-text' },
   {
     label: 'Erros',
     value: '0',
+    statKey: 'errors',
     icon: 'lucide:alert-circle',
     iconBg: 'rgba(239,68,68,0.1)',
     iconColor: '#ef4444',
@@ -22,6 +23,7 @@ const stats = [
   {
     label: 'Alertas',
     value: '0',
+    statKey: 'warnings',
     icon: 'lucide:alert-triangle',
     iconBg: 'rgba(251,191,36,0.1)',
     iconColor: '#fbbf24',
@@ -29,6 +31,7 @@ const stats = [
   {
     label: 'Última att',
     value: '--',
+    statKey: 'lastUpdate',
     icon: 'lucide:check-circle',
     iconBg: 'rgba(34,197,94,0.1)',
     iconColor: '#22c55e',
@@ -36,6 +39,11 @@ const stats = [
 ];
 
 const filters = [
+  {
+    id: 'isTest',
+    label: 'Logs de teste',
+    type: 'checkbox' as const,
+  },
   {
     id: 'level',
     label: 'Nível',
@@ -84,20 +92,6 @@ const filters = [
     </div>
   </div>
 
-  <template id="tpl-log-row">
-    <tr>
-      <td class="log-timestamp text-sm"></td>
-      <td><span class="badge log-level"></span></td>
-      <td class="log-category"></td>
-      <td class="log-message"></td>
-      <td>
-        <button class="action-btn detail-btn" data-id="">
-          <Icon name="lucide:eye" size={16} />
-        </button>
-      </td>
-    </tr>
-  </template>
-
   <Modal id="detailModal" title="Detalhes do Log" size="lg">
     <div id="detailContent"></div>
   </Modal>
@@ -112,173 +106,6 @@ const filters = [
 </Layout>
 
 <script>
-  import { closeModal, formatDateTime, initModals, openModal } from '../../lib/admin';
-
-  type LogLevel = 'info' | 'warning' | 'error' | 'success';
-  type LogCategory = 'auth' | 'api' | 'system';
-
-  interface Log {
-    id: string;
-    timestamp: string;
-    level: LogLevel;
-    category: LogCategory;
-    message: string;
-  }
-
-  const STORAGE_KEY = 'app_logs';
-  const MAX_LOGS = 500;
-  let logs: Log[] = [];
-
-  const defaultLogs = generateMockLogs();
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) logs = JSON.parse(stored);
-  else {
-    logs = defaultLogs;
-    save();
-  }
-
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs.slice(0, MAX_LOGS)));
-  }
-
-  function generateMockLogs(): Log[] {
-    const msgs: Record<LogCategory, string[]> = {
-      auth: ['Login realizado', 'Falha na autenticação', 'Sessão expirada'],
-      api: ['Requisição GET', 'Erro 404', 'Timeout'],
-      system: ['Backup iniciado', 'Memória crítica', 'Cache limpo'],
-    };
-    const arr: Log[] = [];
-    for (let i = 0; i < 20; i++) {
-      const cats: LogCategory[] = ['auth', 'api', 'system'];
-      const cat = cats[Math.floor(Math.random() * cats.length)];
-      const lvl: LogLevel =
-        Math.random() > 0.7 ? (Math.random() > 0.5 ? 'error' : 'warning') : 'info';
-      arr.push({
-        id: `log-${i}`,
-        timestamp: new Date(Date.now() - Math.random() * 86400000 * 7).toISOString(),
-        level: lvl,
-        category: cat,
-        message: msgs[cat][Math.floor(Math.random() * msgs[cat].length)],
-      });
-    }
-    return arr.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }
-
-  function render() {
-    const search =
-      document.querySelector<HTMLInputElement>('#searchInput')?.value.toLowerCase() || '';
-    const level = document.querySelector<HTMLInputElement>('#levelFilter')?.value || '';
-    const cat = document.querySelector<HTMLInputElement>('#categoryFilter')?.value || '';
-
-    const filtered = logs.filter((l) => {
-      const matchSearch = !search || l.message.toLowerCase().includes(search);
-      const matchLevel = !level || l.level === level;
-      const matchCat = !cat || l.category === cat;
-      return matchSearch && matchLevel && matchCat;
-    });
-
-    const tbody = document.getElementById('logsTableBody');
-    if (!tbody) return;
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">Nenhum log</td></tr>`;
-      return;
-    }
-
-    const colors: Record<LogLevel, string> = {
-      info: '#3b82f6',
-      warning: '#fbbf24',
-      error: '#ef4444',
-      success: '#22c55e',
-    };
-
-    tbody.innerHTML = '';
-    const template = document.getElementById('tpl-log-row') as HTMLTemplateElement;
-
-    filtered.slice(0, 100).forEach((l) => {
-      const clone = template.content.cloneNode(true) as DocumentFragment;
-      const tr = clone.querySelector('tr');
-      if (tr) tr.dataset.id = l.id;
-
-      const timestamp = clone.querySelector('.log-timestamp');
-      if (timestamp) timestamp.textContent = formatDateTime(l.timestamp);
-
-      const levelBadge = clone.querySelector('.log-level') as HTMLElement;
-      if (levelBadge) {
-        levelBadge.textContent = l.level;
-        levelBadge.style.background = `${colors[l.level]}20`;
-        levelBadge.style.color = colors[l.level];
-      }
-
-      const category = clone.querySelector('.log-category');
-      if (category) category.textContent = l.category;
-
-      const message = clone.querySelector('.log-message');
-      if (message) message.textContent = l.message;
-
-      const detailBtn = clone.querySelector('.detail-btn') as HTMLButtonElement;
-      if (detailBtn) {
-        detailBtn.dataset.id = l.id;
-        detailBtn.addEventListener('click', () => showDetail(l.id));
-      }
-
-      tbody.appendChild(clone);
-    });
-
-    updateStats(filtered);
-  }
-
-  function updateStats(filtered: Log[]) {
-    document.querySelector("[data-stat='total']")!.textContent = String(filtered.length);
-    document.querySelector("[data-stat='errors']")!.textContent = String(
-      filtered.filter((l) => l.level === 'error').length
-    );
-    document.querySelector("[data-stat='warnings']")!.textContent = String(
-      filtered.filter((l) => l.level === 'warning').length
-    );
-    document.getElementById('lastUpdate')!.textContent = new Date().toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  function showDetail(id: string) {
-    const l = logs.find((x) => x.id === id);
-    if (!l) return;
-    document.getElementById('detailContent')!.innerHTML = `
-      <div class="info-row"><span>ID</span><code>${l.id}</code></div>
-      <div class="info-row"><span>Timestamp</span>${formatDateTime(l.timestamp)}</div>
-      <div class="info-row"><span>Nível</span>${l.level}</div>
-      <div class="info-row"><span>Categoria</span>${l.category}</div>
-      <div class="info-row"><span>Mensagem</span>${l.message}</div>
-    `;
-    openModal('detailModal');
-  }
-
-  function clearLogs() {
-    logs = [];
-    save();
-    render();
-    closeModal('clearModal');
-  }
-
-  function exportLogs() {
-    const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `logs-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-  }
-
-  document.getElementById('searchInput')?.addEventListener('input', render);
-  document.getElementById('levelFilter')?.addEventListener('change', render);
-  document.getElementById('categoryFilter')?.addEventListener('change', render);
-  document.getElementById('clearBtn')?.addEventListener('click', () => openModal('clearModal'));
-  document
-    .getElementById('cancelClearBtn')
-    ?.addEventListener('click', () => closeModal('clearModal'));
-  document.getElementById('confirmClearBtn')?.addEventListener('click', clearLogs);
-  document.getElementById('exportBtn')?.addEventListener('click', exportLogs);
-
-  initModals();
-  render();
+  import { initLogsAdmin } from '../../lib/logs-admin';
+  initLogsAdmin();
 </script>

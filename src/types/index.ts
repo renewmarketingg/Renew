@@ -1,8 +1,6 @@
-export type ToastType = 'success' | 'error' | 'info';
-
+export type { AiModel, AiQuickAction, Chat, ChatMessage, ConnectedProject, Project } from './ai';
 export type { LayoutProps } from './layout';
-export type { SeoProps, SeoMeta, SeoFonts } from './seo';
-export type { Chat, ChatMessage, Project, ConnectedProject, AiModel, AiQuickAction } from './ai';
+export type { SeoFonts, SeoMeta, SeoProps } from './seo';
 
 export type OwnerCredentials = {
   email: string;
@@ -14,7 +12,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | null;
   image: string;
   affiliateLink: string;
   category: string;

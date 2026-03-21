@@ -1,0 +1,413 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Loja e Carrinho - Documentacao" adm={true} activePage="/admin/docs">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-nav">
+        <div class="docs-nav-section">
+          <h3>Getting Started</h3>
+          <ul>
+            <li><a href="/admin/docs">Visao Geral</a></li>
+            <li><a href="/admin/docs/structure">Estrutura</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Sistema</h3>
+          <ul>
+            <li><a href="/admin/docs/auth">Autenticacao</a></li>
+            <li><a href="/admin/docs/store" class="active">Loja e Carrinho</a></li>
+            <li><a href="/admin/docs/ai">Inteligencia Artificial</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Backend</h3>
+          <ul>
+            <li><a href="/admin/docs/database">Banco de Dados</a></li>
+            <li><a href="/admin/docs/api">APIs</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Configuracao</h3>
+          <ul>
+            <li><a href="/admin/docs/env">Variaveis de Ambiente</a></li>
+            <li><a href="/admin/docs/commands">Comandos</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="docs-content">
+      <h1><Icon name="lucide:shopping-cart" size={24} /> Sistema de Loja e Carrinho</h1>
+      <p class="lead">
+        O carrinho de compras e totalmente <strong>client-side</strong>, utilizando localStorage para
+        persistencia e o padrao Observer para atualizacoes em tempo tempo real na interface.
+      </p>
+
+      <h2><Icon name="lucide:database" size={20} /> Arquitetura</h2>
+      <p>
+        O sistema utiliza Astro DB (Turso) para dados de produtos e localStorage para o carrinho.
+        Essa separacao permite que o carrinho funcione mesmo em ambientes onde o banco de dados
+        nao esta disponivel.
+      </p>
+
+      <h3>Componentes Principais</h3>
+      <div class="files-list">
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/lib/cart/store.ts</code>
+          <span>Classe CartStore com padrao Observer</span>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/lib/cart/client.ts</code>
+          <span>Gerenciador de UI para interacoes</span>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/pages/api/cart/</code>
+          <span>Endpoints de sincronizacao (placeholder)</span>
+        </div>
+      </div>
+
+      <h2><Icon name="lucide:zap" size={20} /> Padrao Observer</h2>
+      <p>O CartStore implementa o padrao Observer para notificar subscribers sobre mudancas:</p>
+
+      <pre>// Inscreve para receber atualizacoes
+cartStore.subscribe((state) => {'{'}
+  updateCounter(state.items.length);
+  renderCartModal(state);
+{'}'});
+
+// Adiciona item
+cartStore.addItem({'{'}
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+{'}'});
+
+// Remove item
+cartStore.removeItem(productId);
+
+// Atualiza quantidade
+cartStore.updateQuantity(productId, quantity);</pre>
+
+      <h2><Icon name="lucide:package" size={20} /> Estrutura do Produto</h2>
+      <p>Os produtos sao armazenados no Astro DB com a seguinte estrutura:</p>
+
+      <pre>Products {'{'}
+  id: string;           // UUID unico
+  name: string;         // Nome do produto
+  description: string; // Descricao detalhada
+  price: number;        // Preco em centavos
+  image: string;        // URL da imagem
+  category: string;     // Categoria do produto
+  featured: boolean;    // Produto em destaque
+  visible: boolean;     // Visivel na loja
+  createdAt: Date;     // Data de criacao
+{'}'}</pre>
+
+      <h2><Icon name="lucide:palette" size={20} /> Componentes de Interface</h2>
+      <div class="files-list">
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/components/ProductCard/</code>
+          <span>Card de produto com botao adicionar</span>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/components/CartModal/</code>
+          <span>Modal do carrinho com controles</span>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/components/CartButton/</code>
+          <span>Botao flutuante com contador</span>
+        </div>
+      </div>
+
+      <h2><Icon name="lucide:moon" size={20} /> Modo Escuro</h2>
+      <p>Os controles de quantidade (+/-) possuem estilos dedicados para modo escuro:</p>
+
+      <pre>.qty-btn {'{'}
+  background: #333;
+  color: #f4f2f4;
+  border-color: #444;
+{'}'}
+
+[data-theme='dark'] .qty-btn:hover {'{'}
+  background: #444;
+{'}'}</pre>
+
+      <h2><Icon name="lucide:layout-grid" size={20} /> Seo de Produtos</h2>
+      <p>A pagina de loja exibe produtos em um grid responsivo:</p>
+      <ul class="feature-list">
+        <li><strong>Desktop:</strong> 4 colunas</li>
+        <li><strong>Tablet:</strong> 2 colunas</li>
+        <li><strong>Mobile:</strong> 1 coluna</li>
+      </ul>
+
+      <h2><Icon name="lucide:settings" size={20} /> Configuracao</h2>
+      <p>Para exibir produtos no carrinho, os componentes ProductCard precisam dos atributos:</p>
+      <pre>data-product-id={'{'}product.id{'}'}
+data-name={'{'}product.name{'}'}
+data-price={'{'}product.price{'}'}
+data-image={'{'}product.image{'}'}</pre>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .docs-layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 70px auto;
+    padding: 2rem;
+  }
+
+  .docs-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .docs-nav {
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 1rem;
+  }
+
+  .docs-nav-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .docs-nav-section h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+  }
+
+  .docs-nav-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .docs-nav-section a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-gray-400);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .docs-nav-section a:hover {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-dark);
+  }
+
+  .docs-nav-section a.active {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .docs-content {
+    flex: 1;
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 2rem;
+  }
+
+  .docs-content h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+  }
+
+  .docs-content h1 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary-alpha-20);
+  }
+
+  .docs-content h2:first-of-type {
+    margin-top: 0;
+  }
+
+  .docs-content h2 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .docs-content .lead {
+    font-size: 1.125rem;
+    color: var(--color-gray-400);
+    line-height: 1.7;
+  }
+
+  .docs-content p {
+    color: var(--color-gray-400);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content code {
+    font-family: monospace;
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+  }
+
+  .docs-content pre {
+    background: var(--color-gray-900);
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .docs-content ul {
+    color: var(--color-gray-400);
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .feature-list li {
+    padding: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid var(--color-gray-100);
+  }
+
+  .feature-list li::before {
+    content: '->';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary);
+  }
+
+  .files-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: var(--color-gray-50);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-gray-200);
+  }
+
+  .file-item svg {
+    color: var(--color-primary);
+  }
+
+  .file-item code {
+    font-size: 0.875rem;
+    color: var(--color-dark);
+    background: none;
+    padding: 0;
+  }
+
+  .file-item span {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--color-gray-400);
+  }
+
+  @media (max-width: 992px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+
+    .docs-sidebar {
+      width: 100%;
+      position: static;
+    }
+
+    .docs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  :global([data-theme='dark']) .docs-nav,
+  :global([data-theme='dark']) .docs-content {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .docs-content h1,
+  :global([data-theme='dark']) .docs-content h2,
+  :global([data-theme='dark']) .docs-content h3 {
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) .docs-content p,
+  :global([data-theme='dark']) .docs-content li {
+    color: #a0a0a0;
+  }
+
+  :global([data-theme='dark']) .file-item {
+    background: #252525;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .file-item code {
+    color: #e5e5e5;
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './ThemeToggle.module.css';
+
+interface Props {
+  className?: string;
+}
+
+const { className = '' }: Props = Astro.props;
+---
+
+<button
+  type="button"
+  class={`${styles.themeToggle} theme-toggle ${className}`}
+  aria-label="Alternar tema claro e escuro"
+>
+  <Icon size="20" name="lucide:sun" class={styles.iconSun} />
+  <Icon size="20" name="lucide:moon" class={styles.iconMoon} />
+</button>

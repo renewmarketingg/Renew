@@ -6,9 +6,11 @@ import {
   addMessageToChat,
   clearCurrentChat,
   updateChatModel,
+  renameChat,
 } from './chat';
 import { initTheme } from './theme';
 import { initProjectModal } from './projects';
+import { sendMessage as aiSendMessage } from './chat-service';
 import {
   showToast,
   renderChatList,
@@ -24,7 +26,7 @@ import {
   renderConnectedProject,
   renderProjectsList,
 } from './ui';
-import { getConnectedProject } from './storage';
+import { initSettingsModal, initImagineModal, getSettings } from './settings';
 
 declare global {
   interface Window {
@@ -56,19 +58,29 @@ const initModelSelector = (): void => {
   const modelDropdown = document.getElementById('modelDropdown');
 
   modelBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
     e.stopPropagation();
     modelDropdown?.classList.toggle('show');
   });
 
   document.querySelectorAll('.ai-model-option').forEach((option) => {
-    option.addEventListener('click', () => {
+    option.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const model = (option as HTMLElement).dataset.model;
       const name = option.querySelector('.ai-model-name')?.textContent || '';
       const currentModelSpan = document.getElementById('currentModel');
       if (currentModelSpan) currentModelSpan.textContent = name;
       modelDropdown?.classList.remove('show');
 
-      if (model) updateChatModel(model);
+      if (model) {
+        updateChatModel(model);
+        const currentChat = loadChat(getCurrentChatIdLocal() || '');
+        if (currentChat) {
+          currentChat.model = model;
+          renderMessages(currentChat.messages);
+        }
+      }
     });
   });
 
@@ -159,7 +171,10 @@ const initQuickActions = (): void => {
 };
 
 const initNewChatButton = (): void => {
-  document.getElementById('newChatBtn')?.addEventListener('click', () => {
+  const btn = document.getElementById('newChatBtn');
+  btn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const chat = createNewChat();
     setCurrentChatIdLocal(chat.id);
     renderChatList();
@@ -168,7 +183,10 @@ const initNewChatButton = (): void => {
 };
 
 const initClearChat = (): void => {
-  document.getElementById('clearChatBtn')?.addEventListener('click', () => {
+  const btn = document.getElementById('clearChatBtn');
+  btn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     clearCurrentChat();
     showWelcome();
     renderChatList();
@@ -180,6 +198,22 @@ const initImageGen = (): void => {
   document.getElementById('imageGenBtn')?.addEventListener('click', () => {
     setInputValue('chatInput', 'Crie uma imagem de: ');
     document.getElementById('chatInput')?.focus();
+  });
+};
+
+const initInputListener = (): void => {
+  const chatInput = document.getElementById('chatInput') as HTMLTextAreaElement | null;
+  if (!chatInput) return;
+
+  chatInput.addEventListener('input', () => {
+    const currentChat = loadChat(getCurrentChatIdLocal() || '');
+    if (currentChat && currentChat.messages.length === 0 && currentChat.title === 'Nova conversa') {
+      const preview = chatInput.value.substring(0, 30) + (chatInput.value.length > 30 ? '...' : '');
+      if (preview.trim()) {
+        renameChat(currentChat.id, preview);
+        renderChatList();
+      }
+    }
   });
 };
 
@@ -198,7 +232,16 @@ const sendMessage = (): void => {
   addMessageToChat('user', message, images);
   clearInput('chatInput');
 
-  simulateResponse();
+  const currentChat = loadChat(getCurrentChatIdLocal() || '');
+  if (currentChat) {
+    const preview = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+    if (currentChat.messages.length === 1) {
+      renameChat(currentChat.id, preview);
+      renderChatList();
+    }
+  }
+
+  handleAIResponse();
 };
 
 const initSendMessage = (): void => {
@@ -212,26 +255,50 @@ const initSendMessage = (): void => {
   });
 };
 
-const simulateResponse = (): void => {
+const handleAIResponse = async (): Promise<void> => {
   const typingEl = showTypingIndicator();
   if (!typingEl) return;
 
-  setTimeout(() => {
-    removeTypingIndicator(typingEl);
-
-    const connectedProject = getConnectedProject();
-    let responseText: string;
-
-    if (connectedProject) {
-      responseText = `Entendi! Vou analisar o projeto "${connectedProject.name}" e ajudá-lo com o que precisar. O projeto está conectado em: ${connectedProject.path}`;
-    } else {
-      responseText =
-        'Entendi sua mensagem! Ainda não tenho uma conexão com a API configurada, mas a interface está pronta. Você pode configurar as chaves de API nas variáveis de ambiente para começar a usar.';
+  try {
+    const currentChat = loadChat(getCurrentChatIdLocal() || '');
+    if (!currentChat) {
+      removeTypingIndicator(typingEl);
+      return;
     }
 
+    const settings = getSettings();
+    const modelSettings = {
+      model: currentChat.model || settings.defaultModel,
+      temperature: settings.temperature,
+      maxTokens: settings.maxTokens,
+      topP: settings.topP,
+      presencePenalty: settings.presencePenalty,
+      frequencyPenalty: settings.frequencyPenalty,
+      systemPrompt: settings.systemPrompt,
+    };
+
+    const messages = currentChat.messages.map((m) => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    }));
+
+    const responseText = await aiSendMessage({
+      messages,
+      ...modelSettings,
+    });
+
+    removeTypingIndicator(typingEl);
     addMessageToChat('assistant', responseText);
     renderChatList();
-  }, 1500);
+  } catch (error) {
+    removeTypingIndicator(typingEl);
+    showToast('Erro ao gerar resposta. Verifique sua chave de API.', 'error');
+    addMessageToChat(
+      'assistant',
+      'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, verifique se a chave de API está configurada corretamente.'
+    );
+    renderChatList();
+  }
 };
 
 export const initAI = (): void => {
@@ -244,7 +311,10 @@ export const initAI = (): void => {
   initClearChat();
   initImageGen();
   initProjectModal();
+  initSettingsModal();
+  initImagineModal();
   initSendMessage();
+  initInputListener();
   renderProjectsList();
   renderConnectedProject();
 
@@ -263,7 +333,5 @@ export const initAI = (): void => {
     showWelcome();
   }
 };
-
-document.addEventListener('DOMContentLoaded', initAI);
 
 export { showToast };

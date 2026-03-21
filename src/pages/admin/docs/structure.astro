@@ -1,0 +1,526 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Estrutura - Documentacao" adm={true} activePage="/admin/docs">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-nav">
+        <div class="docs-nav-section">
+          <h3>Getting Started</h3>
+          <ul>
+            <li><a href="/admin/docs">Visao Geral</a></li>
+            <li><a href="/admin/docs/structure" class="active">Estrutura</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Sistema</h3>
+          <ul>
+            <li><a href="/admin/docs/auth">Autenticacao</a></li>
+            <li><a href="/admin/docs/store">Loja e Carrinho</a></li>
+            <li><a href="/admin/docs/ai">Inteligencia Artificial</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Backend</h3>
+          <ul>
+            <li><a href="/admin/docs/database">Banco de Dados</a></li>
+            <li><a href="/admin/docs/api">APIs</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Configuracao</h3>
+          <ul>
+            <li><a href="/admin/docs/env">Variaveis de Ambiente</a></li>
+            <li><a href="/admin/docs/commands">Comandos</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="docs-content">
+      <h1><Icon name="lucide:folder-tree" size={24} /> Estrutura do Projeto</h1>
+      <p class="lead">
+        Astro 5 SSR com TypeScript estrito, Astro DB (Turso), e Vercel adapter.
+        Projeto escrito em Portugues (Brasil).
+      </p>
+
+      <h2><Icon name="lucide:folder" size={20} /> Diretorios Principais</h2>
+
+      <h3>src/</h3>
+      <p>Codigo fonte da aplicacao.</p>
+
+      <h3>db/</h3>
+      <p>Configuracao do banco de dados Astro DB (na raiz do projeto).</p>
+
+      <h2><Icon name="lucide:folder" size={20} /> src/</h2>
+
+      <div class="dir-tree">
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>actions/</strong>
+          <span>Astro server actions para formulários</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>components/</strong>
+          <span>Componentes reutilizaveis</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>ui/</code>
+          <span>Componentes atomicos (Button, Card, Modal)</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>admin/</code>
+          <span>Componentes administrativos</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>constants/</strong>
+          <span>Dados estaticos</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>db/</strong>
+          <span>Importacoes do Astro DB</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>layouts/</strong>
+          <span>Layouts de pagina (Layout, Seo)</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>lib/</strong>
+          <span>Bibliotecas e utilitários</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>api/</code>
+          <span>Helpers de resposta API</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>ai/</code>
+          <span>Modulo de Inteligencia Artificial</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>auth/</code>
+          <span>Autenticacao (owner, visitor)</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>cart/</code>
+          <span>Sistema de carrinho (store, client)</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>utils/</code>
+          <span>Funcoes utilitarias</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>pages/</strong>
+          <span>Rotas e paginas</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>api/</code>
+          <span>API routes</span>
+        </div>
+        <div class="tree-item folder indent">
+          <Icon name="lucide:folder" size={16} />
+          <code>admin/</code>
+          <span>Painel administrativo</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>schemas/</strong>
+          <span>Schemas Zod para validacao</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>services/</strong>
+          <span>Logica de negocio (CRUD)</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>styles/</strong>
+          <span>Estilos globais e CSS modules</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>types/</strong>
+          <span>Definicoes TypeScript</span>
+        </div>
+        <div class="tree-item folder">
+          <Icon name="lucide:folder" size={16} />
+          <strong>utils/</strong>
+          <span>Funcoes helper</span>
+        </div>
+      </div>
+
+      <h2><Icon name="lucide:hash" size={20} /> Convencoes de Nome</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Elemento</th>
+              <th>Convencao</th>
+              <th>Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Componentes</td>
+              <td>PascalCase</td>
+              <td><code>AdminCard.astro</code>, <code>Button.ts</code></td>
+            </tr>
+            <tr>
+              <td>Arquivos (nao componentes)</td>
+              <td>kebab-case</td>
+              <td><code>product-service.ts</code></td>
+            </tr>
+            <tr>
+              <td>Types/Interfaces</td>
+              <td>PascalCase</td>
+              <td><code>Product</code>, <code>CartItem</code></td>
+            </tr>
+            <tr>
+              <td>Funcoes</td>
+              <td>camelCase</td>
+              <td><code>getProducts()</code>, <code>formatPrice()</code></td>
+            </tr>
+            <tr>
+              <td>Constantes</td>
+              <td>UPPER_SNAKE_CASE</td>
+              <td><code>DEFAULT_TIMEOUT</code></td>
+            </tr>
+            <tr>
+              <td>Classes CSS</td>
+              <td>kebab-case</td>
+              <td><code>.btn-primary</code></td>
+            </tr>
+            <tr>
+              <td>Tabelas DB</td>
+              <td>PascalCase</td>
+              <td><code>Products</code>, <code>CartItems</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><Icon name="lucide:file" size={20} /> Arquivos de Configuracao</h2>
+      <div class="files-list">
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>astro.config.mjs</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>tsconfig.json</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>.prettierrc</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>package.json</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>AGENTS.md</code>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .docs-layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 70px auto;
+    padding: 2rem;
+  }
+
+  .docs-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .docs-nav {
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 1rem;
+  }
+
+  .docs-nav-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .docs-nav-section h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+  }
+
+  .docs-nav-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .docs-nav-section a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-gray-400);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .docs-nav-section a:hover {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-dark);
+  }
+
+  .docs-nav-section a.active {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .docs-content {
+    flex: 1;
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 2rem;
+  }
+
+  .docs-content h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+  }
+
+  .docs-content h1 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary-alpha-20);
+  }
+
+  .docs-content h2:first-of-type {
+    margin-top: 0;
+  }
+
+  .docs-content h2 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .docs-content .lead {
+    font-size: 1.125rem;
+    color: var(--color-gray-400);
+    line-height: 1.7;
+  }
+
+  .docs-content p {
+    color: var(--color-gray-400);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content code {
+    font-family: monospace;
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+  }
+
+  .dir-tree {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+  }
+
+  .tree-item.indent {
+    padding-left: 1.5rem;
+  }
+
+  .tree-item svg {
+    color: var(--color-primary);
+  }
+
+  .tree-item strong {
+    color: var(--color-dark);
+  }
+
+  .tree-item span {
+    color: var(--color-gray-400);
+    font-size: 0.75rem;
+    margin-left: auto;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  th {
+    background: var(--color-gray-50);
+    font-weight: 600;
+    color: var(--color-dark);
+  }
+
+  td {
+    color: var(--color-gray-400);
+  }
+
+  td code {
+    font-size: 0.8rem;
+  }
+
+  .files-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: var(--color-gray-50);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-gray-200);
+  }
+
+  .file-item svg {
+    color: var(--color-primary);
+  }
+
+  .file-item code {
+    font-size: 0.875rem;
+    color: var(--color-dark);
+    background: none;
+    padding: 0;
+  }
+
+  @media (max-width: 992px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+
+    .docs-sidebar {
+      width: 100%;
+      position: static;
+    }
+
+    .docs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  :global([data-theme='dark']) .docs-nav,
+  :global([data-theme='dark']) .docs-content {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .docs-content h1,
+  :global([data-theme='dark']) .docs-content h2,
+  :global([data-theme='dark']) .docs-content h3 {
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) .docs-content p,
+  :global([data-theme='dark']) td {
+    color: #a0a0a0;
+  }
+
+  :global([data-theme='dark']) .dir-tree {
+    background: #252525;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .tree-item strong {
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) th {
+    background: #252525;
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) .file-item {
+    background: #252525;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .file-item code {
+    color: #e5e5e5;
+  }
+</style>

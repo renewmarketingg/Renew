@@ -17,7 +17,7 @@ const affiliateProducts: AffiliateProduct[] = [
   {
     id: 'prod-002',
     name: 'MacBook Air M3',
-    description: '笔记本超轻薄 com chip M3, até 18 horas de bateria',
+    description: 'Laptop ultrafino com chip M3, até 18 horas de bateria',
     price: 8499,
     originalPrice: 9499,
     image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',

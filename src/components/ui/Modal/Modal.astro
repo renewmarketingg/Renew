@@ -1,0 +1,103 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './Modal.module.css';
+
+interface Props {
+  id: string;
+  title: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  closeOnOverlay?: boolean;
+  showClose?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  size = 'md',
+  closeOnOverlay = true,
+  showClose = true,
+  class: className,
+} = Astro.props;
+
+const sizeClass = {
+  sm: styles.modalSizeSm,
+  md: styles.modalSizeMd,
+  lg: styles.modalSizeLg,
+  xl: styles.modalSizeXl,
+}[size];
+---
+
+<div
+  class={`${styles.modalOverlay} ${className || ''}`}
+  id={id}
+  data-close-on-overlay={closeOnOverlay}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={`${id}Title`}
+>
+  <div class={`${styles.modal} ${sizeClass}`}>
+    <div class={styles.modalHeader}>
+      <h2 id={`${id}Title`} class={styles.modalTitle}>{title}</h2>
+      {showClose && (
+        <button class={styles.modalClose} data-close={id} aria-label="Fechar modal">
+          <Icon name="lucide:x" size={20} />
+        </button>
+      )}
+    </div>
+    <div class={styles.modalBody}>
+      <slot />
+    </div>
+    <div class={styles.modalFooter}>
+      <slot name="footer" />
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const modals = document.querySelectorAll('[id][role="dialog"]');
+    
+    modals.forEach((modal) => {
+      const closeOnOverlay = modal.getAttribute('data-close-on-overlay') !== 'false';
+      
+      const openModal = (modalEl: Element) => {
+        modalEl.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+        const firstFocusable = modalEl.querySelector<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        firstFocusable?.focus();
+      };
+      
+      const closeModal = (modalEl: Element) => {
+        modalEl.classList.remove('visible');
+        document.body.style.overflow = '';
+      };
+      
+      const closeButtons = modal.querySelectorAll('[data-close]');
+      closeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-close');
+          const target = targetId ? document.getElementById(targetId) : modal;
+          if (target) closeModal(target);
+        });
+      });
+      
+      if (closeOnOverlay) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal(modal);
+        });
+      }
+      
+      modal.addEventListener('keydown', (e) => {
+        const keyboardEvent = e as unknown as KeyboardEvent;
+        if (keyboardEvent.key === 'Escape') closeModal(modal);
+      });
+      
+      const win = window as unknown as Record<string, () => void>;
+      win[`open${modal.id}`] = () => openModal(modal);
+      win[`close${modal.id}`] = () => closeModal(modal);
+    });
+  });
+</script>

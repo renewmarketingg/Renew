@@ -1,0 +1,88 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './Select.module.css';
+
+interface Option {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  name: string;
+  label?: string;
+  options: Option[];
+  value?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+  hint?: string;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  id?: string;
+}
+
+const {
+  name,
+  label,
+  options,
+  value,
+  placeholder = 'Selecione uma opção',
+  required = false,
+  disabled = false,
+  error,
+  hint,
+  size = 'md',
+  class: className,
+  id,
+} = Astro.props;
+
+const selectId = id || `select-${name}`;
+const hasError = Boolean(error);
+---
+
+<div class={`${styles.selectWrapper} ${className || ''}`}>
+  {label && (
+    <label for={selectId} class={styles.label}>
+      {label}
+      {required && <span class={styles.required}>*</span>}
+    </label>
+  )}
+
+  <div class={`${styles.selectContainer} ${styles[size]} ${hasError ? styles.hasError : ''}`}>
+    <select
+      name={name}
+      id={selectId}
+      required={required}
+      disabled={disabled}
+      class={styles.select}
+      aria-invalid={hasError}
+      aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
+    >
+      {placeholder && (
+        <option value="" disabled selected={!value}>
+          {placeholder}
+        </option>
+      )}
+      {options.map((option) => (
+        <option value={option.value} disabled={option.disabled} selected={option.value === value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+    <Icon name="lucide:chevron-down" class={styles.icon} size={18} />
+  </div>
+
+  {error && (
+    <p id={`${selectId}-error`} class={styles.error} role="alert">
+      <Icon name="lucide:alert-circle" size={14} />
+      {error}
+    </p>
+  )}
+  {!error && hint && (
+    <p id={`${selectId}-hint`} class={styles.hint}>
+      {hint}
+    </p>
+  )}
+</div>

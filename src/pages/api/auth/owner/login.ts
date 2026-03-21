@@ -8,9 +8,7 @@ const loginAttempts = new Map<string, { count: number; blockedUntil: number }>()
 const MAX_ATTEMPTS = 5;
 const BLOCK_DURATION_MS = 15 * 60 * 1000;
 
-const sanitizeInput = (input: string): string => {
-  return input.trim().slice(0, 254);
-};
+const sanitizeInput = (input: string): string => input.trim().slice(0, 254);
 
 const getClientIP = (request: Request): string => {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -22,10 +20,7 @@ const checkRateLimit = (ip: string): boolean => {
   const now = Date.now();
   const attempt = loginAttempts.get(ip);
 
-  if (attempt && attempt.blockedUntil > now) {
-    return false;
-  }
-
+  if (attempt && attempt.blockedUntil > now) return false;
   if (attempt && attempt.count >= MAX_ATTEMPTS) {
     loginAttempts.set(ip, { count: attempt.count + 1, blockedUntil: now + BLOCK_DURATION_MS });
     return false;
@@ -36,13 +31,11 @@ const checkRateLimit = (ip: string): boolean => {
   } else {
     loginAttempts.set(ip, { count: 1, blockedUntil: 0 });
   }
-
   return true;
 };
 
-const toStringField = (value: FormDataEntryValue | null): string => {
-  return typeof value === 'string' ? value : '';
-};
+const toStringField = (value: FormDataEntryValue | null): string =>
+  typeof value === 'string' ? value : '';
 
 const isAjaxRequest = (request: Request): boolean => {
   const accept = request.headers.get('accept') || '';
@@ -56,19 +49,6 @@ const redirectWithError = (url: URL, redirectUrl: string): Response => {
   return Response.redirect(new URL(`/login?${q.toString()}`, url).toString(), 303);
 };
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Accept',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders,
-  });
-};
-
 export const POST: APIRoute = async ({ request, cookies, url }) => {
   const clientIP = getClientIP(request);
 
@@ -77,14 +57,13 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: errorMsg }), {
         status: 429,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
     return redirectWithError(url, '/admin');
   }
 
   const form = await request.formData();
-
   const email = sanitizeInput(toStringField(form.get('email')));
   const password = toStringField(form.get('password'));
   const redirectUrl = toStringField(form.get('redirect_url')) || getRedirectUrlParam(url, '/admin');
@@ -93,18 +72,18 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: 'Email e senha são obrigatórios' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
     return redirectWithError(url, redirectUrl);
   }
 
-  const ok = verifyOwnerCredentials({ email, password });
+  const ok = await verifyOwnerCredentials({ email, password });
   if (!ok) {
     if (isAjaxRequest(request)) {
       return new Response(JSON.stringify({ error: 'Email ou senha inválidos' }), {
         status: 401,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
     return redirectWithError(url, redirectUrl);
@@ -118,7 +97,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
   if (isAjaxRequest(request)) {
     return new Response(JSON.stringify({ success: true, redirectUrl }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -128,6 +107,6 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
 export const GET: APIRoute = async () => {
   return new Response(JSON.stringify({ error: 'Method not allowed' }), {
     status: 405,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    headers: { 'Content-Type': 'application/json' },
   });
 };

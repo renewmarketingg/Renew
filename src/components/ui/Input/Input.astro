@@ -1,0 +1,81 @@
+---
+import { Icon } from 'astro-icon/components';
+import styles from './Input.module.css';
+
+interface Props {
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
+  name: string;
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  autocomplete?: string;
+  error?: string;
+  hint?: string;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  id?: string;
+}
+
+const {
+  type = 'text',
+  name,
+  label,
+  placeholder,
+  value,
+  required = false,
+  disabled = false,
+  readonly = false,
+  autocomplete,
+  error,
+  hint,
+  size = 'md',
+  class: className,
+  id,
+} = Astro.props;
+
+const inputId = id || `input-${name}`;
+const hasError = Boolean(error);
+---
+
+<div class={`${styles.inputWrapper} ${className || ''}`}>
+  {label && (
+    <label for={inputId} class={styles.label}>
+      {label}
+      {required && <span class={styles.required}>*</span>}
+    </label>
+  )}
+
+  <div class={`${styles.inputContainer} ${styles[size]} ${hasError ? styles.hasError : ''}`}>
+    <slot name="prefix" />
+    <input
+      type={type}
+      name={name}
+      id={inputId}
+      placeholder={placeholder}
+      value={value}
+      required={required}
+      disabled={disabled}
+      readonly={readonly}
+      autocomplete={autocomplete}
+      class={styles.input}
+      aria-invalid={hasError}
+      aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+    />
+    <slot name="suffix" />
+  </div>
+
+  {error && (
+    <p id={`${inputId}-error`} class={styles.error} role="alert">
+      <Icon name="lucide:alert-circle" size={14} />
+      {error}
+    </p>
+  )}
+  {!error && hint && (
+    <p id={`${inputId}-hint`} class={styles.hint}>
+      {hint}
+    </p>
+  )}
+</div>

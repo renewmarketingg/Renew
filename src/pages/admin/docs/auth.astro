@@ -1,0 +1,354 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Autenticacao - Documentacao" adm={true} activePage="/admin/docs">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-nav">
+        <div class="docs-nav-section">
+          <h3>Getting Started</h3>
+          <ul>
+            <li><a href="/admin/docs">Visao Geral</a></li>
+            <li><a href="/admin/docs/structure">Estrutura</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Sistema</h3>
+          <ul>
+            <li><a href="/admin/docs/auth" class="active">Autenticacao</a></li>
+            <li><a href="/admin/docs/store">Loja e Carrinho</a></li>
+            <li><a href="/admin/docs/ai">Inteligencia Artificial</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Backend</h3>
+          <ul>
+            <li><a href="/admin/docs/database">Banco de Dados</a></li>
+            <li><a href="/admin/docs/api">APIs</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-section">
+          <h3>Configuracao</h3>
+          <ul>
+            <li><a href="/admin/docs/env">Variaveis de Ambiente</a></li>
+            <li><a href="/admin/docs/commands">Comandos</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="docs-content">
+      <h1><Icon name="lucide:lock" size={24} /> Sistema de Autenticacao</h1>
+      <p class="lead">
+        O projeto implementa dois tipos de autenticacao: <strong>Owner (Admin)</strong> para acesso ao
+        painel administrativo e <strong>Visitor</strong> para rastreamento de sessoes de usuarios.
+      </p>
+
+      <h2><Icon name="lucide:user-check" size={20} /> Autenticacao Owner</h2>
+      <p>Utiliza credenciais definidas no arquivo .env e tokens de sessao assinados com HMAC.</p>
+      
+      <h3>Fluxo de Login</h3>
+      <ol class="steps">
+        <li>Usuario acessa /login</li>
+        <li>Preenche email e senha</li>
+        <li>Sistema verifica credenciais</li>
+        <li>Se valido: gera token HMAC + cookie</li>
+        <li>Redireciona para /admin</li>
+        <li>Middleware valida sessao em cada requisicao</li>
+      </ol>
+
+      <h3>Variaveis Necessarias</h3>
+      <pre>ADMIN_OWNER_EMAIL=seu-email@exemplo.com
+ADMIN_PASSWORD=sua-senha-segura
+ADMIN_SESSION_SECRET=chave-secreta-minimo-32-caracteres</pre>
+
+      <h3>Protecao de Rotas</h3>
+      <p>Todas as rotas em /admin sao protegidas automaticamente pelo middleware. Arquivo: <code>src/middleware.ts</code></p>
+
+      <h2><Icon name="lucide:shield" size={20} /> Medidas de Seguranca</h2>
+      <ul class="feature-list">
+        <li><strong>Assinatura HMAC-SHA256:</strong> Tokens de sessao assinados com chave secreta</li>
+        <li><strong>Timing Attack Protection:</strong> Comparacao segura de senhas</li>
+        <li><strong>Rate Limiting:</strong> Maximo 5 tentativas de login por IP</li>
+        <li><strong>Cookie Seguro:</strong> httpOnly, secure, sameSite</li>
+        <li><strong>Input Sanitization:</strong> Trim e validacao de formato</li>
+      </ul>
+
+      <h2><Icon name="lucide:folder" size={20} /> Arquivos Relacionados</h2>
+      <div class="files-list">
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/lib/auth/ownerSession.ts</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/lib/auth/visitorSession.ts</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/middleware.ts</code>
+        </div>
+        <div class="file-item">
+          <Icon name="lucide:file-code" size={16} />
+          <code>src/pages/api/auth/owner/</code>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .docs-layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 70px auto;
+    padding: 2rem;
+  }
+
+  .docs-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .docs-nav {
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 1rem;
+  }
+
+  .docs-nav-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .docs-nav-section h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+  }
+
+  .docs-nav-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .docs-nav-section a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-gray-400);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .docs-nav-section a:hover {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-dark);
+  }
+
+  .docs-nav-section a.active {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .docs-content {
+    flex: 1;
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-gray-200);
+    padding: 2rem;
+  }
+
+  .docs-content h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 1rem;
+  }
+
+  .docs-content h1 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary-alpha-20);
+  }
+
+  .docs-content h2:first-of-type {
+    margin-top: 0;
+  }
+
+  .docs-content h2 svg {
+    color: var(--color-primary);
+  }
+
+  .docs-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .docs-content .lead {
+    font-size: 1.125rem;
+    color: var(--color-gray-400);
+    line-height: 1.7;
+  }
+
+  .docs-content p {
+    color: var(--color-gray-400);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content code {
+    font-family: monospace;
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+  }
+
+  .docs-content pre {
+    background: var(--color-gray-900);
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .docs-content ul {
+    color: var(--color-gray-400);
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .steps {
+    padding-left: 1.5rem;
+    color: var(--color-gray-400);
+  }
+
+  .steps li {
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .feature-list li {
+    padding: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid var(--color-gray-100);
+  }
+
+  .feature-list li::before {
+    content: '->';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary);
+  }
+
+  .files-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: var(--color-gray-50);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-gray-200);
+  }
+
+  .file-item svg {
+    color: var(--color-primary);
+  }
+
+  .file-item code {
+    font-size: 0.875rem;
+    color: var(--color-dark);
+    background: none;
+    padding: 0;
+  }
+
+  @media (max-width: 992px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+
+    .docs-sidebar {
+      width: 100%;
+      position: static;
+    }
+
+    .docs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  :global([data-theme='dark']) .docs-nav,
+  :global([data-theme='dark']) .docs-content {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .docs-content h1,
+  :global([data-theme='dark']) .docs-content h2,
+  :global([data-theme='dark']) .docs-content h3 {
+    color: #e5e5e5;
+  }
+
+  :global([data-theme='dark']) .docs-content p,
+  :global([data-theme='dark']) .docs-content li {
+    color: #a0a0a0;
+  }
+
+  :global([data-theme='dark']) .file-item {
+    background: #252525;
+    border-color: #333;
+  }
+
+  :global([data-theme='dark']) .file-item code {
+    color: #e5e5e5;
+  }
+</style>
